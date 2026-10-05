@@ -30,16 +30,23 @@ jobs:
       - name: Benchmark Runner (152/152 Corpus Verification)
         run: cargo run -p kiteo-runner
 
+      - name: Held-Out Benchmark Evaluation (70 Real CP Cases)
+        run: cargo run -p kiteo-runner -- --held-out
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Empirical Scaling Validator
+      - name: Empirical Scaling Validator (Synthetic Loops)
         run: python benchmark/empirical/validator.py
+
+      - name: Empirical Scaling Validator (Real CP Solutions)
+        run: python benchmark/empirical/real_solution_validator.py
 
       - name: WASM Compilation Check
         run: cargo check -p kiteo-engine --target wasm32-unknown-unknown
+
 
   extension-build:
     runs-on: ubuntu-latest
