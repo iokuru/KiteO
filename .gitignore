@@ -13,5 +13,6 @@ test-results/
 playwright-report/
 dist-*/
 extension/dist-*/
+.astro/
 
 

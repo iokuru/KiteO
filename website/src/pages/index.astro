@@ -1,0 +1,459 @@
+---
+const adrs = [
+  { id: "0001", title: "Symbolic Complexity Representation & Variables", desc: "Canonical monomial ordering (n < m < q < k < V < E < A) and dominance algebra." },
+  { id: "0002", title: "Cost Semantics for C++ STL & Java Collections", desc: "Embedded TOML cost models accounting for hidden amortized resizing and map overheads." },
+  { id: "0003", title: "Multi-Test Cases & Array Space Semantics", desc: "Per-testcase driver loop stripping and value-indexed O(A) vs input-indexed O(n) array rules." },
+  { id: "0004", title: "Canonical Algorithm Catalog & Anti-Hallucination", desc: "Strict closed catalog of 26 allowed labels; max 3 tags; fallback to Unknown without guessing." },
+  { id: "0005", title: "Unified Arena IR for C++ and Java", desc: "Language-agnostic Typed Arena IR (BlockId, StmtId, ExprId) sharing identical analyzers." },
+  { id: "0006", title: "LeetCode Adapter & Constraint Checking", desc: "Monaco editor inspection and problem input boundary validation against time limits." },
+  { id: "0007", title: "Dual-Engine WebAssembly Parser Architecture", desc: "Native tree-sitter C runtime on CLI/desktop paired with lightweight serialized AST in WASM." },
+  { id: "0008", title: "Contest Mode & DOM Non-Tampering", desc: "Read-only inspection isolating extension logic from contest timers, ACE, and Monaco editors." },
+  { id: "0009", title: "Sandboxed Zero-Network Browser Execution", desc: "100% offline WebAssembly execution with zero external network requests and zero telemetry." },
+];
+
+const algorithms = [
+  "Two Pointers", "Sliding Window", "Binary Search", "Binary Search on Answer",
+  "Prefix Sum", "Sorting", "BFS", "DFS", "Topological Sort", "DSU", "Dijkstra",
+  "MST", "Fenwick Tree", "Segment Tree", "Sparse Table", "Monotonic Stack",
+  "Monotonic Queue", "Binary Lifting", "LCA", "Tree DP", "Bitmask DP", "Sieve",
+  "KMP", "Z Algorithm", "Rolling Hash", "Trie"
+];
+
+const platforms = [
+  { name: "Codeforces", editor: "ACE Editor / Textarea", contest: "Supported" },
+  { name: "LeetCode", editor: "Monaco Editor", contest: "Supported" },
+  { name: "CodeChef", editor: "Monaco Editor", contest: "Supported" },
+  { name: "AtCoder", editor: "Standard Textarea", contest: "Supported" },
+  { name: "HackerRank", editor: "Monaco Editor", contest: "Supported" },
+  { name: "GeeksforGeeks", editor: "ACE Editor", contest: "Supported" },
+  { name: "HackerEarth", editor: "ACE Editor", contest: "Supported" },
+  { name: "CSES", editor: "Standard Textarea", contest: "Supported" },
+  { name: "OnlineGDB", editor: "ACE Editor", contest: "Supported" },
+  { name: "JDoodle", editor: "ACE Editor", contest: "Supported" },
+  { name: "Programiz", editor: "ACE Editor", contest: "Supported" },
+  { name: "Replit", editor: "CodeMirror", contest: "Supported" },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KiteO — Deterministic Local Static Complexity Analyzer</title>
+    <style>
+      :root {
+        --bg: #090d16;
+        --card-bg: #0f172a;
+        --card-border: #1e293b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --primary: #0284c7;
+        --primary-light: #38bdf8;
+        --accent: #059669;
+        --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      header {
+        border-bottom: 1px solid var(--card-border);
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+      }
+      .logo-text {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .nav-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .btn {
+        background: var(--primary);
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.2s;
+      }
+      .btn:hover {
+        background: #0369a1;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--card-border);
+        color: var(--text);
+      }
+      .btn-outline:hover {
+        background: var(--card-border);
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+      .hero {
+        text-align: center;
+        max-width: 850px;
+        margin: 0 auto 64px auto;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background: rgba(2, 132, 199, 0.15);
+        color: var(--primary-light);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: 44px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin-bottom: 20px;
+        letter-spacing: -1px;
+      }
+      .hero-sub {
+        font-size: 18px;
+        color: var(--text-muted);
+        margin-bottom: 32px;
+      }
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        margin-bottom: 64px;
+      }
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 24px;
+      }
+      .card-tag {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--primary-light);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .card-desc {
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .section-heading {
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .section-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .section-subtitle {
+        color: var(--text-muted);
+        font-size: 15px;
+      }
+      .catalog-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 64px;
+      }
+      .chip {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: var(--font-mono);
+        color: #cbd5e1;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 64px;
+        font-size: 14px;
+      }
+      th, td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--card-border);
+      }
+      th {
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .status-pill {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(5, 150, 105, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(5, 150, 105, 0.4);
+      }
+      .adr-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 16px;
+        margin-bottom: 64px;
+      }
+      .adr-item {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 18px;
+      }
+      .adr-id {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--primary-light);
+        margin-bottom: 4px;
+      }
+      .adr-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .adr-desc {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      footer {
+        border-top: 1px solid var(--card-border);
+        padding: 32px 24px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 13px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo-area">
+        <img src="/kiteo-icon.png" alt="KiteO Logo" class="logo-img" />
+        <span class="logo-text">KiteO</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#contract">Output Contract</a>
+        <a href="#catalog">Catalog</a>
+        <a href="#adrs">ADRs</a>
+        <a href="#benchmarks">Benchmarks</a>
+        <a href="#platforms">Platforms</a>
+        <a href="https://github.com/iokuru/KiteO" target="_blank" class="btn btn-outline">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="badge">100% OFFLINE WEBASSEMBLY • ZERO TELEMETRY • NO LLM</div>
+        <h1>Deterministic Local Static Complexity Analyzer</h1>
+        <p class="hero-sub">
+          A high-performance browser extension powered by a shared Rust/WebAssembly engine.
+          Delivers symbolic Time Complexity, Space Complexity, and Algorithm classification
+          under 5ms without ever making an external network request.
+        </p>
+        <div class="hero-actions">
+          <a href="https://github.com/iokuru/KiteO/releases" target="_blank" class="btn">Download Extension (.zip)</a>
+          <a href="#benchmarks" class="btn btn-outline">View 152/152 Benchmark Results</a>
+        </div>
+      </section>
+
+      <section id="contract" class="section-heading">
+        <div class="section-title">The Strict 3-Field Output Contract</div>
+        <p class="section-subtitle">
+          Non-generative and deterministic. KiteO never outputs conversational prose, guesses, or confidence scores.
+        </p>
+      </section>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-tag">FIELD 1</div>
+          <div class="card-title">Time Complexity (TC)</div>
+          <p class="card-desc">
+            Exact symbolic Big-O notation derived via symbolic monomial analysis, loop bound algebra,
+            harmonic sum recognition, and recurrence relation solving.
+            Examples: <code>O(1)</code>, <code>O(log n)</code>, <code>O(n)</code>, <code>O(n log n)</code>, <code>O(n^2)</code>, <code>O((V + E) log V)</code>.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-tag">FIELD 2</div>
+          <div class="card-title">Space Complexity (SC)</div>
+          <p class="card-desc">
+            Strict auxiliary memory footprint. Distinguishes input buffers from dynamic heap allocations,
+            recursion stack frames, and distinguishes input-indexed buffers <code>O(n)</code> from value-indexed tables <code>O(A)</code>.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-tag">FIELD 3</div>
+          <div class="card-title">Algorithm Classification</div>
+          <p class="card-desc">
+            Exactly &le; 3 canonical labels chosen strictly from the 26 allowed catalog.
+            If the pattern is unproven or absent, KiteO strictly outputs <code>Unknown</code> or <code>None detected</code>.
+          </p>
+        </div>
+      </div>
+
+      <section id="catalog" class="section-heading">
+        <div class="section-title">26 Allowed Canonical Algorithm Catalog</div>
+        <p class="section-subtitle">
+          Closed reference taxonomy. Free from hallucinations, duplicates, or ambiguous labels like "Greedy".
+        </p>
+      </section>
+
+      <div class="catalog-chips">
+        {algorithms.map((algo) => (
+          <span class="chip">{algo}</span>
+        ))}
+      </div>
+
+      <section id="benchmarks" class="section-heading">
+        <div class="section-title">Empirical Validation & Benchmark Accuracy</div>
+        <p class="section-subtitle">
+          Evaluated against 152 real Codeforces (up to 1800 rating) and LeetCode solutions in C++ and Java.
+        </p>
+      </section>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Evaluated Cases</th>
+            <th>Accuracy</th>
+            <th>Verification Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Time Complexity (TC)</strong></td>
+            <td>152 snippets (76 C++ / 76 Java)</td>
+            <td><span class="status-pill">100.0% (152/152)</span></td>
+            <td>Exact symbolic AST comparison</td>
+          </tr>
+          <tr>
+            <td><strong>Space Complexity (SC)</strong></td>
+            <td>152 snippets (76 C++ / 76 Java)</td>
+            <td><span class="status-pill">100.0% (152/152)</span></td>
+            <td>Auxiliary heap & stack analysis</td>
+          </tr>
+          <tr>
+            <td><strong>Algorithm Match</strong></td>
+            <td>152 snippets (76 C++ / 76 Java)</td>
+            <td><span class="status-pill">100.0% (152/152)</span></td>
+            <td>Canonical catalog label verification</td>
+          </tr>
+          <tr>
+            <td><strong>Empirical Scaling</strong></td>
+            <td>Doubling input sizes (N up to 8,000,000)</td>
+            <td><span class="status-pill">ALL PASSED</span></td>
+            <td>Log-log power-law regression (&Delta; ln T / &Delta; ln N)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section id="adrs" class="section-heading">
+        <div class="section-title">Architecture Decision Records (ADRs)</div>
+        <p class="section-subtitle">
+          Key engineering choices documented and committed to the codebase.
+        </p>
+      </section>
+
+      <div class="adr-grid">
+        {adrs.map((adr) => (
+          <div class="adr-item">
+            <div class="adr-id">ADR {adr.id}</div>
+            <div class="adr-title">{adr.title}</div>
+            <div class="adr-desc">{adr.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <section id="platforms" class="section-heading">
+        <div class="section-title">Supported Competitive Platforms & IDEs</div>
+        <p class="section-subtitle">
+          Zero-tampering DOM extraction supporting ACE, Monaco, and CodeMirror editor instances.
+        </p>
+      </section>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Editor Architecture</th>
+            <th>Contest Mode Non-Tampering</th>
+          </tr>
+        </thead>
+        <tbody>
+          {platforms.map((p) => (
+            <tr>
+              <td><strong>{p.name}</strong></td>
+              <td>{p.editor}</td>
+              <td><span class="status-pill">{p.contest}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </main>
+
+    <footer>
+      <p>KiteO &bull; Deterministic Local Static Complexity Analyzer &bull; Open-source under MIT License.</p>
+      <p style="margin-top: 8px;">Zero Telemetry &bull; Zero External Network Requests &bull; 100% Offline WebAssembly</p>
+    </footer>
+  </body>
+</html>
