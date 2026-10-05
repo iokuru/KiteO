@@ -70,6 +70,10 @@ impl ComplexityExpr {
         Self::Add(Box::new(a), Box::new(b))
     }
 
+    pub fn max(a: Self, b: Self) -> Self {
+        Self::Max(Box::new(a), Box::new(b))
+    }
+
     pub fn is_const_one(&self) -> bool {
         matches!(self, Self::Const(1))
     }

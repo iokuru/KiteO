@@ -67,12 +67,10 @@ impl Monomial {
         let self_all = self.all_vars();
         let other_all = other.all_vars();
 
-        // If other has any variable that self does not possess, self cannot dominate other
         if !other_all.is_subset(&self_all) {
             return false;
         }
 
-        // For all variables in other, compare powers
         let mut strictly_greater = false;
         let mut strictly_lesser = false;
 
@@ -148,23 +146,23 @@ impl PartialOrd for Monomial {
 
 impl Ord for Monomial {
     fn cmp(&self, other: &Self) -> Ordering {
-        // Canonical ordering: higher degree first, then logs, then variable names
         match other.total_var_degree().cmp(&self.total_var_degree()) {
-            Ordering::Equal => match other.total_log_degree().cmp(&self.total_log_degree()) {
-                Ordering::Equal => {
-                    let s_vars: Vec<_> = self.vars.iter().collect();
-                    let o_vars: Vec<_> = other.vars.iter().collect();
-                    match s_vars.cmp(&o_vars) {
+            Ordering::Equal => {
+                let s_vars: Vec<_> = self.vars.iter().collect();
+                let o_vars: Vec<_> = other.vars.iter().collect();
+                match s_vars.cmp(&o_vars) {
+                    Ordering::Equal => match other.total_log_degree().cmp(&self.total_log_degree())
+                    {
                         Ordering::Equal => {
                             let s_logs: Vec<_> = self.logs.iter().collect();
                             let o_logs: Vec<_> = other.logs.iter().collect();
                             s_logs.cmp(&o_logs)
                         }
                         other_order => other_order,
-                    }
+                    },
+                    other_order => other_order,
                 }
-                other_order => other_order,
-            },
+            }
             other_order => other_order,
         }
     }
@@ -228,18 +226,20 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
             }
         }
         ComplexityExpr::Add(lhs, rhs) | ComplexityExpr::Max(lhs, rhs) => {
+            let sl = simplify(lhs);
+            let sr = simplify(rhs);
+            if sl.is_unknown() || sr.is_unknown() {
+                return ComplexityExpr::Unknown;
+            }
+
             let mut terms = Vec::new();
-            collect_additive_terms(lhs, &mut terms);
-            collect_additive_terms(rhs, &mut terms);
+            collect_additive_terms(&sl, &mut terms);
+            collect_additive_terms(&sr, &mut terms);
 
             let mut simplified_terms: Vec<ComplexityExpr> = Vec::new();
             for t in terms {
-                let s = simplify(&t);
-                if s.is_unknown() {
-                    return ComplexityExpr::Unknown;
-                }
-                if !s.is_const_one() {
-                    simplified_terms.push(s);
+                if !t.is_const_one() {
+                    simplified_terms.push(t);
                 }
             }
 
@@ -247,7 +247,6 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
                 return ComplexityExpr::one();
             }
 
-            // Convert to monomials where possible to filter dominated terms
             let mut monomials: Vec<Monomial> = Vec::new();
             let mut non_monomials: Vec<ComplexityExpr> = Vec::new();
 
@@ -259,13 +258,11 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
                 }
             }
 
-            // Filter dominated monomials
             let mut surviving_monomials = Vec::new();
             for i in 0..monomials.len() {
                 let mut dominated = false;
                 for j in 0..monomials.len() {
                     if i != j && monomials[j].dominates(&monomials[i]) {
-                        // Tie breaker: keep earlier index if identical
                         if monomials[j] == monomials[i] && i > j {
                             dominated = true;
                             break;
@@ -289,7 +286,6 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
                 .map(|m| m.to_expr())
                 .collect();
             all_exprs.extend(non_monomials);
-            all_exprs.sort_by_key(|a| a.format_inner());
             all_exprs.dedup();
 
             if all_exprs.is_empty() {
