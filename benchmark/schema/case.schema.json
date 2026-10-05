@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BenchmarkCase",
+  "type": "object",
+  "required": ["id", "name", "language", "code", "expected_tc", "expected_sc", "expected_algorithms"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "language": { "type": "string", "enum": ["cpp", "java"] },
+    "code": { "type": "string" },
+    "expected_tc": { "type": "string" },
+    "expected_sc": { "type": "string" },
+    "expected_algorithms": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
