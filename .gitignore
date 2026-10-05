@@ -11,4 +11,7 @@ benchmark/reports/
 *.proptest-regressions
 test-results/
 playwright-report/
+dist-*/
+extension/dist-*/
+
 

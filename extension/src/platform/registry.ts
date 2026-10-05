@@ -39,3 +39,7 @@ export function getAdapterForUrl(url: string): PlatformAdapter | null {
   }
   return null;
 }
+
+export const getAllPlatformAdapters = () => allAdapters;
+export const getPlatformAdapter = getAdapterForUrl;
+

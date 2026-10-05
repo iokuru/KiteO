@@ -306,6 +306,66 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
         }
     }
 
+    #[cfg(target_arch = "wasm32")]
+    {
+        let mut loop_depth = 0;
+        let mut max_depth = 0;
+        let mut has_halving = false;
+        let mut has_harmonic = false;
+
+        for line in preprocessed.lines() {
+            let trimmed = line.trim();
+            if trimmed.starts_with("for ")
+                || trimmed.starts_with("for(")
+                || trimmed.starts_with("while ")
+                || trimmed.starts_with("while(")
+            {
+                if trimmed.contains("/= 2")
+                    || trimmed.contains("/=2")
+                    || trimmed.contains("*= 2")
+                    || trimmed.contains("*=2")
+                    || trimmed.contains(">>= 1")
+                {
+                    has_halving = true;
+                }
+                if trimmed.contains("+= i") || trimmed.contains("+=i") {
+                    has_harmonic = true;
+                }
+                loop_depth += 1;
+                if loop_depth > max_depth {
+                    max_depth = loop_depth;
+                }
+            }
+            if trimmed.contains('}') && loop_depth > 0 {
+                loop_depth -= 1;
+            }
+        }
+
+        let tc_str = if has_harmonic {
+            "O(n log n)".to_string()
+        } else if has_halving && max_depth == 1 {
+            "O(log n)".to_string()
+        } else if max_depth == 1 {
+            "O(n)".to_string()
+        } else if max_depth == 2 {
+            "O(n^2)".to_string()
+        } else if max_depth == 3 {
+            "O(n^3)".to_string()
+        } else if max_depth > 3 {
+            format!("O(n^{max_depth})")
+        } else {
+            "O(1)".to_string()
+        };
+
+        let sc_str = space::SpaceAnalyzer::analyze_source(&preprocessed).to_string();
+
+        return AnalysisOutput {
+            tc: tc_str,
+            sc: sc_str,
+            algorithms: algo_names,
+        };
+    }
+
     let _ = lang;
     AnalysisOutput {
         tc: "Unknown".to_string(),
