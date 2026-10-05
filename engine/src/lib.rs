@@ -37,7 +37,7 @@ impl Default for AnalysisOutput {
     }
 }
 
-pub fn analyze(code: &str, _lang: &str) -> AnalysisOutput {
+pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
     let preprocessed = preprocessor::preprocess(code);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
     let algo_names: Vec<String> = detected_algos
@@ -273,6 +273,7 @@ pub fn analyze(code: &str, _lang: &str) -> AnalysisOutput {
         }
     }
 
+    let _ = lang;
     AnalysisOutput {
         tc: "Unknown".to_string(),
         sc: "Unknown".to_string(),
