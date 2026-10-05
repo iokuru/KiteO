@@ -89,7 +89,8 @@ fn test_monotonic_stack_positive_and_negative() {
         else if (!st.empty()) st.pop();
     }
     "#;
-    assert!(!AlgorithmDetector::detect(negative_plain_stack).contains(&AllowedAlgorithm::MonotonicStack));
+    assert!(!AlgorithmDetector::detect(negative_plain_stack)
+        .contains(&AllowedAlgorithm::MonotonicStack));
 }
 
 #[test]

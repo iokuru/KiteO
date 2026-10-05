@@ -110,11 +110,27 @@ impl AlgorithmDetector {
         }
 
         // 5. DSU & MST
-        let has_dsu = (source.contains("parent") || source.contains("parent[") || source.contains("root"))
+        let has_dsu = (source.contains("parent")
+            || source.contains("parent[")
+            || source.contains("root"))
             && (source.contains("find(") || source.contains("unite(") || source.contains("union("));
 
-        if (has_dsu && (source.contains("weight") || source.contains("cost") || source.contains("Edge") || source.contains("edge")) && (source.contains("sort") || source.contains("mst") || source.contains("MST") || source.contains("Kruskal") || source.contains("kruskal")))
-            || (source.contains("prim(") || source.contains("Prim(") || source.contains("prims(") || source.contains("Prims(") || source.contains("prim_mst") || source.contains("kruskal_mst"))
+        if (has_dsu
+            && (source.contains("weight")
+                || source.contains("cost")
+                || source.contains("Edge")
+                || source.contains("edge"))
+            && (source.contains("sort")
+                || source.contains("mst")
+                || source.contains("MST")
+                || source.contains("Kruskal")
+                || source.contains("kruskal")))
+            || (source.contains("prim(")
+                || source.contains("Prim(")
+                || source.contains("prims(")
+                || source.contains("Prims(")
+                || source.contains("prim_mst")
+                || source.contains("kruskal_mst"))
         {
             detected.push(AllowedAlgorithm::Mst);
         } else if has_dsu {
@@ -122,9 +138,19 @@ impl AlgorithmDetector {
         }
 
         // 6. Binary Lifting & LCA
-        let has_binary_lifting = (source.contains("up[") || source.contains("ancestor[") || source.contains("jump["))
-            && (source.contains("1 <<") || source.contains("1<<") || source.contains("LOG") || source.contains("LOGN") || source.contains("20"));
-        if has_binary_lifting && (source.contains("lca(") || source.contains("LCA") || source.contains("depth[") || source.contains("tin[")) {
+        let has_binary_lifting =
+            (source.contains("up[") || source.contains("ancestor[") || source.contains("jump["))
+                && (source.contains("1 <<")
+                    || source.contains("1<<")
+                    || source.contains("LOG")
+                    || source.contains("LOGN")
+                    || source.contains("20"));
+        if has_binary_lifting
+            && (source.contains("lca(")
+                || source.contains("LCA")
+                || source.contains("depth[")
+                || source.contains("tin["))
+        {
             detected.push(AllowedAlgorithm::Lca);
             detected.push(AllowedAlgorithm::BinaryLifting);
         } else if has_binary_lifting {
@@ -132,15 +158,23 @@ impl AlgorithmDetector {
         }
 
         // 7. Z Algorithm
-        if (source.contains("z[") || source.contains("z_algorithm") || source.contains("zAlgorithm") || source.contains("z_box"))
-            && (source.contains("r - i + 1") || (source.contains("l = i") && source.contains("r = ")) || source.contains("z[k]"))
+        if (source.contains("z[")
+            || source.contains("z_algorithm")
+            || source.contains("zAlgorithm")
+            || source.contains("z_box"))
+            && (source.contains("r - i + 1")
+                || (source.contains("l = i") && source.contains("r = "))
+                || source.contains("z[k]"))
         {
             detected.push(AllowedAlgorithm::ZAlgorithm);
         }
 
         // 8. Rolling Hash
         if (source.contains("hash") || source.contains("Hash") || source.contains("poly_hash"))
-            && (source.contains("p_pow") || source.contains("power[") || source.contains("base") || source.contains("BASE"))
+            && (source.contains("p_pow")
+                || source.contains("power[")
+                || source.contains("base")
+                || source.contains("BASE"))
             && (source.contains("%") || source.contains("MOD"))
         {
             detected.push(AllowedAlgorithm::RollingHash);

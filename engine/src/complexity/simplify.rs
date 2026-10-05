@@ -359,4 +359,3 @@ fn canonical_expr_cmp(a: &ComplexityExpr, b: &ComplexityExpr) -> std::cmp::Order
         (None, None) => a.format_inner().cmp(&b.format_inner()),
     }
 }
-

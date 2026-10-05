@@ -222,7 +222,8 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
     if detected_algos.contains(&AllowedAlgorithm::TwoPointers)
         || detected_algos.contains(&AllowedAlgorithm::SlidingWindow)
     {
-        let is_nested = preprocessed.contains("for (int i = 0") || preprocessed.contains("for (int i = 0;");
+        let is_nested =
+            preprocessed.contains("for (int i = 0") || preprocessed.contains("for (int i = 0;");
         let tc = if is_nested {
             "O(n^2)".to_string()
         } else {

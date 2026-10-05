@@ -135,7 +135,11 @@ impl<'a> LoopAnalyzer<'a> {
                 match op {
                     BinaryOp::Lt | BinaryOp::Le => {
                         if let Some(IrExpr::Var(name)) = self.module.exprs.get(right.0) {
-                            if name == "t" || name == "tc" || name == "tests" || name == "test_cases" {
+                            if name == "t"
+                                || name == "tc"
+                                || name == "tests"
+                                || name == "test_cases"
+                            {
                                 is_testcase_driver = true;
                             }
                         }
@@ -143,7 +147,11 @@ impl<'a> LoopAnalyzer<'a> {
                     }
                     BinaryOp::Gt | BinaryOp::Ge => {
                         if let Some(IrExpr::Var(name)) = self.module.exprs.get(left.0) {
-                            if name == "t" || name == "tc" || name == "tests" || name == "test_cases" {
+                            if name == "t"
+                                || name == "tc"
+                                || name == "tests"
+                                || name == "test_cases"
+                            {
                                 is_testcase_driver = true;
                             }
                         }
