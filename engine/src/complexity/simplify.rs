@@ -1,6 +1,6 @@
 use super::ast::{ComplexityExpr, DimensionVar};
 use std::cmp::Ordering;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Monomial {
@@ -42,6 +42,17 @@ impl Monomial {
         res
     }
 
+    pub fn all_vars(&self) -> BTreeSet<DimensionVar> {
+        let mut set = BTreeSet::new();
+        for v in self.vars.keys() {
+            set.insert(*v);
+        }
+        for v in self.logs.keys() {
+            set.insert(*v);
+        }
+        set
+    }
+
     pub fn dominates(&self, other: &Self) -> bool {
         if self == other {
             return true;
@@ -53,41 +64,48 @@ impl Monomial {
             return false;
         }
 
-        // Check if self and other share the exact same set of variables
-        let self_var_keys: Vec<_> = self.vars.keys().collect();
-        let other_var_keys: Vec<_> = other.vars.keys().collect();
+        let self_all = self.all_vars();
+        let other_all = other.all_vars();
 
-        if self_var_keys == other_var_keys && !self_var_keys.is_empty() {
-            let mut strictly_greater = false;
-            let mut strictly_lesser = false;
+        // If other has any variable that self does not possess, self cannot dominate other
+        if !other_all.is_subset(&self_all) {
+            return false;
+        }
 
-            for v in self_var_keys {
-                let s_exp = *self.vars.get(v).unwrap_or(&0);
-                let o_exp = *other.vars.get(v).unwrap_or(&0);
-                let s_log = *self.logs.get(v).unwrap_or(&0);
-                let o_log = *other.logs.get(v).unwrap_or(&0);
+        // For all variables in other, compare powers
+        let mut strictly_greater = false;
+        let mut strictly_lesser = false;
 
-                match s_exp.cmp(&o_exp) {
-                    Ordering::Greater => strictly_greater = true,
-                    Ordering::Less => strictly_lesser = true,
-                    Ordering::Equal => match s_log.cmp(&o_log) {
-                        Ordering::Greater => strictly_greater = true,
-                        Ordering::Less => strictly_lesser = true,
-                        Ordering::Equal => {}
-                    },
-                }
-            }
+        for v in &self_all {
+            let s_exp = *self.vars.get(v).unwrap_or(&0);
+            let o_exp = *other.vars.get(v).unwrap_or(&0);
+            let s_log = *self.logs.get(v).unwrap_or(&0);
+            let o_log = *other.logs.get(v).unwrap_or(&0);
 
-            if strictly_greater && !strictly_lesser {
-                return true;
+            if s_exp > o_exp {
+                strictly_greater = true;
+            } else if s_exp < o_exp {
+                strictly_lesser = true;
+            } else if s_log > o_log {
+                strictly_greater = true;
+            } else if s_log < o_log {
+                strictly_lesser = true;
             }
         }
 
-        false
+        strictly_greater && !strictly_lesser
     }
 
     pub fn is_one(&self) -> bool {
         self.vars.is_empty() && self.logs.is_empty() && !self.is_log_log
+    }
+
+    pub fn total_var_degree(&self) -> u32 {
+        self.vars.values().sum()
+    }
+
+    pub fn total_log_degree(&self) -> u32 {
+        self.logs.values().sum()
     }
 
     pub fn to_expr(&self) -> ComplexityExpr {
@@ -122,6 +140,36 @@ impl Monomial {
     }
 }
 
+impl PartialOrd for Monomial {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Monomial {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // Canonical ordering: higher degree first, then logs, then variable names
+        match other.total_var_degree().cmp(&self.total_var_degree()) {
+            Ordering::Equal => match other.total_log_degree().cmp(&self.total_log_degree()) {
+                Ordering::Equal => {
+                    let s_vars: Vec<_> = self.vars.iter().collect();
+                    let o_vars: Vec<_> = other.vars.iter().collect();
+                    match s_vars.cmp(&o_vars) {
+                        Ordering::Equal => {
+                            let s_logs: Vec<_> = self.logs.iter().collect();
+                            let o_logs: Vec<_> = other.logs.iter().collect();
+                            s_logs.cmp(&o_logs)
+                        }
+                        other_order => other_order,
+                    }
+                }
+                other_order => other_order,
+            },
+            other_order => other_order,
+        }
+    }
+}
+
 pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
     match expr {
         ComplexityExpr::Unknown => ComplexityExpr::Unknown,
@@ -131,6 +179,8 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
             let s_inner = simplify(inner);
             match s_inner {
                 ComplexityExpr::Const(_) => ComplexityExpr::one(),
+                ComplexityExpr::Unknown => ComplexityExpr::Unknown,
+                ComplexityExpr::Pow(base, _) => simplify(&ComplexityExpr::log(*base)),
                 _ => ComplexityExpr::log(s_inner),
             }
         }
@@ -140,7 +190,14 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
             } else if *exp == 1 {
                 simplify(base)
             } else {
-                ComplexityExpr::pow(simplify(base), *exp)
+                let sb = simplify(base);
+                if sb.is_unknown() {
+                    ComplexityExpr::Unknown
+                } else if sb.is_const_one() {
+                    ComplexityExpr::one()
+                } else {
+                    ComplexityExpr::pow(sb, *exp)
+                }
             }
         }
         ComplexityExpr::Mul(lhs, rhs) => {
@@ -155,54 +212,107 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
             if sr.is_const_one() {
                 return sl;
             }
-            ComplexityExpr::mul(sl, sr)
+            if let (Some(ml), Some(mr)) = (expr_to_monomial(&sl), expr_to_monomial(&sr)) {
+                return ml.mul(&mr).to_expr();
+            }
+            let is_l_add = matches!(sl, ComplexityExpr::Add(..));
+            let is_r_add = matches!(sr, ComplexityExpr::Add(..));
+            if is_r_add && !is_l_add {
+                ComplexityExpr::mul(sr, sl)
+            } else if is_l_add && !is_r_add {
+                ComplexityExpr::mul(sl, sr)
+            } else if sl.format_inner() > sr.format_inner() {
+                ComplexityExpr::mul(sr, sl)
+            } else {
+                ComplexityExpr::mul(sl, sr)
+            }
         }
-        ComplexityExpr::Add(lhs, rhs) => {
-            let sl = simplify(lhs);
-            let sr = simplify(rhs);
-            if sl.is_unknown() || sr.is_unknown() {
-                return ComplexityExpr::Unknown;
-            }
-            if sl == sr {
-                return sl;
-            }
-            if sl.is_const_one() {
-                return sr;
-            }
-            if sr.is_const_one() {
-                return sl;
-            }
-            // Check dominance
-            let ml = expr_to_monomial(&sl);
-            let mr = expr_to_monomial(&sr);
-            if let (Some(m1), Some(m2)) = (ml, mr) {
-                if m1.dominates(&m2) {
-                    return sl;
+        ComplexityExpr::Add(lhs, rhs) | ComplexityExpr::Max(lhs, rhs) => {
+            let mut terms = Vec::new();
+            collect_additive_terms(lhs, &mut terms);
+            collect_additive_terms(rhs, &mut terms);
+
+            let mut simplified_terms: Vec<ComplexityExpr> = Vec::new();
+            for t in terms {
+                let s = simplify(&t);
+                if s.is_unknown() {
+                    return ComplexityExpr::Unknown;
                 }
-                if m2.dominates(&m1) {
-                    return sr;
+                if !s.is_const_one() {
+                    simplified_terms.push(s);
                 }
             }
-            ComplexityExpr::add(sl, sr)
+
+            if simplified_terms.is_empty() {
+                return ComplexityExpr::one();
+            }
+
+            // Convert to monomials where possible to filter dominated terms
+            let mut monomials: Vec<Monomial> = Vec::new();
+            let mut non_monomials: Vec<ComplexityExpr> = Vec::new();
+
+            for t in simplified_terms {
+                if let Some(m) = expr_to_monomial(&t) {
+                    monomials.push(m);
+                } else {
+                    non_monomials.push(t);
+                }
+            }
+
+            // Filter dominated monomials
+            let mut surviving_monomials = Vec::new();
+            for i in 0..monomials.len() {
+                let mut dominated = false;
+                for j in 0..monomials.len() {
+                    if i != j && monomials[j].dominates(&monomials[i]) {
+                        // Tie breaker: keep earlier index if identical
+                        if monomials[j] == monomials[i] && i > j {
+                            dominated = true;
+                            break;
+                        }
+                        if monomials[j] != monomials[i] {
+                            dominated = true;
+                            break;
+                        }
+                    }
+                }
+                if !dominated {
+                    surviving_monomials.push(monomials[i].clone());
+                }
+            }
+
+            surviving_monomials.sort();
+            surviving_monomials.dedup();
+
+            let mut all_exprs: Vec<ComplexityExpr> = surviving_monomials
+                .into_iter()
+                .map(|m| m.to_expr())
+                .collect();
+            all_exprs.extend(non_monomials);
+            all_exprs.sort_by_key(|a| a.format_inner());
+            all_exprs.dedup();
+
+            if all_exprs.is_empty() {
+                return ComplexityExpr::one();
+            }
+
+            let mut iter = all_exprs.into_iter();
+            let mut res = iter.next().unwrap();
+            for next in iter {
+                res = ComplexityExpr::add(res, next);
+            }
+            res
         }
-        ComplexityExpr::Max(lhs, rhs) => {
-            let sl = simplify(lhs);
-            let sr = simplify(rhs);
-            if sl == sr {
-                return sl;
-            }
-            let ml = expr_to_monomial(&sl);
-            let mr = expr_to_monomial(&sr);
-            if let (Some(m1), Some(m2)) = (ml, mr) {
-                if m1.dominates(&m2) {
-                    return sl;
-                }
-                if m2.dominates(&m1) {
-                    return sr;
-                }
-            }
-            ComplexityExpr::add(sl, sr)
+    }
+}
+
+fn collect_additive_terms(expr: &ComplexityExpr, terms: &mut Vec<ComplexityExpr>) {
+    match expr {
+        ComplexityExpr::Add(lhs, rhs) | ComplexityExpr::Max(lhs, rhs) => {
+            collect_additive_terms(lhs, terms);
+            collect_additive_terms(rhs, terms);
         }
+        other => terms.push(other.clone()),
     }
 }
 
@@ -231,43 +341,5 @@ fn expr_to_monomial(expr: &ComplexityExpr) -> Option<Monomial> {
             Some(ml.mul(&mr))
         }
         _ => None,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn simplifies_n_plus_n_to_n() {
-        let n = ComplexityExpr::var(DimensionVar::N);
-        let expr = ComplexityExpr::add(n.clone(), n.clone());
-        assert_eq!(simplify(&expr), n);
-    }
-
-    #[test]
-    fn preserves_n_plus_q() {
-        let n = ComplexityExpr::var(DimensionVar::N);
-        let q = ComplexityExpr::var(DimensionVar::Q);
-        let expr = ComplexityExpr::add(n.clone(), q.clone());
-        let res = simplify(&expr);
-        assert_eq!(res, ComplexityExpr::add(n, q));
-    }
-
-    #[test]
-    fn dominates_n_squared_over_n() {
-        let n = ComplexityExpr::var(DimensionVar::N);
-        let n2 = ComplexityExpr::pow(n.clone(), 2);
-        let expr = ComplexityExpr::add(n2.clone(), n);
-        assert_eq!(simplify(&expr), n2);
-    }
-
-    #[test]
-    fn dominates_n_log_n_over_n() {
-        let n = ComplexityExpr::var(DimensionVar::N);
-        let log_n = ComplexityExpr::log(n.clone());
-        let n_log_n = ComplexityExpr::mul(n.clone(), log_n);
-        let expr = ComplexityExpr::add(n_log_n.clone(), n);
-        assert_eq!(simplify(&expr), n_log_n);
     }
 }

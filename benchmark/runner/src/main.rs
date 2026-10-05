@@ -24,6 +24,8 @@ enum FailureClass {
     AlgorithmMismatch,
 }
 
+#[derive(Debug)]
+#[allow(dead_code)]
 struct CaseEvaluation {
     id: String,
     name: String,
@@ -44,8 +46,8 @@ fn main() {
         }
     };
 
-    let cases: Vec<BenchmarkCase> = serde_json::from_str(&content)
-        .expect("Failed to deserialize benchmark cases JSON");
+    let cases: Vec<BenchmarkCase> =
+        serde_json::from_str(&content).expect("Failed to deserialize benchmark cases JSON");
 
     let total = cases.len();
     let mut tc_matches = 0;
@@ -97,10 +99,8 @@ fn main() {
                 failures.push(FailureClass::ComplexityMismatch);
             }
         }
-        if !sc_match {
-            if output.sc == "Unknown" && !failures.contains(&FailureClass::UnknownResult) {
-                failures.push(FailureClass::UnknownResult);
-            }
+        if !sc_match && output.sc == "Unknown" && !failures.contains(&FailureClass::UnknownResult) {
+            failures.push(FailureClass::UnknownResult);
         }
         if !algo_match {
             failures.push(FailureClass::AlgorithmMismatch);
@@ -115,10 +115,26 @@ fn main() {
             failures,
         });
 
-        let status = if tc_match && sc_match && algo_match { "PASS" } else { "FAIL" };
-        let fail_summary: Vec<_> = evaluations.last().unwrap().failures.iter().map(|f| format!("{:?}", f)).collect();
-        println!("[{status}] {:<32} | TC: {:<12} (exp {:<12}) | SC: {:<8} | Fails: [{}]",
-            case.id, output.tc, case.expected_tc, output.sc, fail_summary.join(", "));
+        let status = if tc_match && sc_match && algo_match {
+            "PASS"
+        } else {
+            "FAIL"
+        };
+        let fail_summary: Vec<_> = evaluations
+            .last()
+            .unwrap()
+            .failures
+            .iter()
+            .map(|f| format!("{f:?}"))
+            .collect();
+        println!(
+            "[{status}] {:<32} | TC: {:<12} (exp {:<12}) | SC: {:<8} | Fails: [{}]",
+            case.id,
+            output.tc,
+            case.expected_tc,
+            output.sc,
+            fail_summary.join(", ")
+        );
     }
 
     let tc_pct = (tc_matches as f64 / total as f64) * 100.0;

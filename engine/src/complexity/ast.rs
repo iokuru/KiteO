@@ -60,10 +60,12 @@ impl ComplexityExpr {
         Self::Pow(Box::new(e), exp)
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn mul(a: Self, b: Self) -> Self {
         Self::Mul(Box::new(a), Box::new(b))
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn add(a: Self, b: Self) -> Self {
         Self::Add(Box::new(a), Box::new(b))
     }
