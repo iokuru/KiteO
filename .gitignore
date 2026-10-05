@@ -1,0 +1,10 @@
+target/
+node_modules/
+dist/
+pkg/
+.DS_Store
+*.log
+.vscode/
+.idea/
+coverage/
+benchmark/reports/
