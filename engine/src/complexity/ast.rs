@@ -36,6 +36,7 @@ pub enum ComplexityExpr {
     Const(u64),
     Var(DimensionVar),
     Log(Box<ComplexityExpr>),
+    Sqrt(Box<ComplexityExpr>),
     Pow(Box<ComplexityExpr>, u32),
     Mul(Box<ComplexityExpr>, Box<ComplexityExpr>),
     Add(Box<ComplexityExpr>, Box<ComplexityExpr>),
@@ -54,6 +55,10 @@ impl ComplexityExpr {
 
     pub fn log(e: Self) -> Self {
         Self::Log(Box::new(e))
+    }
+
+    pub fn sqrt(e: Self) -> Self {
+        Self::Sqrt(Box::new(e))
     }
 
     pub fn pow(e: Self, exp: u32) -> Self {
@@ -100,6 +105,7 @@ impl ComplexityExpr {
             Self::Const(c) => format!("{c}"),
             Self::Var(v) => v.as_str().to_string(),
             Self::Log(inner) => format!("log {}", inner.format_inner()),
+            Self::Sqrt(inner) => format!("sqrt {}", inner.format_inner()),
             Self::Pow(base, exp) => format!("{}^{exp}", base.format_inner()),
             Self::Mul(lhs, rhs) => {
                 let lhs_str = match &**lhs {

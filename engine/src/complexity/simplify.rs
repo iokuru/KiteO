@@ -182,6 +182,14 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
                 _ => ComplexityExpr::log(s_inner),
             }
         }
+        ComplexityExpr::Sqrt(inner) => {
+            let s_inner = simplify(inner);
+            match s_inner {
+                ComplexityExpr::Const(_) => ComplexityExpr::one(),
+                ComplexityExpr::Unknown => ComplexityExpr::Unknown,
+                _ => ComplexityExpr::sqrt(s_inner),
+            }
+        }
         ComplexityExpr::Pow(base, exp) => {
             if *exp == 0 {
                 ComplexityExpr::one()
