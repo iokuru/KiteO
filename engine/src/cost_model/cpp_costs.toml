@@ -1,0 +1,32 @@
+[containers.vector]
+push_back = { time = "O(1)", amortized = true, space = "O(1)" }
+pop_back = { time = "O(1)", space = "O(1)" }
+erase_begin = { time = "O(n)", space = "O(1)", hidden_cost = "shifts all trailing elements" }
+index = { time = "O(1)", space = "O(1)" }
+copy = { time = "O(n)", space = "O(n)", hidden_cost = "deep copy by value" }
+
+[containers.deque]
+push_back = { time = "O(1)", space = "O(1)" }
+push_front = { time = "O(1)", space = "O(1)" }
+pop_back = { time = "O(1)", space = "O(1)" }
+pop_front = { time = "O(1)", space = "O(1)" }
+
+[containers.set]
+insert = { time = "O(log n)", space = "O(1)" }
+find = { time = "O(log n)", space = "O(1)" }
+erase = { time = "O(log n)", space = "O(1)" }
+
+[containers.map]
+insert = { time = "O(log n)", space = "O(1)" }
+find = { time = "O(log n)", space = "O(1)" }
+operator_bracket = { time = "O(log n)", space = "O(1)" }
+
+[containers.unordered_map]
+insert = { time = "O(1)", expected = true, worst = "O(n)", space = "O(1)" }
+find = { time = "O(1)", expected = true, worst = "O(n)", space = "O(1)" }
+operator_bracket = { time = "O(1)", expected = true, worst = "O(n)", space = "O(1)" }
+
+[containers.string]
+substr = { time = "O(L)", space = "O(L)", hidden_cost = "allocates and copies L characters" }
+operator_plus = { time = "O(n + m)", space = "O(n + m)", hidden_cost = "creates concatenated string" }
+push_back = { time = "O(1)", amortized = true, space = "O(1)" }

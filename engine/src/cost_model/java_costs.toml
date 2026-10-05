@@ -1,0 +1,20 @@
+[containers.ArrayList]
+add = { time = "O(1)", amortized = true, space = "O(1)" }
+get = { time = "O(1)", space = "O(1)" }
+remove_zero = { time = "O(n)", space = "O(1)", hidden_cost = "arraycopy shifts elements" }
+
+[containers.LinkedList]
+add = { time = "O(1)", space = "O(1)" }
+get = { time = "O(n)", space = "O(1)", hidden_cost = "traverses linked list nodes" }
+
+[containers.TreeSet]
+add = { time = "O(log n)", space = "O(1)" }
+contains = { time = "O(log n)", space = "O(1)" }
+
+[containers.HashMap]
+put = { time = "O(1)", expected = true, worst = "O(n)", space = "O(1)" }
+get = { time = "O(1)", expected = true, worst = "O(n)", space = "O(1)" }
+
+[containers.String]
+substring = { time = "O(L)", space = "O(L)", hidden_cost = "creates new character array" }
+plus = { time = "O(n + m)", space = "O(n + m)", hidden_cost = "creates StringBuilder and copies buffer" }
