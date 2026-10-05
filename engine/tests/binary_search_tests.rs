@@ -63,5 +63,7 @@ fn test_negative_lookalike_non_binary_search() {
 
     let res = analyze(lookalike, "cpp");
     assert!(!res.algorithms.contains(&"Binary Search".to_string()));
-    assert!(!res.algorithms.contains(&"Binary Search on Answer".to_string()));
+    assert!(!res
+        .algorithms
+        .contains(&"Binary Search on Answer".to_string()));
 }

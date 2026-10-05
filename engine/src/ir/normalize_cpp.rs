@@ -50,10 +50,16 @@ impl<'a> CppNormalizer<'a> {
     }
 
     fn visit_function(&mut self, node: Node<'a>) {
-        let name = node
+        let raw_name = node
             .child_by_field_name("declarator")
             .map(|d| self.text(d))
             .unwrap_or_else(|| "anon".to_string());
+        let name = raw_name
+            .split('(')
+            .next()
+            .unwrap_or("anon")
+            .trim()
+            .to_string();
 
         let body_node = node.child_by_field_name("body");
         let body_block = if let Some(body) = body_node {

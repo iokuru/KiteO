@@ -31,7 +31,9 @@ impl<'a> AmortizedAnalyzer<'a> {
         }
 
         // 2. Sliding window: outer loop over right bound, inner while advancing left bound
-        if (source.contains("for (int r") || source.contains("for (int right") || source.contains("for (int i"))
+        if (source.contains("for (int r")
+            || source.contains("for (int right")
+            || source.contains("for (int i"))
             && (source.contains("while (") && (source.contains("l++") || source.contains("left++")))
         {
             patterns.push(AmortizedPattern::SlidingWindow);
@@ -53,8 +55,14 @@ impl<'a> AmortizedAnalyzer<'a> {
         }
 
         // 5. Sum of degrees rule: loop over adjacency list inside graph traversal
-        if (source.contains("g[u]") || source.contains("g.get(u)") || source.contains("adj[u]") || source.contains("adj.get(u)"))
-            && (source.contains("dfs(") || source.contains("bfs(") || source.contains("dijkstra(") || source.contains("topoSort("))
+        if (source.contains("g[u]")
+            || source.contains("g.get(u)")
+            || source.contains("adj[u]")
+            || source.contains("adj.get(u)"))
+            && (source.contains("dfs(")
+                || source.contains("bfs(")
+                || source.contains("dijkstra(")
+                || source.contains("topoSort("))
         {
             patterns.push(AmortizedPattern::SumOfDegrees);
         }
@@ -68,9 +76,10 @@ impl<'a> AmortizedAnalyzer<'a> {
             AmortizedPattern::SlidingWindow => ComplexityExpr::var(DimensionVar::N),
             AmortizedPattern::MonotonicStack => ComplexityExpr::var(DimensionVar::N),
             AmortizedPattern::MonotonicQueue => ComplexityExpr::var(DimensionVar::N),
-            AmortizedPattern::SumOfDegrees => {
-                ComplexityExpr::add(ComplexityExpr::var(DimensionVar::V), ComplexityExpr::var(DimensionVar::E))
-            }
+            AmortizedPattern::SumOfDegrees => ComplexityExpr::add(
+                ComplexityExpr::var(DimensionVar::V),
+                ComplexityExpr::var(DimensionVar::E),
+            ),
         }
     }
 }
