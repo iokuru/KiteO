@@ -1,6 +1,7 @@
 use kiteo_engine::analyze;
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::env;
 use std::fs;
 use std::path::Path;
 
@@ -15,6 +16,8 @@ struct BenchmarkCase {
     expected_algorithms: Vec<String>,
     #[serde(default)]
     tags: Vec<String>,
+    #[serde(default)]
+    rating: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -32,17 +35,65 @@ struct CaseEvaluation {
     tc_match: bool,
     sc_match: bool,
     algo_match: bool,
+    is_match: bool,
+    is_unknown: bool,
+    is_wrong: bool,
     failures: Vec<FailureClass>,
 }
 
-fn main() {
-    let corpus_path = Path::new("benchmark/corpus/snippets.json");
-    let content = match fs::read_to_string(corpus_path) {
+#[derive(Default, Debug, Clone)]
+struct MetricCounter {
+    total: usize,
+    matches: usize,
+    unknowns: usize,
+    wrongs: usize,
+}
+
+impl MetricCounter {
+    fn record(&mut self, is_match: bool, is_unknown: bool, is_wrong: bool) {
+        self.total += 1;
+        if is_match {
+            self.matches += 1;
+        } else if is_unknown {
+            self.unknowns += 1;
+        } else if is_wrong {
+            self.wrongs += 1;
+        }
+    }
+
+    fn accuracy_pct(&self) -> f64 {
+        if self.total == 0 {
+            0.0
+        } else {
+            (self.matches as f64 / self.total as f64) * 100.0
+        }
+    }
+
+    fn unknown_pct(&self) -> f64 {
+        if self.total == 0 {
+            0.0
+        } else {
+            (self.unknowns as f64 / self.total as f64) * 100.0
+        }
+    }
+
+    fn wrong_pct(&self) -> f64 {
+        if self.total == 0 {
+            0.0
+        } else {
+            (self.wrongs as f64 / self.total as f64) * 100.0
+        }
+    }
+}
+
+fn evaluate_corpus(corpus_file: &str, report_name: &str) {
+    let path = Path::new(corpus_file);
+    let content = match fs::read_to_string(path) {
         Ok(c) => c,
         Err(_) => {
-            // Check fallback relative path if running from benchmark/runner
-            fs::read_to_string("../corpus/snippets.json")
-                .expect("Failed to locate snippets.json benchmark corpus")
+            let alt = format!("../{corpus_file}");
+            fs::read_to_string(&alt)
+                .unwrap_or_else(|_| panic!("Failed to locate corpus at {corpus_file}"))
         }
     };
 
@@ -50,16 +101,14 @@ fn main() {
         serde_json::from_str(&content).expect("Failed to deserialize benchmark cases JSON");
 
     let total = cases.len();
-    let mut tc_matches = 0;
-    let mut sc_matches = 0;
-    let mut algo_matches = 0;
-    let mut tag_stats: HashMap<String, (usize, usize)> = HashMap::new();
-
-    println!("================================================================================");
-    println!("                           KITEO BENCHMARK EVALUATION                           ");
-    println!("================================================================================");
-
+    let mut overall = MetricCounter::default();
+    let mut tag_metrics: HashMap<String, MetricCounter> = HashMap::new();
+    let mut rating_metrics: HashMap<String, MetricCounter> = HashMap::new();
     let mut evaluations = Vec::new();
+
+    println!("================================================================================");
+    println!("             KITEO BENCHMARK EVALUATION: {report_name:<33}");
+    println!("================================================================================");
 
     for case in &cases {
         let output = analyze(&case.code, &case.language);
@@ -73,23 +122,27 @@ fn main() {
         actual_sorted.sort();
         let algo_match = actual_sorted == expected_sorted;
 
-        if tc_match {
-            tc_matches += 1;
-        }
-        if sc_match {
-            sc_matches += 1;
-        }
-        if algo_match {
-            algo_matches += 1;
-        }
+        let is_match = tc_match && sc_match && algo_match;
+        let is_unknown = !is_match
+            && (output.tc == "Unknown"
+                || output.sc == "Unknown"
+                || (output.algorithms.is_empty() && !case.expected_algorithms.is_empty()));
+        let is_wrong = !is_match && !is_unknown;
+
+        overall.record(is_match, is_unknown, is_wrong);
 
         for tag in &case.tags {
-            let entry = tag_stats.entry(tag.clone()).or_insert((0, 0));
-            entry.0 += 1;
-            if tc_match && sc_match && algo_match {
-                entry.1 += 1;
-            }
+            tag_metrics
+                .entry(tag.clone())
+                .or_default()
+                .record(is_match, is_unknown, is_wrong);
         }
+
+        let rating_key = case.rating.clone().unwrap_or_else(|| "Unrated".to_string());
+        rating_metrics
+            .entry(rating_key)
+            .or_default()
+            .record(is_match, is_unknown, is_wrong);
 
         let mut failures = Vec::new();
         if !tc_match {
@@ -112,14 +165,20 @@ fn main() {
             tc_match,
             sc_match,
             algo_match,
+            is_match,
+            is_unknown,
+            is_wrong,
             failures,
         });
 
-        let status = if tc_match && sc_match && algo_match {
+        let status = if is_match {
             "PASS"
+        } else if is_unknown {
+            "UNKN"
         } else {
             "FAIL"
         };
+
         let fail_summary: Vec<_> = evaluations
             .last()
             .unwrap()
@@ -127,8 +186,9 @@ fn main() {
             .iter()
             .map(|f| format!("{f:?}"))
             .collect();
+
         println!(
-            "[{status}] {:<32} | TC: {:<12} (exp {:<12}) | SC: {:<8} | Fails: [{}]",
+            "[{status}] {:<36} | TC: {:<12} (exp {:<12}) | SC: {:<6} | Fails: [{}]",
             case.id,
             output.tc,
             case.expected_tc,
@@ -137,22 +197,178 @@ fn main() {
         );
     }
 
-    let tc_pct = (tc_matches as f64 / total as f64) * 100.0;
-    let sc_pct = (sc_matches as f64 / total as f64) * 100.0;
-    let algo_pct = (algo_matches as f64 / total as f64) * 100.0;
+    println!("--------------------------------------------------------------------------------");
+    println!("OVERALL METRICS SUMMARY (Total Cases: {total})");
+    println!(
+        "  Accuracy Rate : {:>3}/{} ({:.1}%)",
+        overall.matches,
+        total,
+        overall.accuracy_pct()
+    );
+    println!(
+        "  Unknown Rate  : {:>3}/{} ({:.1}%)",
+        overall.unknowns,
+        total,
+        overall.unknown_pct()
+    );
+    println!(
+        "  Wrong Rate    : {:>3}/{} ({:.1}%)",
+        overall.wrongs,
+        total,
+        overall.wrong_pct()
+    );
+    println!("--------------------------------------------------------------------------------");
 
-    println!("--------------------------------------------------------------------------------");
-    println!("SUMMARY: Total Cases: {total}");
-    println!("  Time Complexity Accuracy : {tc_matches}/{total} ({tc_pct:.1}%)");
-    println!("  Space Complexity Accuracy: {sc_matches}/{total} ({sc_pct:.1}%)");
-    println!("  Algorithm Match Accuracy : {algo_matches}/{total} ({algo_pct:.1}%)");
-    println!("--------------------------------------------------------------------------------");
     println!("PER-TAG BREAKDOWN:");
-    let mut sorted_tags: Vec<_> = tag_stats.into_iter().collect();
+    println!(
+        "  | {:<22} | {:<5} | {:<12} | {:<12} | {:<10} |",
+        "Tag", "Total", "Accuracy", "Unknown Rate", "Wrong Rate"
+    );
+    println!("  |:-----------------------|:------|:-------------|:-------------|:-----------|");
+    let mut sorted_tags: Vec<_> = tag_metrics.into_iter().collect();
     sorted_tags.sort_by(|a, b| a.0.cmp(&b.0));
-    for (tag, (count, passed)) in sorted_tags {
-        let pct = (passed as f64 / count as f64) * 100.0;
-        println!("  Tag '{tag:<20}': {passed}/{count} fully passed ({pct:.1}%)");
+    for (tag, m) in &sorted_tags {
+        println!(
+            "  | {:<22} | {:<5} | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) |",
+            tag,
+            m.total,
+            m.accuracy_pct(),
+            m.matches,
+            m.unknown_pct(),
+            m.unknowns,
+            m.wrong_pct(),
+            m.wrongs
+        );
+    }
+    println!("--------------------------------------------------------------------------------");
+
+    println!("PER-RATING BREAKDOWN:");
+    println!(
+        "  | {:<15} | {:<5} | {:<12} | {:<12} | {:<10} |",
+        "Rating / Tier", "Total", "Accuracy", "Unknown Rate", "Wrong Rate"
+    );
+    println!("  |:----------------|:------|:-------------|:-------------|:-----------|");
+    let mut sorted_ratings: Vec<_> = rating_metrics.into_iter().collect();
+    sorted_ratings.sort_by(|a, b| {
+        let a_num = a.0.parse::<i32>().unwrap_or(9999);
+        let b_num = b.0.parse::<i32>().unwrap_or(9999);
+        if a_num != b_num {
+            a_num.cmp(&b_num)
+        } else {
+            a.0.cmp(&b.0)
+        }
+    });
+    for (rating, m) in &sorted_ratings {
+        println!(
+            "  | {:<15} | {:<5} | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) |",
+            rating,
+            m.total,
+            m.accuracy_pct(),
+            m.matches,
+            m.unknown_pct(),
+            m.unknowns,
+            m.wrong_pct(),
+            m.wrongs
+        );
     }
     println!("================================================================================");
+
+    // Write markdown report
+    let mut md = String::new();
+    md.push_str(&format!("# KiteO Evaluation Report: {report_name}\n\n"));
+    md.push_str(&format!("**Dataset File**: `{corpus_file}`  \n"));
+    md.push_str(&format!("**Total Problems**: `{total}`  \n\n"));
+
+    md.push_str("## 1. Overall Summary\n\n");
+    md.push_str("| Metric | Count | Percentage |\n");
+    md.push_str("| :--- | :--- | :--- |\n");
+    md.push_str(&format!(
+        "| **Accuracy Rate** | {}/{} | **{:.1}%** |\n",
+        overall.matches,
+        total,
+        overall.accuracy_pct()
+    ));
+    md.push_str(&format!(
+        "| **Unknown Rate** | {}/{} | {:.1}% |\n",
+        overall.unknowns,
+        total,
+        overall.unknown_pct()
+    ));
+    md.push_str(&format!(
+        "| **Wrong Rate** | {}/{} | {:.1}% |\n\n",
+        overall.wrongs,
+        total,
+        overall.wrong_pct()
+    ));
+
+    md.push_str("## 2. Breakdown Per Tag\n\n");
+    md.push_str("| Tag | Total | Accuracy | Unknown Rate | Wrong Rate |\n");
+    md.push_str("| :--- | :--- | :--- | :--- | :--- |\n");
+    for (tag, m) in &sorted_tags {
+        md.push_str(&format!(
+            "| `{}` | {} | {:.1}% ({}) | {:.1}% ({}) | {:.1}% ({}) |\n",
+            tag,
+            m.total,
+            m.accuracy_pct(),
+            m.matches,
+            m.unknown_pct(),
+            m.unknowns,
+            m.wrong_pct(),
+            m.wrongs
+        ));
+    }
+
+    md.push_str("\n## 3. Breakdown Per Rating / Tier\n\n");
+    md.push_str("| Rating / Tier | Total | Accuracy | Unknown Rate | Wrong Rate |\n");
+    md.push_str("| :--- | :--- | :--- | :--- | :--- |\n");
+    for (rating, m) in &sorted_ratings {
+        md.push_str(&format!(
+            "| `{}` | {} | {:.1}% ({}) | {:.1}% ({}) | {:.1}% ({}) |\n",
+            rating,
+            m.total,
+            m.accuracy_pct(),
+            m.matches,
+            m.unknown_pct(),
+            m.unknowns,
+            m.wrong_pct(),
+            m.wrongs
+        ));
+    }
+
+    let report_filename = if corpus_file.contains("held_out") {
+        "benchmark/reports/held_out_evaluation_report.md"
+    } else {
+        "benchmark/reports/benchmark_evaluation_report.md"
+    };
+
+    let _ = fs::create_dir_all("benchmark/reports");
+    let _ = fs::write(report_filename, md);
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let is_held_out = args.iter().any(|a| a == "--held-out" || a == "-h");
+    let is_all = args.iter().any(|a| a == "--all");
+
+    if is_all {
+        evaluate_corpus(
+            "benchmark/corpus/snippets.json",
+            "Full Benchmark Corpus (152 Cases)",
+        );
+        println!("\n\n");
+        evaluate_corpus(
+            "benchmark/corpus/held_out.json",
+            "Held-Out Real Solutions (70 Cases)",
+        );
+    } else if is_held_out {
+        evaluate_corpus(
+            "benchmark/corpus/held_out.json",
+            "Held-Out Real Solutions (70 Cases)",
+        );
+    } else {
+        evaluate_corpus(
+            "benchmark/corpus/snippets.json",
+            "Standard Corpus (152 Cases)",
+        );
+    }
 }

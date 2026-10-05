@@ -1,0 +1,1142 @@
+[
+  {
+    "id": "cf_4a_watermelon_cpp",
+    "name": "CF 4A Watermelon (C++)",
+    "language": "cpp",
+    "rating": "800",
+    "tags": [
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(1)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int w;\n    if (cin >> w) {\n        if (w > 2 && w % 2 == 0) cout << \"YES\\n\";\n        else cout << \"NO\\n\";\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_4a_watermelon_java",
+    "name": "CF 4A Watermelon (Java)",
+    "language": "java",
+    "rating": "800",
+    "tags": [
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(1)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int w = sc.nextInt();\n            if (w > 2 && w % 2 == 0) System.out.println(\"YES\");\n            else System.out.println(\"NO\");\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_231a_team_cpp",
+    "name": "CF 231A Team (C++)",
+    "language": "cpp",
+    "rating": "800",
+    "tags": [
+      "linear",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    int ans = 0;\n    for (int i = 0; i < n; i++) {\n        int a, b, c;\n        cin >> a >> b >> c;\n        if (a + b + c >= 2) ans++;\n    }\n    cout << ans << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_231a_team_java",
+    "name": "CF 231A Team (Java)",
+    "language": "java",
+    "rating": "800",
+    "tags": [
+      "linear",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int ans = 0;\n        for (int i = 0; i < n; i++) {\n            int a = sc.nextInt();\n            int b = sc.nextInt();\n            int c = sc.nextInt();\n            if (a + b + c >= 2) ans++;\n        }\n        System.out.println(ans);\n    }\n}"
+  },
+  {
+    "id": "cf_71a_way_too_long_words_cpp",
+    "name": "CF 71A Way Too Long Words (C++)",
+    "language": "cpp",
+    "rating": "800",
+    "tags": [
+      "string",
+      "linear",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\n#include <string>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    for (int i = 0; i < n; i++) {\n        string s;\n        cin >> s;\n        if (s.length() > 10) {\n            cout << s[0] << s.length() - 2 << s.back() << \"\\n\";\n        } else {\n            cout << s << \"\\n\";\n        }\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_71a_way_too_long_words_java",
+    "name": "CF 71A Way Too Long Words (Java)",
+    "language": "java",
+    "rating": "800",
+    "tags": [
+      "string",
+      "linear",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        for (int i = 0; i < n; i++) {\n            String s = sc.next();\n            if (s.length() > 10) {\n                System.out.println(\"\" + s.charAt(0) + (s.length() - 2) + s.charAt(s.length() - 1));\n            } else {\n                System.out.println(s);\n            }\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_160a_twins_cpp",
+    "name": "CF 160A Twins (C++)",
+    "language": "cpp",
+    "rating": "900",
+    "tags": [
+      "sorting",
+      "greedy",
+      "cf"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    vector<int> a(n);\n    int total = 0;\n    for (int i = 0; i < n; i++) {\n        cin >> a[i];\n        total += a[i];\n    }\n    sort(a.rbegin(), a.rend());\n    int take = 0, count = 0;\n    for (int i = 0; i < n; i++) {\n        take += a[i];\n        count++;\n        if (take > total - take) break;\n    }\n    cout << count << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_160a_twins_java",
+    "name": "CF 160A Twins (Java)",
+    "language": "java",
+    "rating": "900",
+    "tags": [
+      "sorting",
+      "greedy",
+      "cf"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting"
+    ],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        int total = 0;\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n            total += a[i];\n        }\n        Arrays.sort(a);\n        int take = 0, count = 0;\n        for (int i = n - 1; i >= 0; i--) {\n            take += a[i];\n            count++;\n            if (take > total - take) break;\n        }\n        System.out.println(count);\n    }\n}"
+  },
+  {
+    "id": "cf_96a_football_cpp",
+    "name": "CF 96A Football (C++)",
+    "language": "cpp",
+    "rating": "900",
+    "tags": [
+      "two_pointers",
+      "string",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "#include <iostream>\n#include <string>\nusing namespace std;\nint main() {\n    string s;\n    if (!(cin >> s)) return 0;\n    int left = 0, n = s.length();\n    bool dangerous = false;\n    for (int right = 0; right < n; right++) {\n        if (s[right] != s[left]) {\n            left = right;\n        }\n        if (right - left + 1 >= 7) {\n            dangerous = true;\n            break;\n        }\n    }\n    if (dangerous) cout << \"YES\\n\";\n    else cout << \"NO\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_96a_football_java",
+    "name": "CF 96A Football (Java)",
+    "language": "java",
+    "rating": "900",
+    "tags": [
+      "two_pointers",
+      "string",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String s = sc.next();\n        int left = 0, n = s.length();\n        boolean dangerous = false;\n        for (int right = 0; right < n; right++) {\n            if (s.charAt(right) != s.charAt(left)) {\n                left = right;\n            }\n            if (right - left + 1 >= 7) {\n                dangerous = true;\n                break;\n            }\n        }\n        if (dangerous) System.out.println(\"YES\");\n        else System.out.println(\"NO\");\n    }\n}"
+  },
+  {
+    "id": "cf_69a_young_physicist_cpp",
+    "name": "CF 69A Young Physicist (C++)",
+    "language": "cpp",
+    "rating": "1000",
+    "tags": [
+      "linear",
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    int sx = 0, sy = 0, sz = 0;\n    for (int i = 0; i < n; i++) {\n        int x, y, z;\n        cin >> x >> y >> z;\n        sx += x; sy += y; sz += z;\n    }\n    if (sx == 0 && sy == 0 && sz == 0) cout << \"YES\\n\";\n    else cout << \"NO\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_69a_young_physicist_java",
+    "name": "CF 69A Young Physicist (Java)",
+    "language": "java",
+    "rating": "1000",
+    "tags": [
+      "linear",
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int sx = 0, sy = 0, sz = 0;\n        for (int i = 0; i < n; i++) {\n            sx += sc.nextInt();\n            sy += sc.nextInt();\n            sz += sc.nextInt();\n        }\n        if (sx == 0 && sy == 0 && sz == 0) System.out.println(\"YES\");\n        else System.out.println(\"NO\");\n    }\n}"
+  },
+  {
+    "id": "cf_313b_ilya_and_queries_cpp",
+    "name": "CF 313B Ilya and Queries (C++)",
+    "language": "cpp",
+    "rating": "1100",
+    "tags": [
+      "prefix_sum",
+      "cf"
+    ],
+    "expected_tc": "O(n + q)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Prefix Sum"
+    ],
+    "code": "#include <iostream>\n#include <string>\n#include <vector>\nusing namespace std;\nint main() {\n    ios::sync_with_stdio(false); cin.tie(nullptr);\n    string s;\n    if (!(cin >> s)) return 0;\n    int n = s.length();\n    vector<int> pref(n + 1, 0);\n    for (int i = 1; i < n; i++) {\n        pref[i] = pref[i - 1] + (s[i] == s[i - 1] ? 1 : 0);\n    }\n    int m;\n    if (cin >> m) {\n        while (m--) {\n            int l, r;\n            cin >> l >> r;\n            cout << pref[r - 1] - pref[l - 1] << \"\\n\";\n        }\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_313b_ilya_and_queries_java",
+    "name": "CF 313B Ilya and Queries (Java)",
+    "language": "java",
+    "rating": "1100",
+    "tags": [
+      "prefix_sum",
+      "cf"
+    ],
+    "expected_tc": "O(n + q)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Prefix Sum"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String s = sc.next();\n        int n = s.length();\n        int[] pref = new int[n + 1];\n        for (int i = 1; i < n; i++) {\n            pref[i] = pref[i - 1] + (s.charAt(i) == s.charAt(i - 1) ? 1 : 0);\n        }\n        if (sc.hasNextInt()) {\n            int m = sc.nextInt();\n            for (int k = 0; k < m; k++) {\n                int l = sc.nextInt();\n                int r = sc.nextInt();\n                System.out.println(pref[r - 1] - pref[l - 1]);\n            }\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_492b_vanya_and_lanterns_cpp",
+    "name": "CF 492B Vanya and Lanterns (C++)",
+    "language": "cpp",
+    "rating": "1200",
+    "tags": [
+      "sorting",
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\n#include <iomanip>\nusing namespace std;\nint main() {\n    int n;\n    long long l;\n    if (!(cin >> n >> l)) return 0;\n    vector<long long> a(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    sort(a.begin(), a.end());\n    double max_d = max((double)a[0], (double)(l - a[n - 1]));\n    for (int i = 1; i < n; i++) {\n        max_d = max(max_d, (double)(a[i] - a[i - 1]) / 2.0);\n    }\n    cout << fixed << setprecision(10) << max_d << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_492b_vanya_and_lanterns_java",
+    "name": "CF 492B Vanya and Lanterns (Java)",
+    "language": "java",
+    "rating": "1200",
+    "tags": [
+      "sorting",
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting"
+    ],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        long l = sc.nextLong();\n        long[] a = new long[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextLong();\n        Arrays.sort(a);\n        double maxD = Math.max((double)a[0], (double)(l - a[n - 1]));\n        for (int i = 1; i < n; i++) {\n            maxD = Math.max(maxD, (double)(a[i] - a[i - 1]) / 2.0);\n        }\n        System.out.printf(java.util.Locale.US, \"%.10f\\n\", maxD);\n    }\n}"
+  },
+  {
+    "id": "cf_451b_sort_the_array_cpp",
+    "name": "CF 451B Sort the Array (C++)",
+    "language": "cpp",
+    "rating": "1300",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    vector<int> a(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    int l = 0, r = n - 1;\n    while (l < n - 1 && a[l] <= a[l + 1]) l++;\n    if (l == n - 1) {\n        cout << \"yes\\n1 1\\n\";\n        return 0;\n    }\n    while (r > 0 && a[r] >= a[r - 1]) r--;\n    reverse(a.begin() + l, a.begin() + r + 1);\n    bool ok = true;\n    for (int i = 0; i < n - 1; i++) {\n        if (a[i] > a[i + 1]) { ok = false; break; }\n    }\n    if (ok) cout << \"yes\\n\" << (l + 1) << \" \" << (r + 1) << \"\\n\";\n    else cout << \"no\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_451b_sort_the_array_java",
+    "name": "CF 451B Sort the Array (Java)",
+    "language": "java",
+    "rating": "1300",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextInt();\n        int l = 0, r = n - 1;\n        while (l < n - 1 && a[l] <= a[l + 1]) l++;\n        if (l == n - 1) {\n            System.out.println(\"yes\\n1 1\");\n            return;\n        }\n        while (r > 0 && a[r] >= a[r - 1]) r--;\n        for (int i = l, j = r; i < j; i++, j--) {\n            int tmp = a[i]; a[i] = a[j]; a[j] = tmp;\n        }\n        boolean ok = true;\n        for (int i = 0; i < n - 1; i++) {\n            if (a[i] > a[i + 1]) { ok = false; break; }\n        }\n        if (ok) System.out.println(\"yes\\n\" + (l + 1) + \" \" + (r + 1));\n        else System.out.println(\"no\");\n    }\n}"
+  },
+  {
+    "id": "cf_520b_two_buttons_cpp",
+    "name": "CF 520B Two Buttons (C++)",
+    "language": "cpp",
+    "rating": "1400",
+    "tags": [
+      "bfs",
+      "graph",
+      "cf"
+    ],
+    "expected_tc": "O(V + E)",
+    "expected_sc": "O(V + E)",
+    "expected_algorithms": [
+      "BFS"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <queue>\nusing namespace std;\nint main() {\n    int n, m;\n    if (!(cin >> n >> m)) return 0;\n    const int MAX = 20000;\n    vector<int> dist(MAX + 1, -1);\n    queue<int> q;\n    dist[n] = 0;\n    q.push(n);\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        if (u == m) break;\n        if (u * 2 <= MAX && dist[u * 2] == -1) {\n            dist[u * 2] = dist[u] + 1;\n            q.push(u * 2);\n        }\n        if (u - 1 > 0 && dist[u - 1] == -1) {\n            dist[u - 1] = dist[u] + 1;\n            q.push(u - 1);\n        }\n    }\n    cout << dist[m] << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_520b_two_buttons_java",
+    "name": "CF 520B Two Buttons (Java)",
+    "language": "java",
+    "rating": "1400",
+    "tags": [
+      "bfs",
+      "graph",
+      "cf"
+    ],
+    "expected_tc": "O(V + E)",
+    "expected_sc": "O(V + E)",
+    "expected_algorithms": [
+      "BFS"
+    ],
+    "code": "import java.util.Scanner;\nimport java.util.Queue;\nimport java.util.LinkedList;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int m = sc.nextInt();\n        int max = 20000;\n        int[] dist = new int[max + 1];\n        Arrays.fill(dist, -1);\n        Queue<Integer> q = new LinkedList<>();\n        dist[n] = 0;\n        q.offer(n);\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            if (u == m) break;\n            if (u * 2 <= max && dist[u * 2] == -1) {\n                dist[u * 2] = dist[u] + 1;\n                q.offer(u * 2);\n            }\n            if (u - 1 > 0 && dist[u - 1] == -1) {\n                dist[u - 1] = dist[u] + 1;\n                q.offer(u - 1);\n            }\n        }\n        System.out.println(dist[m]);\n    }\n}"
+  },
+  {
+    "id": "cf_580c_kefa_and_park_cpp",
+    "name": "CF 580C Kefa and Park (C++)",
+    "language": "cpp",
+    "rating": "1500",
+    "tags": [
+      "dfs",
+      "tree",
+      "cf"
+    ],
+    "expected_tc": "O(V + E)",
+    "expected_sc": "O(V + E)",
+    "expected_algorithms": [
+      "DFS"
+    ],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nint n, m;\nvector<int> has_cat;\nvector<vector<int>> adj;\nint ans = 0;\nvoid dfs(int u, int p, int consecutive) {\n    if (has_cat[u]) consecutive++;\n    else consecutive = 0;\n    if (consecutive > m) return;\n    bool is_leaf = true;\n    for (int v : adj[u]) {\n        if (v != p) {\n            is_leaf = false;\n            dfs(v, u, consecutive);\n        }\n    }\n    if (is_leaf && u != 1) ans++;\n}\nint main() {\n    if (!(cin >> n >> m)) return 0;\n    has_cat.resize(n + 1);\n    adj.resize(n + 1);\n    for (int i = 1; i <= n; i++) cin >> has_cat[i];\n    for (int i = 0; i < n - 1; i++) {\n        int u, v; cin >> u >> v;\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    dfs(1, 0, 0);\n    cout << ans << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cf_580c_kefa_and_park_java",
+    "name": "CF 580C Kefa and Park (Java)",
+    "language": "java",
+    "rating": "1500",
+    "tags": [
+      "dfs",
+      "tree",
+      "cf"
+    ],
+    "expected_tc": "O(V + E)",
+    "expected_sc": "O(V + E)",
+    "expected_algorithms": [
+      "DFS"
+    ],
+    "code": "import java.util.*;\npublic class Main {\n    static int n, m, ans = 0;\n    static int[] hasCat;\n    static List<Integer>[] adj;\n    static void dfs(int u, int p, int consecutive) {\n        if (hasCat[u] == 1) consecutive++;\n        else consecutive = 0;\n        if (consecutive > m) return;\n        boolean isLeaf = true;\n        for (int v : adj[u]) {\n            if (v != p) {\n                isLeaf = false;\n                dfs(v, u, consecutive);\n            }\n        }\n        if (isLeaf && u != 1) ans++;\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        n = sc.nextInt(); m = sc.nextInt();\n        hasCat = new int[n + 1];\n        adj = new ArrayList[n + 1];\n        for (int i = 1; i <= n; i++) { hasCat[i] = sc.nextInt(); adj[i] = new ArrayList<>(); }\n        for (int i = 0; i < n - 1; i++) {\n            int u = sc.nextInt(), v = sc.nextInt();\n            adj[u].add(v); adj[v].add(u);\n        }\n        dfs(1, 0, 0);\n        System.out.println(ans);\n    }\n}"
+  },
+  {
+    "id": "cf_1899e_queue_sort_heldout_cpp",
+    "name": "CF 1899E Queue Sort (C++)",
+    "language": "cpp",
+    "rating": "1600",
+    "tags": [
+      "linear",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nvoid solve() {\n    int n;\n    cin >> n;\n    vector<int> a(n);\n    int min_val = 2e9, min_idx = 0;\n    for (int i = 0; i < n; i++) {\n        cin >> a[i];\n        if (a[i] < min_val) {\n            min_val = a[i];\n            min_idx = i;\n        }\n    }\n    for (int i = min_idx; i < n - 1; i++) {\n        if (a[i] > a[i + 1]) {\n            cout << -1 << \"\\n\";\n            return;\n        }\n    }\n    cout << min_idx << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1899e_queue_sort_heldout_java",
+    "name": "CF 1899E Queue Sort (Java)",
+    "language": "java",
+    "rating": "1600",
+    "tags": [
+      "linear",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    static void solve(Scanner sc) {\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        int minVal = Integer.MAX_VALUE, minIdx = 0;\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n            if (a[i] < minVal) {\n                minVal = a[i];\n                minIdx = i;\n            }\n        }\n        for (int i = minIdx; i < n - 1; i++) {\n            if (a[i] > a[i + 1]) {\n                System.out.println(-1);\n                return;\n            }\n        }\n        System.out.println(minIdx);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1873e_building_aquarium_heldout_cpp",
+    "name": "CF 1873E Building an Aquarium (C++)",
+    "language": "cpp",
+    "rating": "1700",
+    "tags": [
+      "binary_search_on_answer",
+      "cf"
+    ],
+    "expected_tc": "O(n log A)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Binary Search on Answer"
+    ],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nbool check(const vector<long long>& a, long long h, long long x) {\n    long long water = 0;\n    for (long long ai : a) {\n        if (h > ai) water += (h - ai);\n        if (water > x) return false;\n    }\n    return water <= x;\n}\nvoid solve() {\n    int n;\n    long long x;\n    cin >> n >> x;\n    vector<long long> a(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    long long low = 1, high = 2e9 + 7, ans = 1;\n    while (low <= high) {\n        long long mid = low + (high - low) / 2;\n        if (check(a, mid, x)) {\n            ans = mid;\n            low = mid + 1;\n        } else {\n            high = mid - 1;\n        }\n    }\n    cout << ans << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1873e_building_aquarium_heldout_java",
+    "name": "CF 1873E Building an Aquarium (Java)",
+    "language": "java",
+    "rating": "1700",
+    "tags": [
+      "binary_search_on_answer",
+      "cf"
+    ],
+    "expected_tc": "O(n log A)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Binary Search on Answer"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    static boolean check(long[] a, long h, long x) {\n        long water = 0;\n        for (long ai : a) {\n            if (h > ai) water += (h - ai);\n            if (water > x) return false;\n        }\n        return water <= x;\n    }\n    static void solve(Scanner sc) {\n        int n = sc.nextInt();\n        long x = sc.nextLong();\n        long[] a = new long[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextLong();\n        long low = 1, high = 2000000007L, ans = 1;\n        while (low <= high) {\n            long mid = low + (high - low) / 2;\n            if (check(a, mid, x)) {\n                ans = mid;\n                low = mid + 1;\n            } else {\n                high = mid - 1;\n            }\n        }\n        System.out.println(ans);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1676g_white_black_subtrees_heldout_cpp",
+    "name": "CF 1676G White-Black Subtrees (C++)",
+    "language": "cpp",
+    "rating": "1800",
+    "tags": [
+      "tree_dp",
+      "dfs",
+      "tree",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Tree DP",
+      "DFS"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\nvector<vector<int>> tree;\nstring colors;\nint balanced_count;\nint dfs(int u) {\n    int balance = (colors[u - 1] == 'W' ? 1 : -1);\n    for (int child : tree[u]) {\n        balance += dfs(child);\n    }\n    if (balance == 0) balanced_count++;\n    return balance;\n}\nvoid solve() {\n    int n;\n    cin >> n;\n    tree.assign(n + 1, vector<int>());\n    for (int i = 2; i <= n; i++) {\n        int p; cin >> p;\n        tree[p].push_back(i);\n    }\n    cin >> colors;\n    balanced_count = 0;\n    dfs(1);\n    cout << balanced_count << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1676g_white_black_subtrees_heldout_java",
+    "name": "CF 1676G White-Black Subtrees (Java)",
+    "language": "java",
+    "rating": "1800",
+    "tags": [
+      "tree_dp",
+      "dfs",
+      "tree",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Tree DP",
+      "DFS"
+    ],
+    "code": "import java.util.*;\npublic class Main {\n    static List<Integer>[] tree;\n    static String colors;\n    static int balancedCount;\n    static int dfs(int u) {\n        int balance = (colors.charAt(u - 1) == 'W' ? 1 : -1);\n        for (int child : tree[u]) {\n            balance += dfs(child);\n        }\n        if (balance == 0) balancedCount++;\n        return balance;\n    }\n    static void solve(Scanner sc) {\n        int n = sc.nextInt();\n        tree = new ArrayList[n + 1];\n        for (int i = 1; i <= n; i++) tree[i] = new ArrayList<>();\n        for (int i = 2; i <= n; i++) {\n            int p = sc.nextInt();\n            tree[p].add(i);\n        }\n        colors = sc.next();\n        balancedCount = 0;\n        dfs(1);\n        System.out.println(balancedCount);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "lc_1_two_sum_cpp",
+    "name": "LeetCode 1 Two Sum (C++)",
+    "language": "cpp",
+    "rating": "Easy",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "leetcode"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        int n = nums.size();\n        vector<pair<int, int>> p(n);\n        for (int i = 0; i < n; i++) p[i] = {nums[i], i};\n        sort(p.begin(), p.end());\n        int l = 0, r = n - 1;\n        while (l < r) {\n            int sum = p[l].first + p[r].first;\n            if (sum == target) return {p[l].second, p[r].second};\n            if (sum < target) l++;\n            else r--;\n        }\n        return {};\n    }\n};"
+  },
+  {
+    "id": "lc_1_two_sum_java",
+    "name": "LeetCode 1 Two Sum (Java)",
+    "language": "java",
+    "rating": "Easy",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "leetcode"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "import java.util.Arrays;\nimport java.util.Comparator;\nclass Solution {\n    public int[] twoSum(int[] nums, int target) {\n        int n = nums.length;\n        int[][] p = new int[n][2];\n        for (int i = 0; i < n; i++) {\n            p[i][0] = nums[i];\n            p[i][1] = i;\n        }\n        Arrays.sort(p, Comparator.comparingInt(a -> a[0]));\n        int l = 0, r = n - 1;\n        while (l < r) {\n            int sum = p[l][0] + p[r][0];\n            if (sum == target) return new int[]{p[l][1], p[r][1]};\n            if (sum < target) l++;\n            else r--;\n        }\n        return new int[]{};\n    }\n}"
+  },
+  {
+    "id": "lc_20_valid_parentheses_cpp",
+    "name": "LeetCode 20 Valid Parentheses (C++)",
+    "language": "cpp",
+    "rating": "Easy",
+    "tags": [
+      "monotonic_stack",
+      "string",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Monotonic Stack"
+    ],
+    "code": "#include <string>\n#include <stack>\nusing namespace std;\nclass Solution {\npublic:\n    bool isValid(string s) {\n        stack<char> st;\n        for (char c : s) {\n            if (c == '(' || c == '{' || c == '[') {\n                st.push(c);\n            } else {\n                if (st.empty()) return false;\n                char top = st.top();\n                if ((c == ')' && top == '(') || (c == '}' && top == '{') || (c == ']' && top == '[')) {\n                    st.pop();\n                } else {\n                    return false;\n                }\n            }\n        }\n        return st.empty();\n    }\n};"
+  },
+  {
+    "id": "lc_20_valid_parentheses_java",
+    "name": "LeetCode 20 Valid Parentheses (Java)",
+    "language": "java",
+    "rating": "Easy",
+    "tags": [
+      "monotonic_stack",
+      "string",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Monotonic Stack"
+    ],
+    "code": "import java.util.Stack;\nclass Solution {\n    public boolean isValid(String s) {\n        Stack<Character> st = new Stack<>();\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (c == '(' || c == '{' || c == '[') {\n                st.push(c);\n            } else {\n                if (st.empty()) return false;\n                char top = st.pop();\n                if (c == ')' && top != '(') return false;\n                if (c == '}' && top != '{') return false;\n                if (c == ']' && top != '[') return false;\n            }\n        }\n        return st.empty();\n    }\n}"
+  },
+  {
+    "id": "lc_53_maximum_subarray_cpp",
+    "name": "LeetCode 53 Maximum Subarray (C++)",
+    "language": "cpp",
+    "rating": "Easy",
+    "tags": [
+      "dp",
+      "linear",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    int maxSubArray(vector<int>& nums) {\n        int max_so_far = nums[0];\n        int curr_max = nums[0];\n        for (size_t i = 1; i < nums.size(); i++) {\n            curr_max = max(nums[i], curr_max + nums[i]);\n            max_so_far = max(max_so_far, curr_max);\n        }\n        return max_so_far;\n    }\n};"
+  },
+  {
+    "id": "lc_53_maximum_subarray_java",
+    "name": "LeetCode 53 Maximum Subarray (Java)",
+    "language": "java",
+    "rating": "Easy",
+    "tags": [
+      "dp",
+      "linear",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "class Solution {\n    public int maxSubArray(int[] nums) {\n        int maxSoFar = nums[0];\n        int currMax = nums[0];\n        for (int i = 1; i < nums.length; i++) {\n            currMax = Math.max(nums[i], currMax + nums[i]);\n            maxSoFar = Math.max(maxSoFar, currMax);\n        }\n        return maxSoFar;\n    }\n}"
+  },
+  {
+    "id": "lc_15_3sum_cpp",
+    "name": "LeetCode 15 3Sum (C++)",
+    "language": "cpp",
+    "rating": "Medium",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "leetcode"
+    ],
+    "expected_tc": "O(n^2)",
+    "expected_sc": "O(log n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    vector<vector<int>> threeSum(vector<int>& nums) {\n        vector<vector<int>> res;\n        sort(nums.begin(), nums.end());\n        int n = nums.size();\n        for (int i = 0; i < n - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;\n            int l = i + 1, r = n - 1;\n            while (l < r) {\n                int sum = nums[i] + nums[l] + nums[r];\n                if (sum == 0) {\n                    res.push_back({nums[i], nums[l], nums[r]});\n                    while (l < r && nums[l] == nums[l + 1]) l++;\n                    while (l < r && nums[r] == nums[r - 1]) r--;\n                    l++; r--;\n                } else if (sum < 0) {\n                    l++;\n                } else {\n                    r--;\n                }\n            }\n        }\n        return res;\n    }\n};"
+  },
+  {
+    "id": "lc_15_3sum_java",
+    "name": "LeetCode 15 3Sum (Java)",
+    "language": "java",
+    "rating": "Medium",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "leetcode"
+    ],
+    "expected_tc": "O(n^2)",
+    "expected_sc": "O(log n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n        List<List<Integer>> res = new ArrayList<>();\n        Arrays.sort(nums);\n        int n = nums.length;\n        for (int i = 0; i < n - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;\n            int l = i + 1, r = n - 1;\n            while (l < r) {\n                int sum = nums[i] + nums[l] + nums[r];\n                if (sum == 0) {\n                    res.add(Arrays.asList(nums[i], nums[l], nums[r]));\n                    while (l < r && nums[l] == nums[l + 1]) l++;\n                    while (l < r && nums[r] == nums[r - 1]) r--;\n                    l++; r--;\n                } else if (sum < 0) {\n                    l++;\n                } else {\n                    r--;\n                }\n            }\n        }\n        return res;\n    }\n}"
+  },
+  {
+    "id": "lc_3_longest_substring_cpp",
+    "name": "LeetCode 3 Longest Substring Without Repeating Characters (C++)",
+    "language": "cpp",
+    "rating": "Medium",
+    "tags": [
+      "sliding_window",
+      "string",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(A)",
+    "expected_algorithms": [
+      "Sliding Window"
+    ],
+    "code": "#include <string>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    int lengthOfLongestSubstring(string s) {\n        vector<int> last(256, -1);\n        int left = 0, max_len = 0;\n        for (int right = 0; right < (int)s.size(); right++) {\n            if (last[(unsigned char)s[right]] >= left) {\n                left = last[(unsigned char)s[right]] + 1;\n            }\n            last[(unsigned char)s[right]] = right;\n            max_len = max(max_len, right - left + 1);\n        }\n        return max_len;\n    }\n};"
+  },
+  {
+    "id": "lc_3_longest_substring_java",
+    "name": "LeetCode 3 Longest Substring Without Repeating Characters (Java)",
+    "language": "java",
+    "rating": "Medium",
+    "tags": [
+      "sliding_window",
+      "string",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(A)",
+    "expected_algorithms": [
+      "Sliding Window"
+    ],
+    "code": "import java.util.Arrays;\nclass Solution {\n    public int lengthOfLongestSubstring(String s) {\n        int[] last = new int[256];\n        Arrays.fill(last, -1);\n        int left = 0, maxLen = 0;\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            if (last[c] >= left) {\n                left = last[c] + 1;\n            }\n            last[c] = right;\n            maxLen = Math.max(maxLen, right - left + 1);\n        }\n        return maxLen;\n    }\n}"
+  },
+  {
+    "id": "lc_739_daily_temperatures_cpp",
+    "name": "LeetCode 739 Daily Temperatures (C++)",
+    "language": "cpp",
+    "rating": "Medium",
+    "tags": [
+      "monotonic_stack",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Monotonic Stack"
+    ],
+    "code": "#include <vector>\n#include <stack>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> dailyTemperatures(vector<int>& temperatures) {\n        int n = temperatures.size();\n        vector<int> ans(n, 0);\n        stack<int> st;\n        for (int i = 0; i < n; i++) {\n            while (!st.empty() && temperatures[i] > temperatures[st.top()]) {\n                int prev = st.top();\n                st.pop();\n                ans[prev] = i - prev;\n            }\n            st.push(i);\n        }\n        return ans;\n    }\n};"
+  },
+  {
+    "id": "lc_739_daily_temperatures_java",
+    "name": "LeetCode 739 Daily Temperatures (Java)",
+    "language": "java",
+    "rating": "Medium",
+    "tags": [
+      "monotonic_stack",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Monotonic Stack"
+    ],
+    "code": "import java.util.Stack;\nclass Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] ans = new int[n];\n        Stack<Integer> st = new Stack<>();\n        for (int i = 0; i < n; i++) {\n            while (!st.empty() && temperatures[i] > temperatures[st.peek()]) {\n                int prev = st.pop();\n                ans[prev] = i - prev;\n            }\n            st.push(i);\n        }\n        return ans;\n    }\n}"
+  },
+  {
+    "id": "lc_200_number_of_islands_cpp",
+    "name": "LeetCode 200 Number of Islands (C++)",
+    "language": "cpp",
+    "rating": "Medium",
+    "tags": [
+      "bfs",
+      "dfs",
+      "graph",
+      "leetcode"
+    ],
+    "expected_tc": "O(n * m)",
+    "expected_sc": "O(n * m)",
+    "expected_algorithms": [
+      "BFS"
+    ],
+    "code": "#include <vector>\n#include <queue>\nusing namespace std;\nclass Solution {\npublic:\n    int numIslands(vector<vector<char>>& grid) {\n        int m = grid.size();\n        if (m == 0) return 0;\n        int n = grid[0].size();\n        int count = 0;\n        queue<pair<int, int>> q;\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] == '1') {\n                    count++;\n                    grid[i][j] = '0';\n                    q.push({i, j});\n                    while (!q.empty()) {\n                        auto [r, c] = q.front();\n                        q.pop();\n                        int dr[] = {-1, 1, 0, 0};\n                        int dc[] = {0, 0, -1, 1};\n                        for (int d = 0; d < 4; d++) {\n                            int nr = r + dr[d], nc = c + dc[d];\n                            if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] == '1') {\n                                grid[nr][nc] = '0';\n                                q.push({nr, nc});\n                            }\n                        }\n                    }\n                }\n            }\n        }\n        return count;\n    }\n};"
+  },
+  {
+    "id": "lc_200_number_of_islands_java",
+    "name": "LeetCode 200 Number of Islands (Java)",
+    "language": "java",
+    "rating": "Medium",
+    "tags": [
+      "bfs",
+      "dfs",
+      "graph",
+      "leetcode"
+    ],
+    "expected_tc": "O(n * m)",
+    "expected_sc": "O(n * m)",
+    "expected_algorithms": [
+      "BFS"
+    ],
+    "code": "import java.util.Queue;\nimport java.util.LinkedList;\nclass Solution {\n    public int numIslands(char[][] grid) {\n        int m = grid.length;\n        if (m == 0) return 0;\n        int n = grid[0].length;\n        int count = 0;\n        Queue<int[]> q = new LinkedList<>();\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] == '1') {\n                    count++;\n                    grid[i][j] = '0';\n                    q.offer(new int[]{i, j});\n                    while (!q.isEmpty()) {\n                        int[] cur = q.poll();\n                        int r = cur[0], c = cur[1];\n                        int[] dr = {-1, 1, 0, 0};\n                        int[] dc = {0, 0, -1, 1};\n                        for (int d = 0; d < 4; d++) {\n                            int nr = r + dr[d], nc = c + dc[d];\n                            if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] == '1') {\n                                grid[nr][nc] = '0';\n                                q.offer(new int[]{nr, nc});\n                            }\n                        }\n                    }\n                }\n            }\n        }\n        return count;\n    }\n}"
+  },
+  {
+    "id": "lc_42_trapping_rain_water_cpp",
+    "name": "LeetCode 42 Trapping Rain Water (C++)",
+    "language": "cpp",
+    "rating": "Hard",
+    "tags": [
+      "two_pointers",
+      "monotonic_stack",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "#include <vector>\n#include <algorithm>\nusing namespace std;\nclass Solution {\npublic:\n    int trap(vector<int>& height) {\n        int left = 0, right = height.size() - 1;\n        int left_max = 0, right_max = 0;\n        int water = 0;\n        while (left < right) {\n            if (height[left] < height[right]) {\n                if (height[left] >= left_max) left_max = height[left];\n                else water += left_max - height[left];\n                left++;\n            } else {\n                if (height[right] >= right_max) right_max = height[right];\n                else water += right_max - height[right];\n                right--;\n            }\n        }\n        return water;\n    }\n};"
+  },
+  {
+    "id": "lc_42_trapping_rain_water_java",
+    "name": "LeetCode 42 Trapping Rain Water (Java)",
+    "language": "java",
+    "rating": "Hard",
+    "tags": [
+      "two_pointers",
+      "monotonic_stack",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "class Solution {\n    public int trap(int[] height) {\n        int left = 0, right = height.length - 1;\n        int leftMax = 0, rightMax = 0;\n        int water = 0;\n        while (left < right) {\n            if (height[left] < height[right]) {\n                if (height[left] >= leftMax) leftMax = height[left];\n                else water += leftMax - height[left];\n                left++;\n            } else {\n                if (height[right] >= rightMax) rightMax = height[right];\n                else water += rightMax - height[right];\n                right--;\n            }\n        }\n        return water;\n    }\n}"
+  },
+  {
+    "id": "lc_239_sliding_window_max_cpp",
+    "name": "LeetCode 239 Sliding Window Maximum (C++)",
+    "language": "cpp",
+    "rating": "Hard",
+    "tags": [
+      "monotonic_queue",
+      "sliding_window",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(k)",
+    "expected_algorithms": [
+      "Monotonic Queue",
+      "Sliding Window"
+    ],
+    "code": "#include <vector>\n#include <deque>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> maxSlidingWindow(vector<int>& nums, int k) {\n        deque<int> dq;\n        vector<int> ans;\n        for (int i = 0; i < (int)nums.size(); i++) {\n            if (!dq.empty() && dq.front() == i - k) dq.pop_front();\n            while (!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();\n            dq.push_back(i);\n            if (i >= k - 1) ans.push_back(nums[dq.front()]);\n        }\n        return ans;\n    }\n};"
+  },
+  {
+    "id": "lc_239_sliding_window_max_java",
+    "name": "LeetCode 239 Sliding Window Maximum (Java)",
+    "language": "java",
+    "rating": "Hard",
+    "tags": [
+      "monotonic_queue",
+      "sliding_window",
+      "leetcode"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(k)",
+    "expected_algorithms": [
+      "Monotonic Queue",
+      "Sliding Window"
+    ],
+    "code": "import java.util.ArrayDeque;\nimport java.util.Deque;\nclass Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        Deque<Integer> dq = new ArrayDeque<>();\n        int n = nums.length;\n        int[] ans = new int[n - k + 1];\n        int idx = 0;\n        for (int i = 0; i < n; i++) {\n            if (!dq.isEmpty() && dq.peekFirst() == i - k) dq.pollFirst();\n            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) dq.pollLast();\n            dq.offerLast(i);\n            if (i >= k - 1) ans[idx++] = nums[dq.peekFirst()];\n        }\n        return ans;\n    }\n}"
+  },
+  {
+    "id": "cses_distinct_numbers_cpp",
+    "name": "CSES Distinct Numbers (C++)",
+    "language": "cpp",
+    "rating": "1000",
+    "tags": [
+      "sorting",
+      "cses"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    vector<int> a(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    sort(a.begin(), a.end());\n    int count = 1;\n    for (int i = 1; i < n; i++) {\n        if (a[i] != a[i - 1]) count++;\n    }\n    cout << count << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cses_distinct_numbers_java",
+    "name": "CSES Distinct Numbers (Java)",
+    "language": "java",
+    "rating": "1000",
+    "tags": [
+      "sorting",
+      "cses"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting"
+    ],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextInt();\n        Arrays.sort(a);\n        int count = 1;\n        for (int i = 1; i < n; i++) {\n            if (a[i] != a[i - 1]) count++;\n        }\n        System.out.println(count);\n    }\n}"
+  },
+  {
+    "id": "cses_sum_of_two_values_cpp",
+    "name": "CSES Sum of Two Values (C++)",
+    "language": "cpp",
+    "rating": "1100",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "cses"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nint main() {\n    int n;\n    long long x;\n    if (!(cin >> n >> x)) return 0;\n    vector<pair<long long, int>> a(n);\n    for (int i = 0; i < n; i++) {\n        cin >> a[i].first;\n        a[i].second = i + 1;\n    }\n    sort(a.begin(), a.end());\n    int l = 0, r = n - 1;\n    while (l < r) {\n        long long s = a[l].first + a[r].first;\n        if (s == x) {\n            cout << a[l].second << \" \" << a[r].second << \"\\n\";\n            return 0;\n        }\n        if (s < x) l++;\n        else r--;\n    }\n    cout << \"IMPOSSIBLE\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cses_sum_of_two_values_java",
+    "name": "CSES Sum of Two Values (Java)",
+    "language": "java",
+    "rating": "1100",
+    "tags": [
+      "two_pointers",
+      "sorting",
+      "cses"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\nimport java.util.Comparator;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        long x = sc.nextLong();\n        long[][] a = new long[n][2];\n        for (int i = 0; i < n; i++) {\n            a[i][0] = sc.nextLong();\n            a[i][1] = i + 1;\n        }\n        Arrays.sort(a, Comparator.comparingLong(p -> p[0]));\n        int l = 0, r = n - 1;\n        while (l < r) {\n            long s = a[l][0] + a[r][0];\n            if (s == x) {\n                System.out.println(a[l][1] + \" \" + a[r][1]);\n                return;\n            }\n            if (s < x) l++;\n            else r--;\n        }\n        System.out.println(\"IMPOSSIBLE\");\n    }\n}"
+  },
+  {
+    "id": "cses_subarray_sums_i_cpp",
+    "name": "CSES Subarray Sums I (C++)",
+    "language": "cpp",
+    "rating": "1200",
+    "tags": [
+      "sliding_window",
+      "two_pointers",
+      "cses"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    int n;\n    long long x;\n    if (!(cin >> n >> x)) return 0;\n    vector<long long> a(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    int l = 0, count = 0;\n    long long cur = 0;\n    for (int r = 0; r < n; r++) {\n        cur += a[r];\n        while (cur > x && l <= r) {\n            cur -= a[l];\n            l++;\n        }\n        if (cur == x) count++;\n    }\n    cout << count << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "cses_subarray_sums_i_java",
+    "name": "CSES Subarray Sums I (Java)",
+    "language": "java",
+    "rating": "1200",
+    "tags": [
+      "sliding_window",
+      "two_pointers",
+      "cses"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        long x = sc.nextLong();\n        long[] a = new long[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextLong();\n        int l = 0, count = 0;\n        long cur = 0;\n        for (int r = 0; r < n; r++) {\n            cur += a[r];\n            while (cur > x && l <= r) {\n                cur -= a[l];\n                l++;\n            }\n            if (cur == x) count++;\n        }\n        System.out.println(count);\n    }\n}"
+  },
+  {
+    "id": "atcoder_dp_a_frog1_cpp",
+    "name": "AtCoder Educational DP A Frog 1 (C++)",
+    "language": "cpp",
+    "rating": "1100",
+    "tags": [
+      "dp",
+      "atcoder"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\n#include <vector>\n#include <cmath>\n#include <algorithm>\nusing namespace std;\nint main() {\n    int n;\n    if (!(cin >> n)) return 0;\n    vector<int> h(n);\n    for (int i = 0; i < n; i++) cin >> h[i];\n    vector<int> dp(n, 1e9);\n    dp[0] = 0;\n    for (int i = 0; i < n; i++) {\n        if (i + 1 < n) dp[i + 1] = min(dp[i + 1], dp[i] + abs(h[i] - h[i + 1]));\n        if (i + 2 < n) dp[i + 2] = min(dp[i + 2], dp[i] + abs(h[i] - h[i + 2]));\n    }\n    cout << dp[n - 1] << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "atcoder_dp_a_frog1_java",
+    "name": "AtCoder Educational DP A Frog 1 (Java)",
+    "language": "java",
+    "rating": "1100",
+    "tags": [
+      "dp",
+      "atcoder"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] h = new int[n];\n        for (int i = 0; i < n; i++) h[i] = sc.nextInt();\n        int[] dp = new int[n];\n        Arrays.fill(dp, 1000000000);\n        dp[0] = 0;\n        for (int i = 0; i < n; i++) {\n            if (i + 1 < n) dp[i + 1] = Math.min(dp[i + 1], dp[i] + Math.abs(h[i] - h[i + 1]));\n            if (i + 2 < n) dp[i + 2] = Math.min(dp[i + 2], dp[i] + Math.abs(h[i] - h[i + 2]));\n        }\n        System.out.println(dp[n - 1]);\n    }\n}"
+  },
+  {
+    "id": "atcoder_dp_b_frog2_cpp",
+    "name": "AtCoder Educational DP B Frog 2 (C++)",
+    "language": "cpp",
+    "rating": "1200",
+    "tags": [
+      "dp",
+      "nested",
+      "atcoder"
+    ],
+    "expected_tc": "O(n * k)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\n#include <vector>\n#include <cmath>\n#include <algorithm>\nusing namespace std;\nint main() {\n    int n, k;\n    if (!(cin >> n >> k)) return 0;\n    vector<int> h(n);\n    for (int i = 0; i < n; i++) cin >> h[i];\n    vector<int> dp(n, 1e9);\n    dp[0] = 0;\n    for (int i = 0; i < n; i++) {\n        for (int j = 1; j <= k && i + j < n; j++) {\n            dp[i + j] = min(dp[i + j], dp[i] + abs(h[i] - h[i + j]));\n        }\n    }\n    cout << dp[n - 1] << \"\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "atcoder_dp_b_frog2_java",
+    "name": "AtCoder Educational DP B Frog 2 (Java)",
+    "language": "java",
+    "rating": "1200",
+    "tags": [
+      "dp",
+      "nested",
+      "atcoder"
+    ],
+    "expected_tc": "O(n * k)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int k = sc.nextInt();\n        int[] h = new int[n];\n        for (int i = 0; i < n; i++) h[i] = sc.nextInt();\n        int[] dp = new int[n];\n        Arrays.fill(dp, 1000000000);\n        dp[0] = 0;\n        for (int i = 0; i < n; i++) {\n            for (int j = 1; j <= k && i + j < n; j++) {\n                dp[i + j] = Math.min(dp[i + j], dp[i] + Math.abs(h[i] - h[i + j]));\n            }\n        }\n        System.out.println(dp[n - 1]);\n    }\n}"
+  },
+  {
+    "id": "atcoder_abc085_c_otoshidama_cpp",
+    "name": "AtCoder ABC 085 C Otoshidama (C++)",
+    "language": "cpp",
+    "rating": "1000",
+    "tags": [
+      "nested",
+      "math",
+      "atcoder"
+    ],
+    "expected_tc": "O(n^2)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int n;\n    long long y;\n    if (!(cin >> n >> y)) return 0;\n    for (int i = 0; i <= n; i++) {\n        for (int j = 0; i + j <= n; j++) {\n            int k = n - i - j;\n            if (10000LL * i + 5000LL * j + 1000LL * k == y) {\n                cout << i << \" \" << j << \" \" << k << \"\\n\";\n                return 0;\n            }\n        }\n    }\n    cout << \"-1 -1 -1\\n\";\n    return 0;\n}"
+  },
+  {
+    "id": "atcoder_abc085_c_otoshidama_java",
+    "name": "AtCoder ABC 085 C Otoshidama (Java)",
+    "language": "java",
+    "rating": "1000",
+    "tags": [
+      "nested",
+      "math",
+      "atcoder"
+    ],
+    "expected_tc": "O(n^2)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        long y = sc.nextLong();\n        for (int i = 0; i <= n; i++) {\n            for (int j = 0; i + j <= n; j++) {\n                int k = n - i - j;\n                if (10000L * i + 5000L * j + 1000L * k == y) {\n                    System.out.println(i + \" \" + j + \" \" + k);\n                    return;\n                }\n            }\n        }\n        System.out.println(\"-1 -1 -1\");\n    }\n}"
+  },
+  {
+    "id": "cf_1352c_kth_not_divisible_heldout_cpp",
+    "name": "CF 1352C K-th Not Divisible by n (C++)",
+    "language": "cpp",
+    "rating": "1200",
+    "tags": [
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(1)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\nusing namespace std;\nvoid solve() {\n    long long n, k;\n    cin >> n >> k;\n    cout << k + (k - 1) / (n - 1) << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1352c_kth_not_divisible_heldout_java",
+    "name": "CF 1352C K-th Not Divisible by n (Java)",
+    "language": "java",
+    "rating": "1200",
+    "tags": [
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(1)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    static void solve(Scanner sc) {\n        long n = sc.nextLong();\n        long k = sc.nextLong();\n        System.out.println(k + (k - 1) / (n - 1));\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1840c_ski_resort_heldout_cpp",
+    "name": "CF 1840C Ski Resort (C++)",
+    "language": "cpp",
+    "rating": "1000",
+    "tags": [
+      "two_pointers",
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nvoid solve() {\n    int n, k;\n    long long q;\n    cin >> n >> k >> q;\n    long long ans = 0, len = 0;\n    for (int i = 0; i < n; i++) {\n        long long a;\n        cin >> a;\n        if (a <= q) {\n            len++;\n        } else {\n            if (len >= k) {\n                long long m = len - k + 1;\n                ans += m * (m + 1) / 2;\n            }\n            len = 0;\n        }\n    }\n    if (len >= k) {\n        long long m = len - k + 1;\n        ans += m * (m + 1) / 2;\n    }\n    cout << ans << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1840c_ski_resort_heldout_java",
+    "name": "CF 1840C Ski Resort (Java)",
+    "language": "java",
+    "rating": "1000",
+    "tags": [
+      "two_pointers",
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Two Pointers"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    static void solve(Scanner sc) {\n        int n = sc.nextInt();\n        int k = sc.nextInt();\n        long q = sc.nextLong();\n        long ans = 0, len = 0;\n        for (int i = 0; i < n; i++) {\n            long a = sc.nextLong();\n            if (a <= q) {\n                len++;\n            } else {\n                if (len >= k) {\n                    long m = len - k + 1;\n                    ans += m * (m + 1) / 2;\n                }\n                len = 0;\n            }\n        }\n        if (len >= k) {\n            long m = len - k + 1;\n            ans += m * (m + 1) / 2;\n        }\n        System.out.println(ans);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1850d_balanced_round_heldout_cpp",
+    "name": "CF 1850D Balanced Round (C++)",
+    "language": "cpp",
+    "rating": "900",
+    "tags": [
+      "sorting",
+      "two_pointers",
+      "cf"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(log n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nvoid solve() {\n    int n;\n    long long k;\n    cin >> n >> k;\n    vector<long long> a(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    sort(a.begin(), a.end());\n    int max_chain = 1, cur_chain = 1;\n    for (int i = 1; i < n; i++) {\n        if (a[i] - a[i - 1] <= k) {\n            cur_chain++;\n        } else {\n            max_chain = max(max_chain, cur_chain);\n            cur_chain = 1;\n        }\n    }\n    max_chain = max(max_chain, cur_chain);\n    cout << (n - max_chain) << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1850d_balanced_round_heldout_java",
+    "name": "CF 1850D Balanced Round (Java)",
+    "language": "java",
+    "rating": "900",
+    "tags": [
+      "sorting",
+      "two_pointers",
+      "cf"
+    ],
+    "expected_tc": "O(n log n)",
+    "expected_sc": "O(log n)",
+    "expected_algorithms": [
+      "Sorting",
+      "Two Pointers"
+    ],
+    "code": "import java.util.Scanner;\nimport java.util.Arrays;\npublic class Main {\n    static void solve(Scanner sc) {\n        int n = sc.nextInt();\n        long k = sc.nextLong();\n        long[] a = new long[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextLong();\n        Arrays.sort(a);\n        int maxChain = 1, curChain = 1;\n        for (int i = 1; i < n; i++) {\n            if (a[i] - a[i - 1] <= k) {\n                curChain++;\n            } else {\n                maxChain = Math.max(maxChain, curChain);\n                curChain = 1;\n            }\n        }\n        maxChain = Math.max(maxChain, curChain);\n        System.out.println(n - maxChain);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1872d_plus_minus_permutation_heldout_cpp",
+    "name": "CF 1872D Plus Minus Permutation (C++)",
+    "language": "cpp",
+    "rating": "1100",
+    "tags": [
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(log n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "#include <iostream>\n#include <numeric>\nusing namespace std;\nlong long gcd(long long a, long long b) {\n    while (b) { a %= b; swap(a, b); }\n    return a;\n}\nlong long lcm(long long a, long long b) {\n    return (a / gcd(a, b)) * b;\n}\nvoid solve() {\n    long long n, x, y;\n    cin >> n >> x >> y;\n    long long common = n / lcm(x, y);\n    long long plus_count = n / x - common;\n    long long minus_count = n / y - common;\n    long long sum_plus = (n + (n - plus_count + 1)) * plus_count / 2;\n    long long sum_minus = (1 + minus_count) * minus_count / 2;\n    cout << sum_plus - sum_minus << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1872d_plus_minus_permutation_heldout_java",
+    "name": "CF 1872D Plus Minus Permutation (Java)",
+    "language": "java",
+    "rating": "1100",
+    "tags": [
+      "math",
+      "cf"
+    ],
+    "expected_tc": "O(log n)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [],
+    "code": "import java.util.Scanner;\npublic class Main {\n    static long gcd(long a, long b) {\n        while (b != 0) { long t = a % b; a = b; b = t; }\n        return a;\n    }\n    static long lcm(long a, long b) {\n        return (a / gcd(a, b)) * b;\n    }\n    static void solve(Scanner sc) {\n        long n = sc.nextLong();\n        long x = sc.nextLong();\n        long y = sc.nextLong();\n        long common = n / lcm(x, y);\n        long plusCount = n / x - common;\n        long minusCount = n / y - common;\n        long sumPlus = (n + (n - plusCount + 1)) * plusCount / 2;\n        long sumMinus = (1 + minusCount) * minusCount / 2;\n        System.out.println(sumPlus - sumMinus);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1985f_final_boss_heldout_cpp",
+    "name": "CF 1985F Final Boss (C++)",
+    "language": "cpp",
+    "rating": "1500",
+    "tags": [
+      "binary_search_on_answer",
+      "cf"
+    ],
+    "expected_tc": "O(n log A)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Binary Search on Answer"
+    ],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nbool can_defeat(long long turns, long long h, int n, const vector<long long>& a, const vector<long long>& c) {\n    long long total = 0;\n    for (int i = 0; i < n; i++) {\n        long long attacks = (turns - 1) / c[i] + 1;\n        total += attacks * a[i];\n        if (total >= h) return true;\n    }\n    return total >= h;\n}\nvoid solve() {\n    long long h;\n    int n;\n    cin >> h >> n;\n    vector<long long> a(n), c(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    for (int i = 0; i < n; i++) cin >> c[i];\n    long long low = 1, high = 4e11, ans = high;\n    while (low <= high) {\n        long long mid = low + (high - low) / 2;\n        if (can_defeat(mid, h, n, a, c)) {\n            ans = mid;\n            high = mid - 1;\n        } else {\n            low = mid + 1;\n        }\n    }\n    cout << ans << \"\\n\";\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1985f_final_boss_heldout_java",
+    "name": "CF 1985F Final Boss (Java)",
+    "language": "java",
+    "rating": "1500",
+    "tags": [
+      "binary_search_on_answer",
+      "cf"
+    ],
+    "expected_tc": "O(n log A)",
+    "expected_sc": "O(1)",
+    "expected_algorithms": [
+      "Binary Search on Answer"
+    ],
+    "code": "import java.util.Scanner;\npublic class Main {\n    static boolean canDefeat(long turns, long h, int n, long[] a, long[] c) {\n        long total = 0;\n        for (int i = 0; i < n; i++) {\n            long attacks = (turns - 1) / c[i] + 1;\n            total += attacks * a[i];\n            if (total >= h) return true;\n        }\n        return total >= h;\n    }\n    static void solve(Scanner sc) {\n        long h = sc.nextLong();\n        int n = sc.nextInt();\n        long[] a = new long[n];\n        long[] c = new long[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextLong();\n        for (int i = 0; i < n; i++) c[i] = sc.nextLong();\n        long low = 1, high = 400000000000L, ans = high;\n        while (low <= high) {\n            long mid = low + (high - low) / 2;\n            if (canDefeat(mid, h, n, a, c)) {\n                ans = mid;\n                high = mid - 1;\n            } else {\n                low = mid + 1;\n            }\n        }\n        System.out.println(ans);\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  },
+  {
+    "id": "cf_1843d_apple_tree_heldout_cpp",
+    "name": "CF 1843D Apple Tree (C++)",
+    "language": "cpp",
+    "rating": "1200",
+    "tags": [
+      "dfs",
+      "tree",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "DFS"
+    ],
+    "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nvector<vector<int>> adj;\nvector<long long> leaves;\nvoid dfs(int u, int p) {\n    bool is_leaf = true;\n    for (int v : adj[u]) {\n        if (v != p) {\n            is_leaf = false;\n            dfs(v, u);\n            leaves[u] += leaves[v];\n        }\n    }\n    if (is_leaf) leaves[u] = 1;\n}\nvoid solve() {\n    int n;\n    cin >> n;\n    adj.assign(n + 1, vector<int>());\n    leaves.assign(n + 1, 0);\n    for (int i = 0; i < n - 1; i++) {\n        int u, v; cin >> u >> v;\n        adj[u].push_back(v);\n        adj[v].push_back(u);\n    }\n    dfs(1, 0);\n    int q;\n    cin >> q;\n    while (q--) {\n        int x, y;\n        cin >> x >> y;\n        cout << leaves[x] * leaves[y] << \"\\n\";\n    }\n}\nint main() {\n    int t;\n    if (cin >> t) {\n        while (t--) solve();\n    }\n    return 0;\n}"
+  },
+  {
+    "id": "cf_1843d_apple_tree_heldout_java",
+    "name": "CF 1843D Apple Tree (Java)",
+    "language": "java",
+    "rating": "1200",
+    "tags": [
+      "dfs",
+      "tree",
+      "cf"
+    ],
+    "expected_tc": "O(n)",
+    "expected_sc": "O(n)",
+    "expected_algorithms": [
+      "DFS"
+    ],
+    "code": "import java.util.*;\npublic class Main {\n    static List<Integer>[] adj;\n    static long[] leaves;\n    static void dfs(int u, int p) {\n        boolean isLeaf = true;\n        for (int v : adj[u]) {\n            if (v != p) {\n                isLeaf = false;\n                dfs(v, u);\n                leaves[u] += leaves[v];\n            }\n        }\n        if (isLeaf) leaves[u] = 1;\n    }\n    static void solve(Scanner sc) {\n        int n = sc.nextInt();\n        adj = new ArrayList[n + 1];\n        leaves = new long[n + 1];\n        for (int i = 1; i <= n; i++) adj[i] = new ArrayList<>();\n        for (int i = 0; i < n - 1; i++) {\n            int u = sc.nextInt(), v = sc.nextInt();\n            adj[u].add(v); adj[v].add(u);\n        }\n        dfs(1, 0);\n        int q = sc.nextInt();\n        while (q-- > 0) {\n            int x = sc.nextInt(), y = sc.nextInt();\n            System.out.println(leaves[x] * leaves[y]);\n        }\n    }\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int t = sc.nextInt();\n            while (t-- > 0) solve(sc);\n        }\n    }\n}"
+  }
+]
