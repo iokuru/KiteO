@@ -127,15 +127,26 @@ impl<'a> LoopAnalyzer<'a> {
         let mut is_geometric = false;
         let mut is_halving = false;
         let mut is_harmonic = false;
+        let mut is_testcase_driver = false;
 
         // Inspect condition
         if let Some(cond_id) = cond {
             if let Some(IrExpr::Binary(op, left, right)) = self.module.exprs.get(cond_id.0) {
                 match op {
                     BinaryOp::Lt | BinaryOp::Le => {
+                        if let Some(IrExpr::Var(name)) = self.module.exprs.get(right.0) {
+                            if name == "t" || name == "tc" || name == "tests" || name == "test_cases" {
+                                is_testcase_driver = true;
+                            }
+                        }
                         bound_var = self.extract_var_from_expr(*right);
                     }
                     BinaryOp::Gt | BinaryOp::Ge => {
+                        if let Some(IrExpr::Var(name)) = self.module.exprs.get(left.0) {
+                            if name == "t" || name == "tc" || name == "tests" || name == "test_cases" {
+                                is_testcase_driver = true;
+                            }
+                        }
                         bound_var = self.extract_var_from_expr(*left);
                     }
                     _ => {}
@@ -179,7 +190,9 @@ impl<'a> LoopAnalyzer<'a> {
             }
         }
 
-        let bound = if is_geometric || is_halving {
+        let bound = if is_testcase_driver {
+            LoopBound::Constant(1)
+        } else if is_geometric || is_halving {
             LoopBound::Logarithmic(bound_var)
         } else {
             LoopBound::Linear(bound_var)
@@ -195,6 +208,13 @@ impl<'a> LoopAnalyzer<'a> {
 
     fn analyze_while_loop(&self, cond: ExprId, body: BlockId) -> ComplexityExpr {
         let body_comp = self.analyze_block(body);
+
+        // Check for multi-testcase while loop driver: while(t--) or while(t > 0)
+        if let Some(IrExpr::Var(name)) = self.module.exprs.get(cond.0) {
+            if name == "t" || name == "tc" || name == "tests" || name == "test_cases" {
+                return body_comp;
+            }
+        }
 
         // Check for lowbit pattern: while (x > 0) { ... x -= x & -x; }
         if self.is_lowbit_loop(body) {

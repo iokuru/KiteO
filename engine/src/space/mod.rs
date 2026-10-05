@@ -50,11 +50,17 @@ impl SpaceAnalyzer {
             );
         }
 
+        let body = if let Some(idx) = source.find('{') {
+            &source[idx..]
+        } else {
+            source
+        };
+
         // 3. Dynamic auxiliary arrays / recursion
-        if source.contains("vector<")
-            || source.contains("new int[")
-            || source.contains("new long[")
-            || source.contains("new boolean[")
+        if body.contains("vector<")
+            || body.contains("new int[")
+            || body.contains("new long[")
+            || body.contains("new boolean[")
         {
             return ComplexityExpr::var(DimensionVar::N);
         }

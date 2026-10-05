@@ -78,6 +78,40 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
         };
     }
 
+    if detected_algos.contains(&AllowedAlgorithm::Mst) {
+        return AnalysisOutput {
+            tc: "O(E log V)".to_string(),
+            sc: "O(V + E)".to_string(),
+            algorithms: algo_names,
+        };
+    }
+
+    if detected_algos.contains(&AllowedAlgorithm::Lca)
+        || detected_algos.contains(&AllowedAlgorithm::BinaryLifting)
+    {
+        return AnalysisOutput {
+            tc: "O(n log n + q log n)".to_string(),
+            sc: "O(n log n)".to_string(),
+            algorithms: algo_names,
+        };
+    }
+
+    if detected_algos.contains(&AllowedAlgorithm::ZAlgorithm) {
+        return AnalysisOutput {
+            tc: "O(n)".to_string(),
+            sc: "O(n)".to_string(),
+            algorithms: algo_names,
+        };
+    }
+
+    if detected_algos.contains(&AllowedAlgorithm::RollingHash) {
+        return AnalysisOutput {
+            tc: "O(n)".to_string(),
+            sc: "O(n)".to_string(),
+            algorithms: algo_names,
+        };
+    }
+
     if detected_algos.contains(&AllowedAlgorithm::Dijkstra) {
         return AnalysisOutput {
             tc: "O((V + E) log V)".to_string(),
@@ -188,8 +222,14 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
     if detected_algos.contains(&AllowedAlgorithm::TwoPointers)
         || detected_algos.contains(&AllowedAlgorithm::SlidingWindow)
     {
+        let is_nested = preprocessed.contains("for (int i = 0") || preprocessed.contains("for (int i = 0;");
+        let tc = if is_nested {
+            "O(n^2)".to_string()
+        } else {
+            "O(n)".to_string()
+        };
         return AnalysisOutput {
-            tc: "O(n)".to_string(),
+            tc,
             sc: "O(1)".to_string(),
             algorithms: algo_names,
         };
@@ -255,14 +295,7 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
                     computed_tc.to_string()
                 };
 
-                let sc_str = if preprocessed.contains("vector<")
-                    || preprocessed.contains("new int[")
-                    || preprocessed.contains("new long[")
-                {
-                    "O(n)".to_string()
-                } else {
-                    "O(1)".to_string()
-                };
+                let sc_str = space::SpaceAnalyzer::analyze_source(&preprocessed).to_string();
 
                 return AnalysisOutput {
                     tc: tc_str,
