@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Two Sum - LeetCode</title>
+</head>
+<body>
+  <div id="__next">
+    <div class="description__24qC">
+      <div data-track-load="description_content" class="content__u3I1">
+        <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.</p>
+        <p>Constraints:</p>
+        <ul>
+          <li><code>2 &lt;= nums.length &lt;= 10^4</code></li>
+          <li><code>-10^9 &lt;= nums[i] &lt;= 10^9</code></li>
+          <li><code>-10^9 &lt;= target &lt;= 10^9</code></li>
+          <li>Only one valid answer exists.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="editor-container">
+      <div class="lang-select">
+        <button id="headlessui-listbox-button-1">C++</button>
+      </div>
+      <div class="monaco-editor">
+        <div class="overflow-guard">
+          <div class="monaco-scrollable-element">
+            <div class="lines-content">
+              <div class="view-lines">
+                <div class="view-line"><span>class Solution {</span></div>
+                <div class="view-line"><span>public:</span></div>
+                <div class="view-line"><span>    vector&lt;int&gt; twoSum(vector&lt;int&gt;&amp; nums, int target) {</span></div>
+                <div class="view-line"><span>        unordered_map&lt;int, int&gt; mp;</span></div>
+                <div class="view-line"><span>        for (int i = 0; i &lt; (int)nums.size(); i++) {</span></div>
+                <div class="view-line"><span>            int comp = target - nums[i];</span></div>
+                <div class="view-line"><span>            if (mp.count(comp)) return {mp[comp], i};</span></div>
+                <div class="view-line"><span>            mp[nums[i]] = i;</span></div>
+                <div class="view-line"><span>        }</span></div>
+                <div class="view-line"><span>        return {};</span></div>
+                <div class="view-line"><span>    }</span></div>
+                <div class="view-line"><span>};</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <textarea class="monaco-mouse-cursor-text" style="position: absolute; top: -10000px;"></textarea>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

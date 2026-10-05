@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Problem - 4A - Codeforces</title>
+  <style>
+    .ace_editor { height: 300px; width: 600px; }
+    .ace_line { height: 19px; }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <a href="/problemset">Problemset</a>
+  </div>
+  <div class="problem-statement">
+    <div class="header">
+      <div class="title">A. Watermelon</div>
+      <div class="time-limit"><div class="property-title">time limit per test</div>1 second</div>
+      <div class="memory-limit"><div class="property-title">memory limit per test</div>64 megabytes</div>
+    </div>
+    <div class="input-specification">
+      <p>The first (and the only) input line contains integer number <i>w</i> (1 &le; <i>w</i> &le; 100).</p>
+    </div>
+  </div>
+  <form id="submitForm">
+    <select name="programTypeId">
+      <option value="54" selected>GNU G++20 11.2.0 (64 bit, winlibs)</option>
+      <option value="60">Java 17 64bit</option>
+    </select>
+    <div class="ace_editor" id="editor">
+      <div class="ace_scroller">
+        <div class="ace_content">
+          <div class="ace_layer ace_text-layer">
+            <div class="ace_line">#include &lt;iostream&gt;</div>
+            <div class="ace_line">using namespace std;</div>
+            <div class="ace_line">int main() {</div>
+            <div class="ace_line">    int w; cin &gt;&gt; w;</div>
+            <div class="ace_line">    if (w &gt; 2 &amp;&amp; w % 2 == 0) cout &lt;&lt; "YES\n";</div>
+            <div class="ace_line">    else cout &lt;&lt; "NO\n";</div>
+            <div class="ace_line">    return 0;</div>
+            <div class="ace_line">}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <textarea id="sourceCodeTextarea" style="display:none;">#include <iostream>
+using namespace std;
+int main() {
+    int w; cin >> w;
+    if (w > 2 && w % 2 == 0) cout << "YES\n";
+    else cout << "NO\n";
+    return 0;
+}</textarea>
+    <button type="submit" id="singlePageSubmitButton">Submit</button>
+  </form>
+</body>
+</html>
