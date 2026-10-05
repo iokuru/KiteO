@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  engine-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+
+      - name: Rustfmt Check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy Lint
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Native Cargo Tests
+        run: cargo test --workspace
+
+      - name: WASM Compilation Check
+        run: cargo check -p kiteo-engine --target wasm32-unknown-unknown
+
+  extension-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Extension Test and Build
+        run: |
+          if [ -d "extension" ] && [ -f "extension/package.json" ]; then
+            cd extension
+            npm ci || npm install
+            npm run build
+          else
+            echo "Extension directory not yet initialized"
+          fi
