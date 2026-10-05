@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "KiteO",
+  "version": "0.1.0",
+  "description": "Local static complexity analyzer for competitive programming",
+  "permissions": [
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "KiteO Complexity Analyzer"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://codeforces.com/*",
+        "*://leetcode.com/*",
+        "*://www.codechef.com/*",
+        "*://atcoder.jp/*",
+        "*://www.hackerrank.com/*",
+        "*://www.geeksforgeeks.org/*",
+        "*://www.hackerearth.com/*",
+        "*://cses.fi/*",
+        "*://www.onlinegdb.com/*",
+        "*://www.jdoodle.com/*",
+        "*://www.programiz.com/*",
+        "*://replit.com/*"
+      ],
+      "js": ["src/content/index.ts"]
+    }
+  ]
+}
