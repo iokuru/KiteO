@@ -294,6 +294,7 @@ pub fn simplify(expr: &ComplexityExpr) -> ComplexityExpr {
                 .map(|m| m.to_expr())
                 .collect();
             all_exprs.extend(non_monomials);
+            all_exprs.sort_by(canonical_expr_cmp);
             all_exprs.dedup();
 
             if all_exprs.is_empty() {
@@ -347,3 +348,15 @@ fn expr_to_monomial(expr: &ComplexityExpr) -> Option<Monomial> {
         _ => None,
     }
 }
+
+fn canonical_expr_cmp(a: &ComplexityExpr, b: &ComplexityExpr) -> std::cmp::Ordering {
+    let ma = expr_to_monomial(a);
+    let mb = expr_to_monomial(b);
+    match (ma, mb) {
+        (Some(ma), Some(mb)) => ma.cmp(&mb),
+        (Some(_), None) => std::cmp::Ordering::Less,
+        (None, Some(_)) => std::cmp::Ordering::Greater,
+        (None, None) => a.format_inner().cmp(&b.format_inner()),
+    }
+}
+

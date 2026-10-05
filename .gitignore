@@ -8,3 +8,7 @@ pkg/
 .idea/
 coverage/
 benchmark/reports/
+*.proptest-regressions
+test-results/
+playwright-report/
+
