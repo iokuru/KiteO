@@ -1,0 +1,5 @@
+---
+source: engine/tests/ir_snapshots.rs
+expression: cpp_ir.stmts.len()
+---
+4

@@ -1,0 +1,5 @@
+---
+source: engine/tests/ir_snapshots.rs
+expression: java_ir.stmts.len()
+---
+4
