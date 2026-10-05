@@ -27,6 +27,17 @@ jobs:
       - name: Native Cargo Tests
         run: cargo test --workspace
 
+      - name: Benchmark Runner (152/152 Corpus Verification)
+        run: cargo run -p kiteo-runner
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Empirical Scaling Validator
+        run: python benchmark/empirical/validator.py
+
       - name: WASM Compilation Check
         run: cargo check -p kiteo-engine --target wasm32-unknown-unknown
 
@@ -40,12 +51,25 @@ jobs:
         with:
           node-version: 20
 
-      - name: Extension Test and Build
+      - name: Extension Install & Build
         run: |
-          if [ -d "extension" ] && [ -f "extension/package.json" ]; then
-            cd extension
-            npm ci || npm install
-            npm run build
-          else
-            echo "Extension directory not yet initialized"
-          fi
+          cd extension
+          npm install
+          npm run build
+
+  website-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Website Install & Build
+        run: |
+          cd website
+          npm install
+          npm run build
+
