@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KiteO WebAssembly Static Analyzer Test Page</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #090d16;
+      color: #f1f5f9;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .preset-btn {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .preset-btn:hover {
+      background: #334155;
+      color: #fff;
+    }
+    .editor-box {
+      margin-bottom: 16px;
+    }
+    select, textarea, button {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    select {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      padding: 6px 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%;
+      height: 240px;
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 12px;
+      box-sizing: border-box;
+      font-size: 13px;
+      resize: vertical;
+    }
+    .analyze-btn {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .analyze-btn:hover {
+      background: #0369a1;
+    }
+    .results {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .card-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .tc-val { color: #38bdf8; }
+    .sc-val { color: #4ade80; }
+    .algo-val { color: #facc15; }
+    #status {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #a855f7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>KiteO Local Static Analyzer</h1>
+    <div class="subtitle">Deterministic Local Static Complexity & Algorithm Classifier (WebAssembly)</div>
+
+    <div class="presets">
+      <button class="preset-btn" data-lang="cpp" data-type="linear">Linear Loop (C++)</button>
+      <button class="preset-btn" data-lang="cpp" data-type="nested">Nested Quadratic (C++)</button>
+      <button class="preset-btn" data-lang="cpp" data-type="two_pointers">Two Pointers (C++)</button>
+      <button class="preset-btn" data-lang="cpp" data-type="segtree">Segment Tree (C++)</button>
+      <button class="preset-btn" data-lang="java" data-type="dijkstra">Dijkstra (Java)</button>
+      <button class="preset-btn" data-lang="java" data-type="sieve">Sieve (Java)</button>
+    </div>
+
+    <div class="editor-box">
+      <label for="lang-select" style="font-size: 13px; color: #94a3b8; margin-right: 8px;">Language:</label>
+      <select id="lang-select">
+        <option value="cpp">C++</option>
+        <option value="java">Java</option>
+      </select>
+      <textarea id="code-input" spellcheck="false" placeholder="Paste C++ or Java code here..."></textarea>
+      <button id="run-btn" class="analyze-btn">Analyze Locally (WASM)</button>
+      <span id="status"></span>
+    </div>
+
+    <div class="results">
+      <div class="card">
+        <div class="card-title">TIME COMPLEXITY (TC)</div>
+        <div id="tc-output" class="card-value tc-val">-</div>
+      </div>
+      <div class="card">
+        <div class="card-title">SPACE COMPLEXITY (SC)</div>
+        <div id="sc-output" class="card-value sc-val">-</div>
+      </div>
+      <div class="card">
+        <div class="card-title">ALGORITHM</div>
+        <div id="algo-output" class="card-value algo-val">-</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/test-page.ts"></script>
+</body>
+</html>
