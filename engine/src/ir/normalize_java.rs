@@ -1,17 +1,12 @@
-#[cfg(not(target_arch = "wasm32"))]
 use super::arena::{BlockId, ExprId, StmtId};
-#[cfg(not(target_arch = "wasm32"))]
 use super::ast::*;
-#[cfg(not(target_arch = "wasm32"))]
-use tree_sitter::Node;
+use crate::parser::AstNode;
 
-#[cfg(not(target_arch = "wasm32"))]
 pub struct JavaNormalizer<'a> {
     source: &'a [u8],
     module: IrModule,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl<'a> JavaNormalizer<'a> {
     pub fn new(source: &'a str) -> Self {
         Self {
@@ -20,36 +15,34 @@ impl<'a> JavaNormalizer<'a> {
         }
     }
 
-    pub fn normalize(mut self, root: Node<'a>) -> IrModule {
+    pub fn normalize(mut self, root: &'a AstNode) -> IrModule {
         self.visit_node(root);
         self.module
     }
 
-    fn text(&self, node: Node<'a>) -> String {
-        node.utf8_text(self.source).unwrap_or("").to_string()
+    fn text(&self, node: &AstNode) -> String {
+        node.text(self.source).to_string()
     }
 
-    fn visit_node(&mut self, node: Node<'a>) {
+    fn visit_node(&mut self, node: &'a AstNode) {
         match node.kind() {
             "method_declaration" => {
                 self.visit_method(node);
             }
             "class_declaration" | "program" => {
-                let mut cursor = node.walk();
-                for child in node.children(&mut cursor) {
+                for child in &node.children {
                     self.visit_node(child);
                 }
             }
             _ => {
-                let mut cursor = node.walk();
-                for child in node.children(&mut cursor) {
+                for child in &node.children {
                     self.visit_node(child);
                 }
             }
         }
     }
 
-    fn visit_method(&mut self, node: Node<'a>) {
+    fn visit_method(&mut self, node: &'a AstNode) {
         let name = node
             .child_by_field_name("name")
             .map(|d| self.text(d))
@@ -69,10 +62,9 @@ impl<'a> JavaNormalizer<'a> {
         });
     }
 
-    pub fn lower_block(&mut self, node: Node<'a>) -> BlockId {
+    pub fn lower_block(&mut self, node: &'a AstNode) -> BlockId {
         let mut stmts = Vec::new();
-        let mut cursor = node.walk();
-        for child in node.children(&mut cursor) {
+        for child in &node.children {
             if child.kind() == "{" || child.kind() == "}" || child.kind() == ";" {
                 continue;
             }
@@ -83,7 +75,7 @@ impl<'a> JavaNormalizer<'a> {
         self.module.alloc_block(IrBlock { stmts })
     }
 
-    pub fn lower_statement(&mut self, node: Node<'a>) -> Option<StmtId> {
+    pub fn lower_statement(&mut self, node: &'a AstNode) -> Option<StmtId> {
         match node.kind() {
             "block" => {
                 let block_id = self.lower_block(node);
@@ -97,8 +89,7 @@ impl<'a> JavaNormalizer<'a> {
                 Some(dummy_stmt)
             }
             "expression_statement" => {
-                let mut cursor = node.walk();
-                for child in node.children(&mut cursor) {
+                for child in &node.children {
                     if child.kind() != ";" {
                         return self.lower_statement(child);
                     }
@@ -192,9 +183,8 @@ impl<'a> JavaNormalizer<'a> {
                 }))
             }
             "return_statement" => {
-                let mut cursor = node.walk();
                 let mut ret_expr = None;
-                for child in node.children(&mut cursor) {
+                for child in &node.children {
                     if child.kind() != "return" && child.kind() != ";" {
                         ret_expr = Some(self.lower_expr(child));
                         break;
@@ -205,8 +195,7 @@ impl<'a> JavaNormalizer<'a> {
             "break_statement" => Some(self.module.alloc_stmt(IrStmt::Break)),
             "continue_statement" => Some(self.module.alloc_stmt(IrStmt::Continue)),
             "local_variable_declaration" => {
-                let mut cursor = node.walk();
-                for child in node.children(&mut cursor) {
+                for child in &node.children {
                     if child.kind() == "variable_declarator" {
                         let var_name = child
                             .child_by_field_name("name")
@@ -264,10 +253,9 @@ impl<'a> JavaNormalizer<'a> {
                 Some(self.module.alloc_stmt(IrStmt::Assign(left, right)))
             }
             "update_expression" => {
-                let mut cursor = node.walk();
                 let mut var_name = "var".to_string();
                 let mut op = "++".to_string();
-                for child in node.children(&mut cursor) {
+                for child in &node.children {
                     if child.kind() == "identifier" {
                         var_name = self.text(child);
                     } else if child.kind() == "++" || child.kind() == "--" {
@@ -291,7 +279,7 @@ impl<'a> JavaNormalizer<'a> {
         }
     }
 
-    pub fn lower_expr(&mut self, node: Node<'a>) -> ExprId {
+    pub fn lower_expr(&mut self, node: &'a AstNode) -> ExprId {
         match node.kind() {
             "decimal_integer_literal" | "integral_type" => {
                 let val = self.text(node).parse::<i64>().unwrap_or(0);
@@ -350,8 +338,7 @@ impl<'a> JavaNormalizer<'a> {
                 let args_node = node.child_by_field_name("arguments");
                 let mut args = Vec::new();
                 if let Some(args_list) = args_node {
-                    let mut cursor = args_list.walk();
-                    for child in args_list.children(&mut cursor) {
+                    for child in &args_list.children {
                         if child.kind() != "(" && child.kind() != ")" && child.kind() != "," {
                             args.push(self.lower_expr(child));
                         }

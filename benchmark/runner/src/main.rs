@@ -345,12 +345,55 @@ fn evaluate_corpus(corpus_file: &str, report_name: &str) {
     let _ = fs::write(report_filename, md);
 }
 
+#[derive(serde::Serialize)]
+struct RunnerJsonItem {
+    id: String,
+    tc: String,
+    sc: String,
+    algorithms: Vec<String>,
+}
+
+fn dump_json(corpus_file: &str) {
+    let path = Path::new(corpus_file);
+    let content = match fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(_) => {
+            let alt = format!("../{corpus_file}");
+            fs::read_to_string(&alt)
+                .unwrap_or_else(|_| panic!("Failed to locate corpus at {corpus_file}"))
+        }
+    };
+
+    let cases: Vec<BenchmarkCase> = serde_json::from_str(&content).expect("Invalid JSON corpus");
+    let mut results = Vec::new();
+    for case in &cases {
+        let out = analyze(&case.code, &case.language);
+        results.push(RunnerJsonItem {
+            id: case.id.clone(),
+            tc: out.tc,
+            sc: out.sc,
+            algorithms: out.algorithms,
+        });
+    }
+
+    println!("{}", serde_json::to_string(&results).unwrap());
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let is_json = args.iter().any(|a| a == "--json");
     let is_held_out = args.iter().any(|a| a == "--held-out" || a == "-h");
     let is_all = args.iter().any(|a| a == "--all");
 
-    if is_all {
+    let corpus_file = if is_held_out {
+        "benchmark/corpus/held_out.json"
+    } else {
+        "benchmark/corpus/snippets.json"
+    };
+
+    if is_json {
+        dump_json(corpus_file);
+    } else if is_all {
         evaluate_corpus(
             "benchmark/corpus/snippets.json",
             "Full Benchmark Corpus (152 Cases)",

@@ -16,7 +16,8 @@ fn test_cfg_detects_loop_cycle() {
     let mut parser = tree_sitter::Parser::new();
     parser.set_language(&tree_sitter_cpp::language()).unwrap();
     let tree = parser.parse(code, None).unwrap();
-    let ir = CppNormalizer::new(code).normalize(tree.root_node());
+    let ast = kiteo_engine::parser::tree_sitter_to_ast(tree.root_node());
+    let ir = CppNormalizer::new(code).normalize(&ast);
 
     let cfg = ControlFlowGraph::build(&ir);
     assert!(
@@ -37,7 +38,8 @@ fn test_callgraph_detects_recursion() {
     let mut parser = tree_sitter::Parser::new();
     parser.set_language(&tree_sitter_cpp::language()).unwrap();
     let tree = parser.parse(code, None).unwrap();
-    let ir = CppNormalizer::new(code).normalize(tree.root_node());
+    let ast = kiteo_engine::parser::tree_sitter_to_ast(tree.root_node());
+    let ir = CppNormalizer::new(code).normalize(&ast);
 
     let cg = CallGraph::build(&ir);
     assert!(

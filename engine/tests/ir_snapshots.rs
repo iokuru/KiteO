@@ -25,14 +25,16 @@ fn test_loop_ir_snapshot_cpp_vs_java() {
         .set_language(&tree_sitter_cpp::language())
         .unwrap();
     let cpp_tree = cpp_parser.parse(cpp_code, None).unwrap();
-    let cpp_ir = CppNormalizer::new(cpp_code).normalize(cpp_tree.root_node());
+    let cpp_ast = kiteo_engine::parser::tree_sitter_to_ast(cpp_tree.root_node());
+    let cpp_ir = CppNormalizer::new(cpp_code).normalize(&cpp_ast);
 
     let mut java_parser = tree_sitter::Parser::new();
     java_parser
         .set_language(&tree_sitter_java::language())
         .unwrap();
     let java_tree = java_parser.parse(java_code, None).unwrap();
-    let java_ir = JavaNormalizer::new(java_code).normalize(java_tree.root_node());
+    let java_ast = kiteo_engine::parser::tree_sitter_to_ast(java_tree.root_node());
+    let java_ir = JavaNormalizer::new(java_code).normalize(&java_ast);
 
     assert_eq!(cpp_ir.functions.len(), 1);
     assert_eq!(java_ir.functions.len(), 1);
@@ -75,14 +77,16 @@ fn test_condition_and_call_ir_snapshot() {
         .set_language(&tree_sitter_cpp::language())
         .unwrap();
     let cpp_tree = cpp_parser.parse(cpp_code, None).unwrap();
-    let cpp_ir = CppNormalizer::new(cpp_code).normalize(cpp_tree.root_node());
+    let cpp_ast = kiteo_engine::parser::tree_sitter_to_ast(cpp_tree.root_node());
+    let cpp_ir = CppNormalizer::new(cpp_code).normalize(&cpp_ast);
 
     let mut java_parser = tree_sitter::Parser::new();
     java_parser
         .set_language(&tree_sitter_java::language())
         .unwrap();
     let java_tree = java_parser.parse(java_code, None).unwrap();
-    let java_ir = JavaNormalizer::new(java_code).normalize(java_tree.root_node());
+    let java_ast = kiteo_engine::parser::tree_sitter_to_ast(java_tree.root_node());
+    let java_ir = JavaNormalizer::new(java_code).normalize(&java_ast);
 
     let has_if_cpp = cpp_ir
         .stmts

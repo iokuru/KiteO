@@ -48,15 +48,63 @@ jobs:
         run: cargo check -p kiteo-engine --target wasm32-unknown-unknown
 
 
-  extension-build:
+  parser-parity:
+    name: Parser Parity (Native vs WebAssembly)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Install Extension Dependencies
+        run: |
+          cd extension
+          npm install
+
+      - name: Build WebAssembly Package
+        run: |
+          cd engine
+          wasm-pack build --target web --out-dir ../extension/src/wasm/pkg
+
+      - name: Run Parser Parity Test (Standard Corpus - 152 Cases)
+        run: node benchmark/parity_test.mjs
+
+      - name: Run Parser Parity Test (Held-Out Corpus - 70 Cases)
+        run: node benchmark/parity_test.mjs --held-out
+
+  extension-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build WebAssembly Package
+        run: |
+          cd engine
+          wasm-pack build --target web --out-dir ../extension/src/wasm/pkg
 
       - name: Extension Install & Build
         run: |

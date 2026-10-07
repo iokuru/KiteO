@@ -32,5 +32,11 @@
       ],
       "js": ["src/content/index.ts"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["*.wasm", "assets/*"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

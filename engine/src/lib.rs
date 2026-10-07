@@ -17,8 +17,8 @@ pub mod space;
 pub mod wasm;
 
 use algorithms::{AlgorithmDetector, AllowedAlgorithm};
-#[cfg(not(target_arch = "wasm32"))]
 use loops::LoopAnalyzer;
+use parser::AstNode;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct AnalysisOutput {
@@ -37,7 +37,7 @@ impl Default for AnalysisOutput {
     }
 }
 
-pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
+pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
     let preprocessed = preprocessor::preprocess(code);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
     let algo_names: Vec<String> = detected_algos
@@ -246,7 +246,6 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
         };
     }
 
-    // Check simple linear recursion pattern: f(n - 1)
     if (preprocessed.contains("factorial(n - 1)") || preprocessed.contains("factorial(n-1)"))
         && (preprocessed.contains("factorial(") || preprocessed.contains("factorial ("))
     {
@@ -257,128 +256,152 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
         };
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        let mut parser = tree_sitter::Parser::new();
-        let language = match lang {
-            "cpp" => tree_sitter_cpp::language(),
-            "java" => tree_sitter_java::language(),
-            _ => return AnalysisOutput::default(),
-        };
+    let ir = match lang {
+        "cpp" => ir::CppNormalizer::new(&preprocessed).normalize(ast),
+        "java" => ir::JavaNormalizer::new(&preprocessed).normalize(ast),
+        _ => ir::ast::IrModule::new(),
+    };
 
-        if parser.set_language(&language).is_ok() {
-            if let Some(tree) = parser.parse(&preprocessed, None) {
-                let ir = match lang {
-                    "cpp" => ir::CppNormalizer::new(&preprocessed).normalize(tree.root_node()),
-                    "java" => ir::JavaNormalizer::new(&preprocessed).normalize(tree.root_node()),
-                    _ => ir::ast::IrModule::new(),
-                };
+    let analyzer = LoopAnalyzer::new(&ir);
+    let computed_tc = analyzer.analyze_module();
 
-                let analyzer = LoopAnalyzer::new(&ir);
-                let computed_tc = analyzer.analyze_module();
-
-                let tc_str = if computed_tc.is_unknown() {
-                    "Unknown".to_string()
-                } else if computed_tc.is_const_one() {
-                    // Check if there was any loop at all
-                    let has_loops = ir.stmts.iter().any(|s| {
-                        matches!(
-                            s,
-                            ir::ast::IrStmt::For { .. } | ir::ast::IrStmt::While { .. }
-                        )
-                    });
-                    if has_loops {
-                        "O(n)".to_string()
-                    } else {
-                        "O(1)".to_string()
-                    }
-                } else {
-                    computed_tc.to_string()
-                };
-
-                let sc_str = space::SpaceAnalyzer::analyze_source(&preprocessed).to_string();
-
-                return AnalysisOutput {
-                    tc: tc_str,
-                    sc: sc_str,
-                    algorithms: algo_names,
-                };
-            }
-        }
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    {
-        let mut loop_depth = 0;
-        let mut max_depth = 0;
-        let mut has_halving = false;
-        let mut has_harmonic = false;
-
-        for line in preprocessed.lines() {
-            let trimmed = line.trim();
-            if trimmed.starts_with("for ")
-                || trimmed.starts_with("for(")
-                || trimmed.starts_with("while ")
-                || trimmed.starts_with("while(")
-            {
-                if trimmed.contains("/= 2")
-                    || trimmed.contains("/=2")
-                    || trimmed.contains("*= 2")
-                    || trimmed.contains("*=2")
-                    || trimmed.contains(">>= 1")
-                {
-                    has_halving = true;
-                }
-                if trimmed.contains("+= i") || trimmed.contains("+=i") {
-                    has_harmonic = true;
-                }
-                loop_depth += 1;
-                if loop_depth > max_depth {
-                    max_depth = loop_depth;
-                }
-            }
-            if trimmed.contains('}') && loop_depth > 0 {
-                loop_depth -= 1;
-            }
-        }
-
-        let tc_str = if has_harmonic {
-            "O(n log n)".to_string()
-        } else if has_halving && max_depth == 1 {
-            "O(log n)".to_string()
-        } else if max_depth == 1 {
+    let tc_str = if computed_tc.is_unknown() {
+        "Unknown".to_string()
+    } else if computed_tc.is_const_one() {
+        let has_loops = ir.stmts.iter().any(|s| {
+            matches!(
+                s,
+                ir::ast::IrStmt::For { .. } | ir::ast::IrStmt::While { .. }
+            )
+        });
+        if has_loops {
             "O(n)".to_string()
-        } else if max_depth == 2 {
-            "O(n^2)".to_string()
-        } else if max_depth == 3 {
-            "O(n^3)".to_string()
-        } else if max_depth > 3 {
-            format!("O(n^{max_depth})")
         } else {
             "O(1)".to_string()
-        };
+        }
+    } else {
+        computed_tc.to_string()
+    };
 
-        let sc_str = space::SpaceAnalyzer::analyze_source(&preprocessed).to_string();
+    let sc_str = space::SpaceAnalyzer::analyze_source(&preprocessed).to_string();
 
-        return AnalysisOutput {
-            tc: tc_str,
-            sc: sc_str,
-            algorithms: algo_names,
-        };
-    }
-
-    let _ = lang;
     AnalysisOutput {
-        tc: "Unknown".to_string(),
-        sc: "Unknown".to_string(),
+        tc: tc_str,
+        sc: sc_str,
         algorithms: algo_names,
     }
+}
+
+pub fn analyze_heuristic(code: &str, _lang: &str) -> AnalysisOutput {
+    let preprocessed = preprocessor::preprocess(code);
+    let detected_algos = AlgorithmDetector::detect(&preprocessed);
+    let algo_names: Vec<String> = detected_algos
+        .iter()
+        .map(|a| a.as_str().to_string())
+        .collect();
+
+    let mut loop_depth = 0;
+    let mut max_depth = 0;
+    let mut has_halving = false;
+    let mut has_harmonic = false;
+
+    for line in preprocessed.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("for ")
+            || trimmed.starts_with("for(")
+            || trimmed.starts_with("while ")
+            || trimmed.starts_with("while(")
+        {
+            if trimmed.contains("/= 2")
+                || trimmed.contains("/=2")
+                || trimmed.contains("*= 2")
+                || trimmed.contains("*=2")
+                || trimmed.contains(">>= 1")
+            {
+                has_halving = true;
+            }
+            if trimmed.contains("+= i") || trimmed.contains("+=i") {
+                has_harmonic = true;
+            }
+            loop_depth += 1;
+            if loop_depth > max_depth {
+                max_depth = loop_depth;
+            }
+        }
+        if trimmed.contains('}') && loop_depth > 0 {
+            loop_depth -= 1;
+        }
+    }
+
+    let tc_str = if has_harmonic {
+        "O(n log n)".to_string()
+    } else if has_halving && max_depth == 1 {
+        "O(log n)".to_string()
+    } else if max_depth == 1 {
+        "O(n)".to_string()
+    } else if max_depth == 2 {
+        "O(n^2)".to_string()
+    } else if max_depth == 3 {
+        "O(n^3)".to_string()
+    } else if max_depth > 3 {
+        format!("O(n^{max_depth})")
+    } else {
+        "O(1)".to_string()
+    };
+
+    let sc_str = space::SpaceAnalyzer::analyze_source(&preprocessed).to_string();
+
+    AnalysisOutput {
+        tc: tc_str,
+        sc: sc_str,
+        algorithms: algo_names,
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
+    let preprocessed = preprocessor::preprocess(code);
+    let mut parser = tree_sitter::Parser::new();
+    let language = match lang {
+        "cpp" => tree_sitter_cpp::language(),
+        "java" => tree_sitter_java::language(),
+        _ => return analyze_heuristic(code, lang),
+    };
+
+    if parser.set_language(&language).is_ok() {
+        if let Some(tree) = parser.parse(&preprocessed, None) {
+            let ast = parser::tree_sitter_to_ast(tree.root_node());
+            return analyze_ast(code, lang, &ast);
+        }
+    }
+
+    analyze_heuristic(code, lang)
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
+    analyze_heuristic(code, lang)
 }
 
 #[wasm_bindgen]
 pub fn analyze_wasm(code: &str, lang: &str) -> String {
     let result = analyze(code, lang);
     serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string())
+}
+
+#[wasm_bindgen]
+pub fn analyze_wasm_with_ast(code: &str, lang: &str, ast_json: &str) -> String {
+    if let Ok(ast) = serde_json::from_str::<AstNode>(ast_json) {
+        let result = analyze_ast(code, lang, &ast);
+        serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string())
+    } else {
+        analyze_wasm(code, lang)
+    }
+}
+
+#[wasm_bindgen]
+pub fn preprocess_wasm(code: &str) -> String {
+    preprocessor::preprocess(code)
 }
 
 #[cfg(test)]

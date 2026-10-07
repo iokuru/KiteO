@@ -8,6 +8,8 @@
     "build": "vite build",
     "package": "python scripts/package.py",
     "test:e2e": "playwright test",
+    "test:parity": "node ../benchmark/parity_test.mjs",
+    "test:parity:heldout": "node ../benchmark/parity_test.mjs --held-out",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -21,6 +23,7 @@
     "@types/archiver": "^8.0.0",
     "@types/webextension-polyfill": "^0.10.7",
     "archiver": "^8.0.0",
+    "tree-sitter-wasms": "^0.1.13",
     "typescript": "^5.4.0",
     "vite": "^5.2.0"
   }
