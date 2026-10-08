@@ -265,14 +265,15 @@ fn canonical_from_detected(
 
 pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
     let preprocessed = preprocessor::preprocess(code);
+    let raw_algos = AlgorithmDetector::detect_raw(&preprocessed);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
     let algo_names: Vec<String> = detected_algos
         .iter()
         .map(|a| a.as_str().to_string())
         .collect();
 
-    // Check specific known canonical structures first
-    if let Some(canonical) = canonical_from_detected(&detected_algos, &algo_names, &preprocessed) {
+    // Check specific known canonical structures first for TC/SC
+    if let Some(canonical) = canonical_from_detected(&raw_algos, &algo_names, &preprocessed) {
         return canonical;
     }
 
@@ -317,13 +318,14 @@ pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
 
 pub fn analyze_heuristic(code: &str, _lang: &str) -> AnalysisOutput {
     let preprocessed = preprocessor::preprocess(code);
+    let raw_algos = AlgorithmDetector::detect_raw(&preprocessed);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
     let algo_names: Vec<String> = detected_algos
         .iter()
         .map(|a| a.as_str().to_string())
         .collect();
 
-    if let Some(canonical) = canonical_from_detected(&detected_algos, &algo_names, &preprocessed) {
+    if let Some(canonical) = canonical_from_detected(&raw_algos, &algo_names, &preprocessed) {
         return canonical;
     }
 

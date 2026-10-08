@@ -1,32 +1,6 @@
 export type SupportedLanguage = 'cpp' | 'java';
 
-export type AllowedAlgorithm =
-  | 'Binary Search'
-  | 'Binary Search on Answer'
-  | 'Two Pointers'
-  | 'Sliding Window'
-  | 'Prefix Sum'
-  | 'Sorting'
-  | 'BFS'
-  | 'DFS'
-  | 'Topological Sort'
-  | 'DSU'
-  | 'Dijkstra'
-  | 'MST'
-  | 'Fenwick Tree'
-  | 'Segment Tree'
-  | 'Sparse Table'
-  | 'Monotonic Stack'
-  | 'Monotonic Queue'
-  | 'Binary Lifting'
-  | 'LCA'
-  | 'Tree DP'
-  | 'Bitmask DP'
-  | 'Sieve'
-  | 'KMP'
-  | 'Z Algorithm'
-  | 'Rolling Hash'
-  | 'Trie';
+export type AllowedAlgorithm = string;
 
 export type ConstraintStatus = 'Within limits' | 'Likely too slow' | "Can't tell";
 

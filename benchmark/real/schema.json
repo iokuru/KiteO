@@ -67,7 +67,7 @@
       "items": {
         "type": "string"
       },
-      "description": "List of canonical labels from the closed 39-algorithm catalog (max 3)"
+      "description": "List of canonical labels from the closed canonical algorithm catalog (max 3)"
     },
     "variables": {
       "type": "array",

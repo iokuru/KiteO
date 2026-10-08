@@ -10,7 +10,8 @@ fn test_two_pointers_positive_and_negative() {
         else r--;
     }
     "#;
-    assert!(AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::TwoPointers));
+    assert!(AlgorithmDetector::detect_raw(positive).contains(&AllowedAlgorithm::TwoPointers));
+    assert!(!AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::TwoPointers));
 
     let negative_nested = r#"
     for (int i = 0; i < n; i++) {
@@ -19,7 +20,7 @@ fn test_two_pointers_positive_and_negative() {
         }
     }
     "#;
-    assert!(!AlgorithmDetector::detect(negative_nested).contains(&AllowedAlgorithm::TwoPointers));
+    assert!(!AlgorithmDetector::detect_raw(negative_nested).contains(&AllowedAlgorithm::TwoPointers));
 }
 
 #[test]
@@ -32,7 +33,8 @@ fn test_sieve_positive_and_negative() {
         }
     }
     "#;
-    assert!(AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::Sieve));
+    assert!(AlgorithmDetector::detect_raw(positive).contains(&AllowedAlgorithm::Sieve));
+    assert!(!AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::Sieve));
 
     let negative_factor_count = r#"
     int divisors = 0;
@@ -40,7 +42,7 @@ fn test_sieve_positive_and_negative() {
         if (n % i == 0) divisors++;
     }
     "#;
-    assert!(!AlgorithmDetector::detect(negative_factor_count).contains(&AllowedAlgorithm::Sieve));
+    assert!(!AlgorithmDetector::detect_raw(negative_factor_count).contains(&AllowedAlgorithm::Sieve));
 }
 
 #[test]
@@ -58,7 +60,8 @@ fn test_dsu_positive_and_negative() {
         }
     };
     "#;
-    assert!(AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::Dsu));
+    assert!(AlgorithmDetector::detect_raw(positive).contains(&AllowedAlgorithm::Dsu));
+    assert!(!AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::Dsu));
 
     let negative_parent_pointer = r#"
     struct TreeNode {
@@ -66,7 +69,7 @@ fn test_dsu_positive_and_negative() {
         int val;
     };
     "#;
-    assert!(!AlgorithmDetector::detect(negative_parent_pointer).contains(&AllowedAlgorithm::Dsu));
+    assert!(!AlgorithmDetector::detect_raw(negative_parent_pointer).contains(&AllowedAlgorithm::Dsu));
 }
 
 #[test]
@@ -80,7 +83,8 @@ fn test_monotonic_stack_positive_and_negative() {
         st.push(i);
     }
     "#;
-    assert!(AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::MonotonicStack));
+    assert!(AlgorithmDetector::detect_raw(positive).contains(&AllowedAlgorithm::MonotonicStack));
+    assert!(!AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::MonotonicStack));
 
     let negative_plain_stack = r#"
     stack<char> st;
@@ -89,7 +93,7 @@ fn test_monotonic_stack_positive_and_negative() {
         else if (!st.empty()) st.pop();
     }
     "#;
-    assert!(!AlgorithmDetector::detect(negative_plain_stack)
+    assert!(!AlgorithmDetector::detect_raw(negative_plain_stack)
         .contains(&AllowedAlgorithm::MonotonicStack));
 }
 
@@ -111,12 +115,13 @@ fn test_dijkstra_positive_and_negative() {
         }
     }
     "#;
-    assert!(AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::Dijkstra));
+    assert!(AlgorithmDetector::detect_raw(positive).contains(&AllowedAlgorithm::Dijkstra));
+    assert!(!AlgorithmDetector::detect(positive).contains(&AllowedAlgorithm::Dijkstra));
 
     let negative_max_heap = r#"
     priority_queue<int> pq;
     for (int x : nums) pq.push(x);
     int top = pq.top();
     "#;
-    assert!(!AlgorithmDetector::detect(negative_max_heap).contains(&AllowedAlgorithm::Dijkstra));
+    assert!(!AlgorithmDetector::detect_raw(negative_max_heap).contains(&AllowedAlgorithm::Dijkstra));
 }

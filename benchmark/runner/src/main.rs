@@ -712,6 +712,68 @@ fn evaluate_real_split(manifest_cases: &[RealManifestCase], target_split: &str, 
         &label_confusion,
         &failure_counts,
     );
+
+    // Generate benchmark/reports/detector_status.json per Section 42
+    let total_cases = evaluated_cases.len();
+    let mut status_report = Vec::new();
+    for (label, conf) in &label_confusion {
+        let tp = conf.tp;
+        let fp = conf.fp;
+        let fn_count = conf.fn_count;
+        let tn = total_cases.saturating_sub(tp + fp + fn_count);
+        let positive_count = tp + fn_count;
+        let negative_count = fp + tn;
+        let precision = if tp + fp == 0 {
+            1.0
+        } else {
+            tp as f64 / (tp + fp) as f64
+        };
+        let recall = if positive_count == 0 {
+            0.0
+        } else {
+            tp as f64 / positive_count as f64
+        };
+        // Status gate: precision >= 95%, positive_count >= 10, negative_count >= 10
+        let status = if precision >= 0.95 && positive_count >= 10 && negative_count >= 10 {
+            "approved"
+        } else {
+            "candidate"
+        };
+
+        status_report.push(DetectorStatusReportItem {
+            label: label.clone(),
+            precision,
+            recall,
+            tp,
+            fp,
+            tn,
+            fn_count,
+            positive_count,
+            negative_count,
+            status: status.to_string(),
+        });
+    }
+
+    let report_path = "benchmark/reports/detector_status.json";
+    let _ = fs::create_dir_all("benchmark/reports");
+    if let Ok(json_str) = serde_json::to_string_pretty(&status_report) {
+        let _ = fs::write(report_path, json_str);
+    }
+}
+
+#[derive(serde::Serialize)]
+struct DetectorStatusReportItem {
+    label: String,
+    precision: f64,
+    recall: f64,
+    tp: usize,
+    fp: usize,
+    tn: usize,
+    #[serde(rename = "fn")]
+    fn_count: usize,
+    positive_count: usize,
+    negative_count: usize,
+    status: String,
 }
 
 #[derive(serde::Serialize)]

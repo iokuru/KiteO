@@ -1,0 +1,16 @@
+[
+  {
+    "case_id": "hybrid_range_query_01",
+    "source_file": "benchmark/real/sources/placeholder_09.cpp",
+    "disputed_labels": ["Segment Tree", "Prefix Sum"],
+    "notes": "Queries are partially prefix-based and partially point-update range sum. Determine whether Segment Tree fully suppresses Prefix Sum or whether both techniques are central.",
+    "status": "needs_human_review"
+  },
+  {
+    "case_id": "two_pointers_sliding_window_02",
+    "source_file": "benchmark/real/sources/placeholder_02.cpp",
+    "disputed_labels": ["Two Pointers", "Sliding Window"],
+    "notes": "Pointers move monotonically but window condition depends on external set size. Determine if dynamic window state qualifies for Sliding Window suppression of Two Pointers.",
+    "status": "needs_human_review"
+  }
+]

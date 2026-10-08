@@ -2,56 +2,106 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum AllowedAlgorithm {
-    // 39 canonical algorithms ordered by priority sequence
-    SegmentTree,
-    FenwickTree,
-    SparseTable,
-    Dijkstra,
-    Mst,
-    StronglyConnectedComponents,
-    TopologicalSort,
+    // Arrays, Hashing and Searching
+    TwoPointers,
+    FastAndSlowPointers,
+    SlidingWindow,
+    PrefixSum,
+    DifferenceArray,
+    BinarySearch,
+    BinarySearchOnAnswer,
+    Sorting,
+    HashMap,
+    HashSet,
+    FrequencyCounting,
+    KadanesAlgorithm,
+    Intervals,
+    MatrixGrid,
+    CoordinateCompression,
+
+    // Stack, Queue and Heap
+    Stack,
+    MonotonicStack,
+    Queue,
+    MonotonicQueue,
+    HeapPriorityQueue,
+    TopK,
+    TwoHeaps,
+
+    // Linked Lists
+    LinkedList,
+    LinkedListReversal,
+    CycleDetection,
+    MergeLinkedLists,
+
+    // Trees
+    Bfs,
+    Dfs,
+    BinarySearchTree,
+    Trie,
     Lca,
     BinaryLifting,
-    Trie,
+    TreeDp,
+
+    // Graphs
     Dsu,
+    Dijkstra,
+    Mst,
+    TopologicalSort,
+    ShortestPath,
+    StronglyConnectedComponents,
+    BridgesAndArticulationPoints,
+    EulerianPath,
+
+    // Dynamic Programming
+    DynamicProgramming,
+    Memoization,
+    OneDDp,
+    TwoDDp,
+    KnapsackDp,
+    BitmaskDp,
+    IntervalDp,
+
+    // String Algorithms
     Kmp,
     ZAlgorithm,
     RollingHash,
-    Sieve,
-    KadanesAlgorithm,
-    TreeDp,
-    BitmaskDp,
-    DynamicProgramming,
+
+    // General Algorithms and Techniques
+    Greedy,
     Backtracking,
     DivideAndConquer,
-    BinarySearchOnAnswer,
-    TwoHeaps,
-    TopK,
-    HeapPriorityQueue,
-    MonotonicStack,
-    MonotonicQueue,
-    CycleDetection,
-    LinkedListReversal,
-    FastAndSlowPointers,
-    SlidingWindow,
-    TwoPointers,
-    BinarySearch,
-    DifferenceArray,
-    PrefixSum,
-    CoordinateCompression,
-    Bfs,
-    Dfs,
-    Sorting,
+    BitManipulation,
+    MeetInTheMiddle,
+    SweepLine,
+
+    // Advanced Data Structures
+    FenwickTree,
+    SegmentTree,
+    SparseTable,
+    LazySegmentTree,
+
+    // Mathematics and Number Theory
+    Sieve,
+    Gcd,
+    Lcm,
+    FastExponentiation,
+    ModularArithmetic,
+    PrimeFactorization,
+    Combinatorics,
 }
 
 impl AllowedAlgorithm {
-    pub const ALL: [AllowedAlgorithm; 39] = [
+    pub const ALL: [AllowedAlgorithm; 68] = [
         AllowedAlgorithm::SegmentTree,
         AllowedAlgorithm::FenwickTree,
         AllowedAlgorithm::SparseTable,
+        AllowedAlgorithm::LazySegmentTree,
         AllowedAlgorithm::Dijkstra,
         AllowedAlgorithm::Mst,
         AllowedAlgorithm::StronglyConnectedComponents,
+        AllowedAlgorithm::BridgesAndArticulationPoints,
+        AllowedAlgorithm::EulerianPath,
         AllowedAlgorithm::TopologicalSort,
         AllowedAlgorithm::Lca,
         AllowedAlgorithm::BinaryLifting,
@@ -64,7 +114,12 @@ impl AllowedAlgorithm {
         AllowedAlgorithm::KadanesAlgorithm,
         AllowedAlgorithm::TreeDp,
         AllowedAlgorithm::BitmaskDp,
+        AllowedAlgorithm::IntervalDp,
+        AllowedAlgorithm::KnapsackDp,
+        AllowedAlgorithm::TwoDDp,
+        AllowedAlgorithm::OneDDp,
         AllowedAlgorithm::DynamicProgramming,
+        AllowedAlgorithm::Memoization,
         AllowedAlgorithm::Backtracking,
         AllowedAlgorithm::DivideAndConquer,
         AllowedAlgorithm::BinarySearchOnAnswer,
@@ -75,6 +130,7 @@ impl AllowedAlgorithm {
         AllowedAlgorithm::MonotonicQueue,
         AllowedAlgorithm::CycleDetection,
         AllowedAlgorithm::LinkedListReversal,
+        AllowedAlgorithm::MergeLinkedLists,
         AllowedAlgorithm::FastAndSlowPointers,
         AllowedAlgorithm::SlidingWindow,
         AllowedAlgorithm::TwoPointers,
@@ -82,9 +138,29 @@ impl AllowedAlgorithm {
         AllowedAlgorithm::DifferenceArray,
         AllowedAlgorithm::PrefixSum,
         AllowedAlgorithm::CoordinateCompression,
+        AllowedAlgorithm::Intervals,
+        AllowedAlgorithm::MatrixGrid,
+        AllowedAlgorithm::HashMap,
+        AllowedAlgorithm::HashSet,
+        AllowedAlgorithm::FrequencyCounting,
+        AllowedAlgorithm::Stack,
+        AllowedAlgorithm::Queue,
+        AllowedAlgorithm::LinkedList,
+        AllowedAlgorithm::BinarySearchTree,
+        AllowedAlgorithm::ShortestPath,
+        AllowedAlgorithm::Greedy,
+        AllowedAlgorithm::BitManipulation,
+        AllowedAlgorithm::MeetInTheMiddle,
+        AllowedAlgorithm::SweepLine,
+        AllowedAlgorithm::Gcd,
+        AllowedAlgorithm::Lcm,
+        AllowedAlgorithm::FastExponentiation,
+        AllowedAlgorithm::ModularArithmetic,
+        AllowedAlgorithm::PrimeFactorization,
+        AllowedAlgorithm::Combinatorics,
+        AllowedAlgorithm::Sorting,
         AllowedAlgorithm::Bfs,
         AllowedAlgorithm::Dfs,
-        AllowedAlgorithm::Sorting,
     ];
 
     pub fn as_str(&self) -> &'static str {
@@ -92,9 +168,12 @@ impl AllowedAlgorithm {
             Self::SegmentTree => "Segment Tree",
             Self::FenwickTree => "Fenwick Tree",
             Self::SparseTable => "Sparse Table",
+            Self::LazySegmentTree => "Lazy Segment Tree",
             Self::Dijkstra => "Dijkstra",
             Self::Mst => "MST",
             Self::StronglyConnectedComponents => "Strongly Connected Components",
+            Self::BridgesAndArticulationPoints => "Bridges and Articulation Points",
+            Self::EulerianPath => "Eulerian Path",
             Self::TopologicalSort => "Topological Sort",
             Self::Lca => "LCA",
             Self::BinaryLifting => "Binary Lifting",
@@ -107,7 +186,12 @@ impl AllowedAlgorithm {
             Self::KadanesAlgorithm => "Kadane's Algorithm",
             Self::TreeDp => "Tree DP",
             Self::BitmaskDp => "Bitmask DP",
+            Self::IntervalDp => "Interval DP",
+            Self::KnapsackDp => "Knapsack DP",
+            Self::TwoDDp => "2D DP",
+            Self::OneDDp => "1D DP",
             Self::DynamicProgramming => "Dynamic Programming",
+            Self::Memoization => "Memoization",
             Self::Backtracking => "Backtracking",
             Self::DivideAndConquer => "Divide and Conquer",
             Self::BinarySearchOnAnswer => "Binary Search on Answer",
@@ -118,6 +202,7 @@ impl AllowedAlgorithm {
             Self::MonotonicQueue => "Monotonic Queue",
             Self::CycleDetection => "Cycle Detection",
             Self::LinkedListReversal => "Linked List Reversal",
+            Self::MergeLinkedLists => "Merge Linked Lists",
             Self::FastAndSlowPointers => "Fast and Slow Pointers",
             Self::SlidingWindow => "Sliding Window",
             Self::TwoPointers => "Two Pointers",
@@ -125,68 +210,43 @@ impl AllowedAlgorithm {
             Self::DifferenceArray => "Difference Array",
             Self::PrefixSum => "Prefix Sum",
             Self::CoordinateCompression => "Coordinate Compression",
+            Self::Intervals => "Intervals",
+            Self::MatrixGrid => "Matrix / Grid",
+            Self::HashMap => "Hash Map",
+            Self::HashSet => "Hash Set",
+            Self::FrequencyCounting => "Frequency Counting",
+            Self::Stack => "Stack",
+            Self::Queue => "Queue",
+            Self::LinkedList => "Linked List",
+            Self::BinarySearchTree => "Binary Search Tree",
+            Self::ShortestPath => "Shortest Path",
+            Self::Greedy => "Greedy",
+            Self::BitManipulation => "Bit Manipulation",
+            Self::MeetInTheMiddle => "Meet in the Middle",
+            Self::SweepLine => "Sweep Line",
+            Self::Gcd => "GCD",
+            Self::Lcm => "LCM",
+            Self::FastExponentiation => "Fast Exponentiation",
+            Self::ModularArithmetic => "Modular Arithmetic",
+            Self::PrimeFactorization => "Prime Factorization",
+            Self::Combinatorics => "Combinatorics",
+            Self::Sorting => "Sorting",
             Self::Bfs => "BFS",
             Self::Dfs => "DFS",
-            Self::Sorting => "Sorting",
         }
     }
 
     pub fn from_canonical_name(s: &str) -> Option<Self> {
         Self::ALL.iter().copied().find(|a| a.as_str() == s)
     }
-}
 
-impl std::str::FromStr for AllowedAlgorithm {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::from_canonical_name(s).ok_or(())
-    }
-}
-
-impl AllowedAlgorithm {
     pub fn priority(&self) -> u32 {
-        match self {
-            Self::SegmentTree => 1,
-            Self::FenwickTree => 2,
-            Self::SparseTable => 3,
-            Self::Dijkstra => 4,
-            Self::Mst => 5,
-            Self::StronglyConnectedComponents => 6,
-            Self::TopologicalSort => 7,
-            Self::Lca => 8,
-            Self::BinaryLifting => 9,
-            Self::Trie => 10,
-            Self::Dsu => 11,
-            Self::Kmp => 12,
-            Self::ZAlgorithm => 13,
-            Self::RollingHash => 14,
-            Self::Sieve => 15,
-            Self::KadanesAlgorithm => 16,
-            Self::TreeDp => 17,
-            Self::BitmaskDp => 18,
-            Self::DynamicProgramming => 19,
-            Self::Backtracking => 20,
-            Self::DivideAndConquer => 21,
-            Self::BinarySearchOnAnswer => 22,
-            Self::TwoHeaps => 23,
-            Self::TopK => 24,
-            Self::HeapPriorityQueue => 25,
-            Self::MonotonicStack => 26,
-            Self::MonotonicQueue => 27,
-            Self::CycleDetection => 28,
-            Self::LinkedListReversal => 29,
-            Self::FastAndSlowPointers => 30,
-            Self::SlidingWindow => 31,
-            Self::TwoPointers => 32,
-            Self::BinarySearch => 33,
-            Self::DifferenceArray => 34,
-            Self::PrefixSum => 35,
-            Self::CoordinateCompression => 36,
-            Self::Bfs => 37,
-            Self::Dfs => 38,
-            Self::Sorting => 39,
-        }
+        let name = self.as_str();
+        get_catalog()
+            .iter()
+            .find(|item| item.name == name)
+            .map(|item| item.priority)
+            .unwrap_or(999)
     }
 
     pub fn is_approved(&self) -> bool {
@@ -196,6 +256,14 @@ impl AllowedAlgorithm {
             .find(|item| item.name == name)
             .map(|item| item.status == "approved")
             .unwrap_or(false)
+    }
+}
+
+impl std::str::FromStr for AllowedAlgorithm {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::from_canonical_name(s).ok_or(())
     }
 }
 
@@ -223,9 +291,20 @@ pub fn get_catalog() -> &'static [CatalogItem] {
     })
 }
 
-pub fn apply_selection_rules(detected: &[AllowedAlgorithm], source: &str) -> Vec<AllowedAlgorithm> {
-    let mut current: std::collections::HashSet<AllowedAlgorithm> =
-        detected.iter().copied().collect();
+pub fn select_labels(
+    detected: &[AllowedAlgorithm],
+    source: &str,
+    require_approved: bool,
+) -> Vec<AllowedAlgorithm> {
+    let mut current: std::collections::HashSet<AllowedAlgorithm> = if require_approved {
+        detected
+            .iter()
+            .filter(|algo| algo.is_approved())
+            .copied()
+            .collect()
+    } else {
+        detected.iter().copied().collect()
+    };
 
     // 1. Most specific wins (suppression rules)
     // Tree DP suppresses Dynamic Programming and DFS
@@ -236,6 +315,26 @@ pub fn apply_selection_rules(detected: &[AllowedAlgorithm], source: &str) -> Vec
 
     // Bitmask DP suppresses Dynamic Programming
     if current.contains(&AllowedAlgorithm::BitmaskDp) {
+        current.remove(&AllowedAlgorithm::DynamicProgramming);
+    }
+
+    // Interval DP suppresses Dynamic Programming
+    if current.contains(&AllowedAlgorithm::IntervalDp) {
+        current.remove(&AllowedAlgorithm::DynamicProgramming);
+    }
+
+    // Knapsack DP suppresses Dynamic Programming
+    if current.contains(&AllowedAlgorithm::KnapsackDp) {
+        current.remove(&AllowedAlgorithm::DynamicProgramming);
+    }
+
+    // 2D DP suppresses Dynamic Programming
+    if current.contains(&AllowedAlgorithm::TwoDDp) {
+        current.remove(&AllowedAlgorithm::DynamicProgramming);
+    }
+
+    // 1D DP suppresses Dynamic Programming
+    if current.contains(&AllowedAlgorithm::OneDDp) {
         current.remove(&AllowedAlgorithm::DynamicProgramming);
     }
 
@@ -256,6 +355,16 @@ pub fn apply_selection_rules(detected: &[AllowedAlgorithm], source: &str) -> Vec
         current.remove(&AllowedAlgorithm::Dfs);
     }
 
+    // Bridges and Articulation Points suppresses DFS
+    if current.contains(&AllowedAlgorithm::BridgesAndArticulationPoints) {
+        current.remove(&AllowedAlgorithm::Dfs);
+    }
+
+    // Eulerian Path suppresses DFS
+    if current.contains(&AllowedAlgorithm::EulerianPath) {
+        current.remove(&AllowedAlgorithm::Dfs);
+    }
+
     // Binary Search on Answer suppresses Binary Search
     if current.contains(&AllowedAlgorithm::BinarySearchOnAnswer) {
         current.remove(&AllowedAlgorithm::BinarySearch);
@@ -271,30 +380,46 @@ pub fn apply_selection_rules(detected: &[AllowedAlgorithm], source: &str) -> Vec
         current.remove(&AllowedAlgorithm::HeapPriorityQueue);
     }
 
+    // Monotonic Stack suppresses Stack
+    if current.contains(&AllowedAlgorithm::MonotonicStack) {
+        current.remove(&AllowedAlgorithm::Stack);
+    }
+
+    // Monotonic Queue suppresses Queue
+    if current.contains(&AllowedAlgorithm::MonotonicQueue) {
+        current.remove(&AllowedAlgorithm::Queue);
+    }
+
+    // Lazy Segment Tree suppresses Segment Tree
+    if current.contains(&AllowedAlgorithm::LazySegmentTree) {
+        current.remove(&AllowedAlgorithm::SegmentTree);
+    }
+
     // Fenwick Tree and Segment Tree suppress Prefix Sum only when the prefix sums are computed through the tree
     if (current.contains(&AllowedAlgorithm::FenwickTree)
-        || current.contains(&AllowedAlgorithm::SegmentTree))
+        || current.contains(&AllowedAlgorithm::SegmentTree)
+        || current.contains(&AllowedAlgorithm::LazySegmentTree))
         && !source.contains("pref[")
         && !source.contains("prefix[")
     {
         current.remove(&AllowedAlgorithm::PrefixSum);
     }
 
-    // Filter by status gate (only approved labels may be output)
-    let mut approved: Vec<AllowedAlgorithm> = current
-        .into_iter()
-        .filter(|algo| algo.is_approved())
-        .collect();
+    let mut result: Vec<AllowedAlgorithm> = current.into_iter().collect();
 
     // Deterministic priority ordering: lower priority number = higher precedence
-    approved.sort_by_key(|a| a.priority());
+    result.sort_by_key(|a| a.priority());
 
     // Keep at most 3 labels with the highest priority
-    if approved.len() > 3 {
-        approved.truncate(3);
+    if result.len() > 3 {
+        result.truncate(3);
     }
 
-    approved
+    result
+}
+
+pub fn apply_selection_rules(detected: &[AllowedAlgorithm], source: &str) -> Vec<AllowedAlgorithm> {
+    select_labels(detected, source, true)
 }
 
 pub struct AlgorithmDetector;

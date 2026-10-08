@@ -1,276 +1,480 @@
-# KiteO Closed Canonical Algorithm Catalog (39 Labels)
-# status: "approved" | "candidate"
-# category: "technique" | "data_structure" | "algorithm" | "paradigm"
+# KiteO Closed Canonical Algorithm Catalog (68 Labels)
+# Single Source of Truth
+# Allowed status values: "approved" | "candidate"
+# Allowed category values: "algorithm" | "technique" | "data_structure" | "paradigm"
 
 [[algorithm]]
 name = "Segment Tree"
-status = "approved"
+status = "candidate"
 category = "data_structure"
 priority = 1
-suppresses = []
+suppresses = ["Prefix Sum"]
 
 [[algorithm]]
 name = "Fenwick Tree"
-status = "approved"
+status = "candidate"
 category = "data_structure"
 priority = 2
-suppresses = []
+suppresses = ["Prefix Sum"]
 
 [[algorithm]]
 name = "Sparse Table"
-status = "approved"
+status = "candidate"
 category = "data_structure"
 priority = 3
 suppresses = []
 
 [[algorithm]]
-name = "Dijkstra"
-status = "approved"
-category = "algorithm"
+name = "Lazy Segment Tree"
+status = "candidate"
+category = "data_structure"
 priority = 4
+suppresses = ["Segment Tree", "Prefix Sum"]
+
+[[algorithm]]
+name = "Dijkstra"
+status = "candidate"
+category = "algorithm"
+priority = 5
 suppresses = ["BFS", "Heap / Priority Queue"]
 
 [[algorithm]]
 name = "MST"
-status = "approved"
+status = "candidate"
 category = "algorithm"
-priority = 5
+priority = 6
 suppresses = []
 
 [[algorithm]]
 name = "Strongly Connected Components"
 status = "candidate"
 category = "algorithm"
-priority = 6
+priority = 7
+suppresses = ["DFS"]
+
+[[algorithm]]
+name = "Bridges and Articulation Points"
+status = "candidate"
+category = "algorithm"
+priority = 8
+suppresses = ["DFS"]
+
+[[algorithm]]
+name = "Eulerian Path"
+status = "candidate"
+category = "algorithm"
+priority = 9
 suppresses = ["DFS"]
 
 [[algorithm]]
 name = "Topological Sort"
-status = "approved"
+status = "candidate"
 category = "algorithm"
-priority = 7
+priority = 10
 suppresses = ["BFS", "DFS"]
 
 [[algorithm]]
 name = "LCA"
-status = "approved"
-category = "algorithm"
-priority = 8
-suppresses = []
-
-[[algorithm]]
-name = "Binary Lifting"
-status = "approved"
+status = "candidate"
 category = "technique"
-priority = 9
-suppresses = []
-
-[[algorithm]]
-name = "Trie"
-status = "approved"
-category = "data_structure"
-priority = 10
-suppresses = []
-
-[[algorithm]]
-name = "DSU"
-status = "approved"
-category = "data_structure"
 priority = 11
 suppresses = []
 
 [[algorithm]]
-name = "KMP"
-status = "approved"
-category = "algorithm"
+name = "Binary Lifting"
+status = "candidate"
+category = "technique"
 priority = 12
 suppresses = []
 
 [[algorithm]]
-name = "Z Algorithm"
-status = "approved"
-category = "algorithm"
+name = "Trie"
+status = "candidate"
+category = "data_structure"
 priority = 13
 suppresses = []
 
 [[algorithm]]
-name = "Rolling Hash"
-status = "approved"
-category = "technique"
+name = "DSU"
+status = "candidate"
+category = "data_structure"
 priority = 14
 suppresses = []
 
 [[algorithm]]
-name = "Sieve"
-status = "approved"
+name = "KMP"
+status = "candidate"
 category = "algorithm"
 priority = 15
 suppresses = []
 
 [[algorithm]]
-name = "Kadane's Algorithm"
+name = "Z Algorithm"
 status = "candidate"
 category = "algorithm"
 priority = 16
 suppresses = []
 
 [[algorithm]]
-name = "Tree DP"
-status = "approved"
-category = "paradigm"
+name = "Rolling Hash"
+status = "candidate"
+category = "algorithm"
 priority = 17
+suppresses = []
+
+[[algorithm]]
+name = "Sieve"
+status = "candidate"
+category = "algorithm"
+priority = 18
+suppresses = []
+
+[[algorithm]]
+name = "Kadane's Algorithm"
+status = "candidate"
+category = "algorithm"
+priority = 19
+suppresses = []
+
+[[algorithm]]
+name = "Tree DP"
+status = "candidate"
+category = "paradigm"
+priority = 20
 suppresses = ["Dynamic Programming", "DFS"]
 
 [[algorithm]]
 name = "Bitmask DP"
-status = "approved"
+status = "candidate"
 category = "paradigm"
-priority = 18
+priority = 21
+suppresses = ["Dynamic Programming"]
+
+[[algorithm]]
+name = "Interval DP"
+status = "candidate"
+category = "paradigm"
+priority = 22
+suppresses = ["Dynamic Programming"]
+
+[[algorithm]]
+name = "Knapsack DP"
+status = "candidate"
+category = "paradigm"
+priority = 23
+suppresses = ["Dynamic Programming"]
+
+[[algorithm]]
+name = "2D DP"
+status = "candidate"
+category = "paradigm"
+priority = 24
+suppresses = ["Dynamic Programming"]
+
+[[algorithm]]
+name = "1D DP"
+status = "candidate"
+category = "paradigm"
+priority = 25
 suppresses = ["Dynamic Programming"]
 
 [[algorithm]]
 name = "Dynamic Programming"
 status = "candidate"
 category = "paradigm"
-priority = 19
+priority = 26
+suppresses = []
+
+[[algorithm]]
+name = "Memoization"
+status = "candidate"
+category = "paradigm"
+priority = 27
 suppresses = []
 
 [[algorithm]]
 name = "Backtracking"
 status = "candidate"
 category = "paradigm"
-priority = 20
+priority = 28
 suppresses = []
 
 [[algorithm]]
 name = "Divide and Conquer"
 status = "candidate"
 category = "paradigm"
-priority = 21
+priority = 29
 suppresses = []
 
 [[algorithm]]
 name = "Binary Search on Answer"
-status = "approved"
-category = "technique"
-priority = 22
+status = "candidate"
+category = "algorithm"
+priority = 30
 suppresses = ["Binary Search"]
 
 [[algorithm]]
 name = "Two Heaps"
 status = "candidate"
-category = "data_structure"
-priority = 23
+category = "technique"
+priority = 31
 suppresses = ["Heap / Priority Queue"]
 
 [[algorithm]]
 name = "Top K"
 status = "candidate"
 category = "technique"
-priority = 24
+priority = 32
 suppresses = ["Heap / Priority Queue"]
 
 [[algorithm]]
 name = "Heap / Priority Queue"
 status = "candidate"
 category = "data_structure"
-priority = 25
-suppresses = []
-
-[[algorithm]]
-name = "Monotonic Stack"
-status = "approved"
-category = "data_structure"
-priority = 26
-suppresses = []
-
-[[algorithm]]
-name = "Monotonic Queue"
-status = "approved"
-category = "data_structure"
-priority = 27
-suppresses = []
-
-[[algorithm]]
-name = "Cycle Detection"
-status = "candidate"
-category = "algorithm"
-priority = 28
-suppresses = []
-
-[[algorithm]]
-name = "Linked List Reversal"
-status = "candidate"
-category = "technique"
-priority = 29
-suppresses = []
-
-[[algorithm]]
-name = "Fast and Slow Pointers"
-status = "candidate"
-category = "technique"
-priority = 30
-suppresses = []
-
-[[algorithm]]
-name = "Sliding Window"
-status = "approved"
-category = "technique"
-priority = 31
-suppresses = ["Two Pointers"]
-
-[[algorithm]]
-name = "Two Pointers"
-status = "approved"
-category = "technique"
-priority = 32
-suppresses = []
-
-[[algorithm]]
-name = "Binary Search"
-status = "approved"
-category = "algorithm"
 priority = 33
 suppresses = []
 
 [[algorithm]]
-name = "Difference Array"
+name = "Monotonic Stack"
 status = "candidate"
 category = "technique"
 priority = 34
-suppresses = []
+suppresses = ["Stack"]
 
 [[algorithm]]
-name = "Prefix Sum"
-status = "approved"
+name = "Monotonic Queue"
+status = "candidate"
 category = "technique"
 priority = 35
-suppresses = []
+suppresses = ["Queue"]
 
 [[algorithm]]
-name = "Coordinate Compression"
+name = "Cycle Detection"
 status = "candidate"
 category = "technique"
 priority = 36
 suppresses = []
 
 [[algorithm]]
-name = "BFS"
-status = "approved"
-category = "algorithm"
+name = "Linked List Reversal"
+status = "candidate"
+category = "technique"
 priority = 37
 suppresses = []
 
 [[algorithm]]
-name = "DFS"
-status = "approved"
-category = "algorithm"
+name = "Merge Linked Lists"
+status = "candidate"
+category = "technique"
 priority = 38
 suppresses = []
 
 [[algorithm]]
-name = "Sorting"
-status = "approved"
-category = "algorithm"
+name = "Fast and Slow Pointers"
+status = "candidate"
+category = "technique"
 priority = 39
+suppresses = []
+
+[[algorithm]]
+name = "Sliding Window"
+status = "candidate"
+category = "technique"
+priority = 40
+suppresses = ["Two Pointers"]
+
+[[algorithm]]
+name = "Two Pointers"
+status = "candidate"
+category = "technique"
+priority = 41
+suppresses = []
+
+[[algorithm]]
+name = "Binary Search"
+status = "candidate"
+category = "algorithm"
+priority = 42
+suppresses = []
+
+[[algorithm]]
+name = "Difference Array"
+status = "candidate"
+category = "technique"
+priority = 43
+suppresses = ["Prefix Sum"]
+
+[[algorithm]]
+name = "Prefix Sum"
+status = "candidate"
+category = "technique"
+priority = 44
+suppresses = []
+
+[[algorithm]]
+name = "Coordinate Compression"
+status = "candidate"
+category = "technique"
+priority = 45
+suppresses = []
+
+[[algorithm]]
+name = "Intervals"
+status = "candidate"
+category = "technique"
+priority = 46
+suppresses = []
+
+[[algorithm]]
+name = "Matrix / Grid"
+status = "candidate"
+category = "technique"
+priority = 47
+suppresses = []
+
+[[algorithm]]
+name = "Hash Map"
+status = "candidate"
+category = "data_structure"
+priority = 48
+suppresses = []
+
+[[algorithm]]
+name = "Hash Set"
+status = "candidate"
+category = "data_structure"
+priority = 49
+suppresses = []
+
+[[algorithm]]
+name = "Frequency Counting"
+status = "candidate"
+category = "technique"
+priority = 50
+suppresses = []
+
+[[algorithm]]
+name = "Stack"
+status = "candidate"
+category = "data_structure"
+priority = 51
+suppresses = []
+
+[[algorithm]]
+name = "Queue"
+status = "candidate"
+category = "data_structure"
+priority = 52
+suppresses = []
+
+[[algorithm]]
+name = "Linked List"
+status = "candidate"
+category = "technique"
+priority = 53
+suppresses = []
+
+[[algorithm]]
+name = "Binary Search Tree"
+status = "candidate"
+category = "data_structure"
+priority = 54
+suppresses = []
+
+[[algorithm]]
+name = "Shortest Path"
+status = "candidate"
+category = "algorithm"
+priority = 55
+suppresses = []
+
+[[algorithm]]
+name = "Greedy"
+status = "candidate"
+category = "paradigm"
+priority = 56
+suppresses = []
+
+[[algorithm]]
+name = "Bit Manipulation"
+status = "candidate"
+category = "technique"
+priority = 57
+suppresses = []
+
+[[algorithm]]
+name = "Meet in the Middle"
+status = "candidate"
+category = "technique"
+priority = 58
+suppresses = []
+
+[[algorithm]]
+name = "Sweep Line"
+status = "candidate"
+category = "technique"
+priority = 59
+suppresses = []
+
+[[algorithm]]
+name = "GCD"
+status = "candidate"
+category = "algorithm"
+priority = 60
+suppresses = []
+
+[[algorithm]]
+name = "LCM"
+status = "candidate"
+category = "algorithm"
+priority = 61
+suppresses = []
+
+[[algorithm]]
+name = "Fast Exponentiation"
+status = "candidate"
+category = "algorithm"
+priority = 62
+suppresses = []
+
+[[algorithm]]
+name = "Modular Arithmetic"
+status = "candidate"
+category = "algorithm"
+priority = 63
+suppresses = []
+
+[[algorithm]]
+name = "Prime Factorization"
+status = "candidate"
+category = "algorithm"
+priority = 64
+suppresses = []
+
+[[algorithm]]
+name = "Combinatorics"
+status = "candidate"
+category = "algorithm"
+priority = 65
+suppresses = []
+
+[[algorithm]]
+name = "Sorting"
+status = "candidate"
+category = "algorithm"
+priority = 66
+suppresses = []
+
+[[algorithm]]
+name = "BFS"
+status = "candidate"
+category = "algorithm"
+priority = 67
+suppresses = []
+
+[[algorithm]]
+name = "DFS"
+status = "candidate"
+category = "algorithm"
+priority = 68
 suppresses = []
