@@ -301,6 +301,10 @@ pub struct AlgorithmDetector;
 
 impl AlgorithmDetector {
     pub fn detect(source: &str) -> Vec<AllowedAlgorithm> {
+        apply_selection_rules(&Self::detect_raw(source), source)
+    }
+
+    pub fn detect_raw(source: &str) -> Vec<AllowedAlgorithm> {
         let mut detected = Vec::new();
 
         // 1. Sieve
@@ -592,6 +596,6 @@ impl AlgorithmDetector {
             detected.push(AllowedAlgorithm::KadanesAlgorithm);
         }
 
-        apply_selection_rules(&detected, source)
+        detected
     }
 }

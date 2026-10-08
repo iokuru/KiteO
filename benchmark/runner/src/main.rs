@@ -488,7 +488,10 @@ fn evaluate_corpus(corpus_file: &str, report_name: &str) {
     );
 }
 
-fn evaluate_real_benchmark(is_debug_mode: bool) {
+fn evaluate_real_benchmark(is_debug_mode: bool, verbose: bool) {
+    // Manifest lives in the repo workspace (dev split only).
+    // Held-out cases are loaded from a separate private path set via KITEO_HELD_OUT_DIR.
+    // If that env var is not set, held-out evaluation is skipped unconditionally.
     let manifest_path = "benchmark/real/manifest.json";
     let manifest_raw = match fs::read_to_string(manifest_path) {
         Ok(c) => c,
@@ -516,33 +519,46 @@ fn evaluate_real_benchmark(is_debug_mode: bool) {
         );
     }
 
-    println!(
-        "[MANIFEST VERIFIED] SHA-256 integrity match: {calculated_hash}"
-    );
+    println!("[MANIFEST VERIFIED] SHA-256 integrity match: {calculated_hash}");
     println!(
         "[MANIFEST STATS] Total: {}, Dev: {} (70%), Held-Out: {} (30%)",
         manifest.total_cases, manifest.dev_count, manifest.held_out_count
     );
 
-    // Evaluate DEV split
-    println!("\n>>> RUNNING DEV SPLIT (Real Accepted Solutions) <<<");
-    evaluate_real_split(&manifest.cases, "dev");
+    // WARNING: all cases in manifest.json are currently PLACEHOLDERS (synthetic stubs).
+    // Their expected labels were written by the agent, not by hand, and their source files
+    // contain only stub code. Results below are NOT MEANINGFUL until real accepted solutions
+    // and human-verified labels are supplied via KITEO_REAL_CASES_DIR.
+    println!("\n>>> RUNNING DEV SPLIT (PLACEHOLDER CASES — RESULTS NOT MEANINGFUL) <<<");
+    evaluate_real_split(&manifest.cases, "dev", verbose);
 
-    // Check debug mode constraint before held-out
-    if is_debug_mode {
-        eprintln!(
-            "\n[POLICY REFUSAL] Refusing to evaluate held-out benchmark cases in debug mode.\n\
-             Held-out test cases are strictly blind and must never be evaluated during debugging."
-        );
-        return;
+    // Held-out evaluation requires the external directory to be explicitly set.
+    // This keeps held-out data entirely outside the repo workspace.
+    let held_out_dir = std::env::var("KITEO_HELD_OUT_DIR").ok();
+    match &held_out_dir {
+        None => {
+            eprintln!(
+                "\n[HELD-OUT SKIPPED] KITEO_HELD_OUT_DIR is not set. \
+                 Held-out cases live outside the repo. Set the env var to a directory \
+                 containing the real held-out manifest and sources to evaluate."
+            );
+        }
+        Some(_dir) => {
+            if is_debug_mode {
+                eprintln!(
+                    "\n[POLICY REFUSAL] KITEO_HELD_OUT_DIR is set but the binary was built in \
+                     debug mode. Held-out evaluation requires a release build \
+                     (`cargo run --release -p kiteo-runner -- --real`)."
+                );
+                return;
+            }
+            println!("\n>>> RUNNING HELD-OUT SPLIT (Blind Verification) <<<");
+            evaluate_real_split(&manifest.cases, "held_out", verbose);
+        }
     }
-
-    // Evaluate HELD-OUT split
-    println!("\n>>> RUNNING HELD-OUT SPLIT (Blind Verification) <<<");
-    evaluate_real_split(&manifest.cases, "held_out");
 }
 
-fn evaluate_real_split(manifest_cases: &[RealManifestCase], target_split: &str) {
+fn evaluate_real_split(manifest_cases: &[RealManifestCase], target_split: &str, verbose: bool) {
     let mut overall = MetricCounter::default();
     let mut tag_metrics: HashMap<String, MetricCounter> = HashMap::new();
     let mut rating_metrics: HashMap<String, MetricCounter> = HashMap::new();
@@ -641,6 +657,34 @@ fn evaluate_real_split(manifest_cases: &[RealManifestCase], target_split: &str) 
             *failure_counts.entry(f.clone()).or_default() += 1;
         }
 
+        // Per-case verbose output
+        if verbose {
+            let status = if tc_exact && sc_exact && algo_exact {
+                "PASS"
+            } else {
+                "FAIL"
+            };
+            println!("  [{status}] {}", case.id);
+            println!("       code ({} lines):", code.lines().count());
+            for line in code.lines().take(20) {
+                println!("         {line}");
+            }
+            if code.lines().count() > 20 {
+                println!("         ... ({} more lines)", code.lines().count() - 20);
+            }
+            println!(
+                "       expected TC: {}  SC: {}  algos: {:?}",
+                case.expected_tc, case.expected_sc, expected_sorted
+            );
+            println!(
+                "       actual   TC: {}  SC: {}  algos: {:?}",
+                output.tc, output.sc, actual_sorted
+            );
+            let failure_strs: Vec<&str> = failures.iter().map(|f| f.as_str()).collect();
+            println!("       failure classes: {failure_strs:?}");
+            println!();
+        }
+
         evaluated_cases.push(EvaluatedItem {
             id: case.id.clone(),
             tc_exact,
@@ -652,7 +696,12 @@ fn evaluate_real_split(manifest_cases: &[RealManifestCase], target_split: &str) 
         });
     }
 
-    let title = format!("Real Solutions [{}]", target_split.to_uppercase());
+    // Title reflects placeholder status for dev split
+    let title = if target_split == "dev" {
+        "Placeholder Cases [DEV] — NOT MEANINGFUL".to_string()
+    } else {
+        format!("Real Solutions [{}]", target_split.to_uppercase())
+    };
     print_evaluation_summary(
         &title,
         &evaluated_cases,
@@ -737,7 +786,10 @@ fn main() {
         .iter()
         .any(|a| a == "--dev2" || a == "--held-out" || a == "-h");
     let is_all = args.iter().any(|a| a == "--all");
-    let is_real = args.iter().any(|a| a == "--real");
+    let is_real = args.iter().any(|a| a == "--real" || a == "--real-verbose");
+    let is_verbose = args
+        .iter()
+        .any(|a| a == "--real-verbose" || a == "--verbose");
     let is_debug = args.iter().any(|a| a == "--debug") || cfg!(debug_assertions);
 
     let corpus_file = if is_dev2 {
@@ -751,7 +803,7 @@ fn main() {
     } else if is_json {
         dump_json(corpus_file);
     } else if is_real {
-        evaluate_real_benchmark(is_debug);
+        evaluate_real_benchmark(is_debug, is_verbose);
     } else if is_all {
         evaluate_corpus(
             "benchmark/corpus/snippets.json",

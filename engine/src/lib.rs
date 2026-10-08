@@ -288,14 +288,17 @@ pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
     let tc_str = if computed_tc.is_unknown() {
         "Unknown".to_string()
     } else if computed_tc.is_const_one() {
-        let has_loops = ir.stmts.iter().any(|s| {
+        let has_unmodeled_loops = ir.stmts.iter().any(|s| {
             matches!(
                 s,
                 ir::ast::IrStmt::For { .. } | ir::ast::IrStmt::While { .. }
             )
         });
-        if has_loops {
-            "O(n)".to_string()
+        if has_unmodeled_loops {
+            // The LoopAnalyzer returned Const(1) but the IR still has loop nodes,
+            // which means those loops' bounds could not be determined from the AST.
+            // Prefer Unknown over a wrong O(n) guess.
+            "Unknown".to_string()
         } else {
             "O(1)".to_string()
         }
@@ -407,17 +410,59 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
     let language = match lang {
         "cpp" => tree_sitter_cpp::language(),
         "java" => tree_sitter_java::language(),
-        _ => return analyze_heuristic(code, lang),
+        // Unknown language: algorithm detection only, TC/SC Unknown.
+        _ => {
+            let detected_algos = AlgorithmDetector::detect(&preprocessed);
+            let algo_names: Vec<String> = detected_algos
+                .iter()
+                .map(|a| a.as_str().to_string())
+                .collect();
+            return AnalysisOutput {
+                tc: "Unknown".to_string(),
+                sc: "Unknown".to_string(),
+                algorithms: algo_names,
+            };
+        }
     };
 
     if parser.set_language(&language).is_ok() {
         if let Some(tree) = parser.parse(&preprocessed, None) {
+            let root = tree.root_node();
+            let has_any_valid_decl = (0..root.child_count()).any(|i| {
+                if let Some(c) = root.child(i) {
+                    c.kind() != "ERROR" && c.kind() != ";"
+                } else {
+                    false
+                }
+            });
+            if !has_any_valid_decl && root.child_count() > 0 {
+                let detected_algos = AlgorithmDetector::detect(&preprocessed);
+                let algo_names: Vec<String> = detected_algos
+                    .iter()
+                    .map(|a| a.as_str().to_string())
+                    .collect();
+                return AnalysisOutput {
+                    tc: "Unknown".to_string(),
+                    sc: "Unknown".to_string(),
+                    algorithms: algo_names,
+                };
+            }
             let ast = parser::tree_sitter_to_ast(tree.root_node());
             return analyze_ast(code, lang, &ast);
         }
     }
 
-    analyze_heuristic(code, lang)
+    // tree-sitter parse failed for cpp/java — prefer Unknown over a heuristic guess.
+    let detected_algos = AlgorithmDetector::detect(&preprocessed);
+    let algo_names: Vec<String> = detected_algos
+        .iter()
+        .map(|a| a.as_str().to_string())
+        .collect();
+    AnalysisOutput {
+        tc: "Unknown".to_string(),
+        sc: "Unknown".to_string(),
+        algorithms: algo_names,
+    }
 }
 
 #[cfg(target_arch = "wasm32")]

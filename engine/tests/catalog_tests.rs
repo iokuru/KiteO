@@ -163,7 +163,13 @@ fn test_kadane_detector_positive_and_negative() {
         return max_so_far;
     }
     "#;
-    assert!(AlgorithmDetector::detect(positive_cpp).contains(&AllowedAlgorithm::KadanesAlgorithm));
+    assert!(
+        AlgorithmDetector::detect_raw(positive_cpp).contains(&AllowedAlgorithm::KadanesAlgorithm)
+    );
+    assert!(
+        !AlgorithmDetector::detect(positive_cpp).contains(&AllowedAlgorithm::KadanesAlgorithm),
+        "Candidate algorithm must not be emitted by detect() until approved"
+    );
 
     let positive_java = r#"
     class Solution {
@@ -177,7 +183,10 @@ fn test_kadane_detector_positive_and_negative() {
         }
     }
     "#;
-    assert!(AlgorithmDetector::detect(positive_java).contains(&AllowedAlgorithm::KadanesAlgorithm));
+    assert!(
+        AlgorithmDetector::detect_raw(positive_java).contains(&AllowedAlgorithm::KadanesAlgorithm)
+    );
+    assert!(!AlgorithmDetector::detect(positive_java).contains(&AllowedAlgorithm::KadanesAlgorithm));
 
     // Negative look-alike 1: Plain prefix sum (running sum without reset)
     let negative_prefix_sum = r#"

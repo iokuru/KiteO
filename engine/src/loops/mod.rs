@@ -102,7 +102,7 @@ impl<'a> LoopAnalyzer<'a> {
                 ComplexityExpr::log(ComplexityExpr::log(ComplexityExpr::var(v)))
             }
             LoopBound::Constant(_) => ComplexityExpr::one(),
-            LoopBound::Unknown => ComplexityExpr::var(DimensionVar::N),
+            LoopBound::Unknown => ComplexityExpr::Unknown,
         };
 
         if loop_info.is_harmonic {
@@ -128,12 +128,14 @@ impl<'a> LoopAnalyzer<'a> {
         let mut is_halving = false;
         let mut is_harmonic = false;
         let mut is_testcase_driver = false;
+        let mut has_recognized_bound = false;
 
         // Inspect condition
         if let Some(cond_id) = cond {
             if let Some(IrExpr::Binary(op, left, right)) = self.module.exprs.get(cond_id.0) {
                 match op {
                     BinaryOp::Lt | BinaryOp::Le => {
+                        has_recognized_bound = true;
                         if let Some(IrExpr::Var(name)) = self.module.exprs.get(right.0) {
                             if name == "t"
                                 || name == "tc"
@@ -146,6 +148,7 @@ impl<'a> LoopAnalyzer<'a> {
                         bound_var = self.extract_var_from_expr(*right);
                     }
                     BinaryOp::Gt | BinaryOp::Ge => {
+                        has_recognized_bound = true;
                         if let Some(IrExpr::Var(name)) = self.module.exprs.get(left.0) {
                             if name == "t"
                                 || name == "tc"
@@ -200,6 +203,8 @@ impl<'a> LoopAnalyzer<'a> {
 
         let bound = if is_testcase_driver {
             LoopBound::Constant(1)
+        } else if !has_recognized_bound {
+            LoopBound::Unknown
         } else if is_geometric || is_halving {
             LoopBound::Logarithmic(bound_var)
         } else {

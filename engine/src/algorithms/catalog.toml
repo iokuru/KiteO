@@ -109,7 +109,7 @@ suppresses = []
 
 [[algorithm]]
 name = "Kadane's Algorithm"
-status = "approved"
+status = "candidate"
 category = "algorithm"
 priority = 16
 suppresses = []
