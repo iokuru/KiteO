@@ -35,9 +35,11 @@ function serializeNode(node, fieldName = null) {
 
 async function main() {
   const args = process.argv.slice(2);
-  const isHeldOut = args.includes('--held-out') || args.includes('-h');
-  const corpusRel = isHeldOut
-    ? 'benchmark/corpus/held_out.json'
+  const isDev2 = args.includes('--dev2') || args.includes('--held-out') || args.includes('-h');
+  const corpusRel = isDev2
+    ? (fs.existsSync(path.resolve(rootDir, 'benchmark/corpus/dev2.json'))
+        ? 'benchmark/corpus/dev2.json'
+        : 'benchmark/corpus/held_out.json')
     : 'benchmark/corpus/snippets.json';
   const corpusPath = path.resolve(rootDir, corpusRel);
 
@@ -53,8 +55,8 @@ async function main() {
   // 1. Obtain native runner results
   console.log('[PARITY TEST] Running native runner with --json...');
   const runnerArgs = ['run', '-p', 'kiteo-runner', '--', '--json'];
-  if (isHeldOut) {
-    runnerArgs.push('--held-out');
+  if (isDev2) {
+    runnerArgs.push('--dev2');
   }
 
   let nativeRaw;

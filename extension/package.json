@@ -8,13 +8,18 @@
     "build": "vite build",
     "package": "python scripts/package.py",
     "test:e2e": "playwright test",
+    "test:ast-parity": "node ../benchmark/ast_parity_test.mjs",
+    "test:ast-parity:dev2": "node ../benchmark/ast_parity_test.mjs --dev2",
+    "test:incomplete": "node ../benchmark/incomplete_code_parity_test.mjs",
     "test:parity": "node ../benchmark/parity_test.mjs",
-    "test:parity:heldout": "node ../benchmark/parity_test.mjs --held-out",
+    "test:parity:dev2": "node ../benchmark/parity_test.mjs --dev2",
+    "test:parity:heldout": "node ../benchmark/parity_test.mjs --dev2",
+    "test:browser-parity": "playwright test e2e/browser-parity.spec.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "preact": "^10.20.0",
-    "web-tree-sitter": "^0.22.6",
+    "web-tree-sitter": "0.22.6",
     "webextension-polyfill": "^0.12.0"
   },
   "devDependencies": {
@@ -23,7 +28,7 @@
     "@types/archiver": "^8.0.0",
     "@types/webextension-polyfill": "^0.10.7",
     "archiver": "^8.0.0",
-    "tree-sitter-wasms": "^0.1.13",
+    "tree-sitter-wasms": "0.1.13",
     "typescript": "^5.4.0",
     "vite": "^5.2.0"
   }

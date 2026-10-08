@@ -30,8 +30,8 @@ jobs:
       - name: Benchmark Runner (152/152 Corpus Verification)
         run: cargo run -p kiteo-runner
 
-      - name: Held-Out Benchmark Evaluation (70 Real CP Cases)
-        run: cargo run -p kiteo-runner -- --held-out
+      - name: Dev2 Synthetic Benchmark Evaluation (70 Cases)
+        run: cargo run -p kiteo-runner -- --dev2
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,8 +41,8 @@ jobs:
       - name: Empirical Scaling Validator (Synthetic Loops)
         run: python benchmark/empirical/validator.py
 
-      - name: Empirical Scaling Validator (Real CP Solutions)
-        run: python benchmark/empirical/real_solution_validator.py
+      - name: Empirical Scaling Validator (CP Patterns)
+        run: python benchmark/empirical/synthetic_pattern_validator.py
 
       - name: WASM Compilation Check
         run: cargo check -p kiteo-engine --target wasm32-unknown-unknown
@@ -80,8 +80,27 @@ jobs:
       - name: Run Parser Parity Test (Standard Corpus - 152 Cases)
         run: node benchmark/parity_test.mjs
 
-      - name: Run Parser Parity Test (Held-Out Corpus - 70 Cases)
-        run: node benchmark/parity_test.mjs --held-out
+      - name: Run Parser Parity Test (Dev2 Corpus - 70 Cases)
+        run: node benchmark/parity_test.mjs --dev2
+
+      - name: Run AST JSON Parity Test (Standard Corpus - 152 Cases)
+        run: node benchmark/ast_parity_test.mjs
+
+      - name: Run AST JSON Parity Test (Dev2 Corpus - 70 Cases)
+        run: node benchmark/ast_parity_test.mjs --dev2
+
+      - name: Run Incomplete Code Parity Test
+        run: node benchmark/incomplete_code_parity_test.mjs
+
+      - name: Install Playwright Browsers (Chromium & Firefox)
+        run: |
+          cd extension
+          npx playwright install --with-deps chromium firefox
+
+      - name: Run Browser-Level Parity Test (Playwright Chromium & Firefox)
+        run: |
+          cd extension
+          npm run test:browser-parity
 
   extension-build:
     runs-on: ubuntu-latest

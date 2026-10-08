@@ -20,9 +20,9 @@ toml = "0.8"
 wasm-bindgen = "0.2"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tree-sitter = "0.22"
-tree-sitter-cpp = "0.22"
-tree-sitter-java = "0.21"
+tree-sitter = "=0.22.6"
+tree-sitter-cpp = "=0.22.3"
+tree-sitter-java = "=0.21.0"
 
 
 

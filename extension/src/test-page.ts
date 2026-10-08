@@ -1,4 +1,13 @@
-import init, { analyze_wasm } from './wasm/pkg/kiteo_engine.js';
+import { analyzeCode, initAnalyzer } from './shared/analyzer';
+import type { AnalysisResult } from './shared/types';
+
+declare global {
+  interface Window {
+    kiteoAnalyze: (code: string, lang?: string) => Promise<AnalysisResult>;
+  }
+}
+
+window.kiteoAnalyze = analyzeCode;
 
 const presets: Record<string, { lang: string; code: string }> = {
   linear: {
@@ -33,16 +42,16 @@ async function bootstrap() {
   const statusEl = document.getElementById('status');
   if (statusEl) statusEl.textContent = 'Loading WebAssembly engine...';
   try {
-    await init();
+    await initAnalyzer();
     wasmReady = true;
     if (statusEl) statusEl.textContent = 'WebAssembly engine loaded ready.';
-    runAnalysis();
+    await runAnalysis();
   } catch (err) {
     if (statusEl) statusEl.textContent = 'Failed to load WebAssembly: ' + String(err);
   }
 }
 
-function runAnalysis() {
+async function runAnalysis() {
   if (!wasmReady) return;
   const langSelect = document.getElementById('lang-select') as HTMLSelectElement | null;
   const codeInput = document.getElementById('code-input') as HTMLTextAreaElement | null;
@@ -56,11 +65,10 @@ function runAnalysis() {
   const lang = langSelect.value;
 
   const t0 = performance.now();
-  const raw = analyze_wasm(code, lang);
-  const t1 = performance.now();
-
   try {
-    const parsed = JSON.parse(raw);
+    const parsed = await analyzeCode(code, lang);
+    const t1 = performance.now();
+
     tcOut.textContent = parsed.tc || 'Unknown';
     scOut.textContent = parsed.sc || 'Unknown';
     algoOut.textContent = parsed.algorithms && parsed.algorithms.length > 0
@@ -88,12 +96,12 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('.preset-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const type = btn.getAttribute('data-type');
       if (type && presets[type]) {
         if (codeInput) codeInput.value = presets[type].code;
         if (langSelect) langSelect.value = presets[type].lang;
-        runAnalysis();
+        await runAnalysis();
       }
     });
   });

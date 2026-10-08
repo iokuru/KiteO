@@ -37,186 +37,182 @@ impl Default for AnalysisOutput {
     }
 }
 
-pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
-    let preprocessed = preprocessor::preprocess(code);
-    let detected_algos = AlgorithmDetector::detect(&preprocessed);
-    let algo_names: Vec<String> = detected_algos
-        .iter()
-        .map(|a| a.as_str().to_string())
-        .collect();
-
-    // Check specific known canonical structures first
+fn canonical_from_detected(
+    detected_algos: &[AllowedAlgorithm],
+    algo_names: &[String],
+    preprocessed: &str,
+) -> Option<AnalysisOutput> {
     if detected_algos.contains(&AllowedAlgorithm::Sieve) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n log log n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::SegmentTree) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n + q log n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::FenwickTree) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(q log n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::SparseTable) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n log n + q)".to_string(),
             sc: "O(n log n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Mst) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(E log V)".to_string(),
             sc: "O(V + E)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Lca)
         || detected_algos.contains(&AllowedAlgorithm::BinaryLifting)
     {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n log n + q log n)".to_string(),
             sc: "O(n log n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::ZAlgorithm) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::RollingHash) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Dijkstra) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O((V + E) log V)".to_string(),
             sc: "O(V + E)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::TopologicalSort)
         || detected_algos.contains(&AllowedAlgorithm::Bfs)
         || detected_algos.contains(&AllowedAlgorithm::Dfs)
     {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(V + E)".to_string(),
             sc: "O(V + E)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::BinarySearchOnAnswer) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n log A)".to_string(),
             sc: "O(1)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::BinarySearch) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(log n)".to_string(),
             sc: "O(1)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::TreeDp) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::BitmaskDp) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(2^n * n)".to_string(),
             sc: "O(2^n * n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Sorting) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n log n)".to_string(),
             sc: "O(log n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Kmp) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n + m)".to_string(),
             sc: "O(m)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Trie) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::Dsu) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::MonotonicStack) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::MonotonicQueue) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(k)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::PrefixSum) {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if detected_algos.contains(&AllowedAlgorithm::TwoPointers)
@@ -229,31 +225,47 @@ pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
         } else {
             "O(n)".to_string()
         };
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc,
             sc: "O(1)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
     }
 
     if (preprocessed.contains("x -= x & -x") || preprocessed.contains("x -= x&-x"))
         && detected_algos.is_empty()
     {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(log n)".to_string(),
             sc: "O(1)".to_string(),
             algorithms: Vec::new(),
-        };
+        });
     }
 
     if (preprocessed.contains("factorial(n - 1)") || preprocessed.contains("factorial(n-1)"))
         && (preprocessed.contains("factorial(") || preprocessed.contains("factorial ("))
     {
-        return AnalysisOutput {
+        return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names,
-        };
+            algorithms: algo_names.to_vec(),
+        });
+    }
+
+    None
+}
+
+pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
+    let preprocessed = preprocessor::preprocess(code);
+    let detected_algos = AlgorithmDetector::detect(&preprocessed);
+    let algo_names: Vec<String> = detected_algos
+        .iter()
+        .map(|a| a.as_str().to_string())
+        .collect();
+
+    // Check specific known canonical structures first
+    if let Some(canonical) = canonical_from_detected(&detected_algos, &algo_names, &preprocessed) {
+        return canonical;
     }
 
     let ir = match lang {
@@ -299,6 +311,10 @@ pub fn analyze_heuristic(code: &str, _lang: &str) -> AnalysisOutput {
         .iter()
         .map(|a| a.as_str().to_string())
         .collect();
+
+    if let Some(canonical) = canonical_from_detected(&detected_algos, &algo_names, &preprocessed) {
+        return canonical;
+    }
 
     let mut loop_depth = 0;
     let mut max_depth = 0;
@@ -356,6 +372,24 @@ pub fn analyze_heuristic(code: &str, _lang: &str) -> AnalysisOutput {
         sc: sc_str,
         algorithms: algo_names,
     }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub fn parse_to_ast(code: &str, lang: &str) -> Option<AstNode> {
+    let preprocessed = preprocessor::preprocess(code);
+    let mut parser = tree_sitter::Parser::new();
+    let language = match lang {
+        "cpp" => tree_sitter_cpp::language(),
+        "java" => tree_sitter_java::language(),
+        _ => return None,
+    };
+
+    if parser.set_language(&language).is_ok() {
+        if let Some(tree) = parser.parse(&preprocessed, None) {
+            return Some(parser::tree_sitter_to_ast(tree.root_node()));
+        }
+    }
+    None
 }
 
 #[cfg(not(target_arch = "wasm32"))]

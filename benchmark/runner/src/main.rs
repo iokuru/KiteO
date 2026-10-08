@@ -335,8 +335,8 @@ fn evaluate_corpus(corpus_file: &str, report_name: &str) {
         ));
     }
 
-    let report_filename = if corpus_file.contains("held_out") {
-        "benchmark/reports/held_out_evaluation_report.md"
+    let report_filename = if corpus_file.contains("dev2") || corpus_file.contains("held_out") {
+        "benchmark/reports/dev2_evaluation_report.md"
     } else {
         "benchmark/reports/benchmark_evaluation_report.md"
     };
@@ -379,39 +379,74 @@ fn dump_json(corpus_file: &str) {
     println!("{}", serde_json::to_string(&results).unwrap());
 }
 
+#[derive(serde::Serialize)]
+struct RunnerAstItem {
+    id: String,
+    ast: Option<kiteo_engine::parser::AstNode>,
+}
+
+fn dump_ast(corpus_file: &str) {
+    let path = Path::new(corpus_file);
+    let content = match fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(_) => {
+            let alt = format!("../{corpus_file}");
+            fs::read_to_string(&alt)
+                .unwrap_or_else(|_| panic!("Failed to locate corpus at {corpus_file}"))
+        }
+    };
+
+    let cases: Vec<BenchmarkCase> = serde_json::from_str(&content).expect("Invalid JSON corpus");
+    let mut results = Vec::new();
+    for case in &cases {
+        let ast = kiteo_engine::parse_to_ast(&case.code, &case.language);
+        results.push(RunnerAstItem {
+            id: case.id.clone(),
+            ast,
+        });
+    }
+
+    println!("{}", serde_json::to_string(&results).unwrap());
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let is_ast = args.iter().any(|a| a == "--ast");
     let is_json = args.iter().any(|a| a == "--json");
-    let is_held_out = args.iter().any(|a| a == "--held-out" || a == "-h");
+    let is_dev2 = args
+        .iter()
+        .any(|a| a == "--dev2" || a == "--held-out" || a == "-h");
     let is_all = args.iter().any(|a| a == "--all");
 
-    let corpus_file = if is_held_out {
-        "benchmark/corpus/held_out.json"
+    let corpus_file = if is_dev2 {
+        "benchmark/corpus/dev2.json"
     } else {
         "benchmark/corpus/snippets.json"
     };
 
-    if is_json {
+    if is_ast {
+        dump_ast(corpus_file);
+    } else if is_json {
         dump_json(corpus_file);
     } else if is_all {
         evaluate_corpus(
             "benchmark/corpus/snippets.json",
-            "Full Benchmark Corpus (152 Cases)",
+            "Canonical Dev Benchmark Corpus (152 Cases)",
         );
         println!("\n\n");
         evaluate_corpus(
-            "benchmark/corpus/held_out.json",
-            "Held-Out Real Solutions (70 Cases)",
+            "benchmark/corpus/dev2.json",
+            "Dev2 Synthetic Solutions (70 Cases)",
         );
-    } else if is_held_out {
+    } else if is_dev2 {
         evaluate_corpus(
-            "benchmark/corpus/held_out.json",
-            "Held-Out Real Solutions (70 Cases)",
+            "benchmark/corpus/dev2.json",
+            "Dev2 Synthetic Solutions (70 Cases)",
         );
     } else {
         evaluate_corpus(
             "benchmark/corpus/snippets.json",
-            "Standard Corpus (152 Cases)",
+            "Canonical Dev Corpus (152 Cases)",
         );
     }
 }
