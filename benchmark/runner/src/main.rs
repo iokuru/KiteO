@@ -1,6 +1,10 @@
+#![allow(dead_code)]
+
+use kiteo_engine::algorithms::AllowedAlgorithm;
 use kiteo_engine::analyze;
 use serde::Deserialize;
-use std::collections::HashMap;
+use sha2::{Digest, Sha256};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::env;
 use std::fs;
 use std::path::Path;
@@ -20,70 +24,355 @@ struct BenchmarkCase {
     rating: Option<String>,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-enum FailureClass {
-    UnknownResult,
-    ComplexityMismatch,
-    AlgorithmMismatch,
+#[derive(Debug, Deserialize)]
+struct RealCaseJson {
+    id: String,
+    platform: String,
+    problem_id: String,
+    rating: Option<i64>,
+    language: String,
+    source_file: String,
+    expected_tc: String,
+    expected_sc: String,
+    expected_algorithms: Vec<String>,
+    variables: Vec<String>,
+    case_type: String,
+    status: String,
 }
 
-#[derive(Debug)]
-#[allow(dead_code)]
-struct CaseEvaluation {
+#[derive(Debug, Clone, Deserialize)]
+struct RealManifestCase {
     id: String,
-    name: String,
-    tc_match: bool,
-    sc_match: bool,
-    algo_match: bool,
-    is_match: bool,
-    is_unknown: bool,
-    is_wrong: bool,
-    failures: Vec<FailureClass>,
+    split: String,
+    language: String,
+    platform: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct RealManifestDoc {
+    manifest_version: String,
+    manifest_sha256: String,
+    total_cases: usize,
+    dev_count: usize,
+    held_out_count: usize,
+    cases: Vec<RealManifestCase>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
+enum FailureClass {
+    Parser,
+    Preprocessor,
+    Ir,
+    Loop,
+    Recursion,
+    CostModel,
+    Detector,
+    Simplification,
+}
+
+impl FailureClass {
+    fn as_str(&self) -> &'static str {
+        match self {
+            Self::Parser => "parser",
+            Self::Preprocessor => "preprocessor",
+            Self::Ir => "IR",
+            Self::Loop => "loop",
+            Self::Recursion => "recursion",
+            Self::CostModel => "cost_model",
+            Self::Detector => "detector",
+            Self::Simplification => "simplification",
+        }
+    }
 }
 
 #[derive(Default, Debug, Clone)]
 struct MetricCounter {
     total: usize,
-    matches: usize,
-    unknowns: usize,
-    wrongs: usize,
+    tc_exact: usize,
+    tc_unknown: usize,
+    tc_wrong: usize,
+    sc_exact: usize,
+    sc_unknown: usize,
+    sc_wrong: usize,
+    algo_exact: usize,
+    fully_correct: usize,
 }
 
 impl MetricCounter {
-    fn record(&mut self, is_match: bool, is_unknown: bool, is_wrong: bool) {
+    fn record(
+        &mut self,
+        tc_exact: bool,
+        tc_unknown: bool,
+        sc_exact: bool,
+        sc_unknown: bool,
+        algo_exact: bool,
+    ) {
         self.total += 1;
-        if is_match {
-            self.matches += 1;
-        } else if is_unknown {
-            self.unknowns += 1;
-        } else if is_wrong {
-            self.wrongs += 1;
+        if tc_exact {
+            self.tc_exact += 1;
+        } else if tc_unknown {
+            self.tc_unknown += 1;
+        } else {
+            self.tc_wrong += 1;
+        }
+
+        if sc_exact {
+            self.sc_exact += 1;
+        } else if sc_unknown {
+            self.sc_unknown += 1;
+        } else {
+            self.sc_wrong += 1;
+        }
+
+        if algo_exact {
+            self.algo_exact += 1;
+        }
+
+        if tc_exact && sc_exact && algo_exact {
+            self.fully_correct += 1;
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone)]
+struct LabelConfusion {
+    tp: usize,
+    fp: usize,
+    fn_count: usize,
+}
+
+impl LabelConfusion {
+    fn precision(&self) -> f64 {
+        if self.tp + self.fp == 0 {
+            100.0
+        } else {
+            (self.tp as f64 / (self.tp + self.fp) as f64) * 100.0
         }
     }
 
-    fn accuracy_pct(&self) -> f64 {
-        if self.total == 0 {
-            0.0
+    fn recall(&self) -> f64 {
+        if self.tp + self.fn_count == 0 {
+            100.0
         } else {
-            (self.matches as f64 / self.total as f64) * 100.0
+            (self.tp as f64 / (self.tp + self.fn_count) as f64) * 100.0
+        }
+    }
+}
+
+struct EvaluatedItem {
+    id: String,
+    tc_exact: bool,
+    tc_unknown: bool,
+    sc_exact: bool,
+    sc_unknown: bool,
+    algo_exact: bool,
+    failures: Vec<FailureClass>,
+}
+
+fn compute_failure_classes(
+    tc_exact: bool,
+    sc_exact: bool,
+    algo_exact: bool,
+    code: &str,
+    expected_tc: &str,
+    actual_tc: &str,
+) -> Vec<FailureClass> {
+    let mut failures = Vec::new();
+    if !tc_exact {
+        if actual_tc == "Unknown" {
+            if code.contains("solve(") || code.contains("dfs(") || code.contains("factorial(") {
+                failures.push(FailureClass::Recursion);
+            } else if code.contains("for ") || code.contains("while ") {
+                failures.push(FailureClass::Loop);
+            } else {
+                failures.push(FailureClass::Simplification);
+            }
+        } else if expected_tc.contains("log") && !actual_tc.contains("log") {
+            failures.push(FailureClass::Loop);
+        } else if code.contains("vector") || code.contains("map") || code.contains("set") {
+            failures.push(FailureClass::CostModel);
+        } else {
+            failures.push(FailureClass::Simplification);
         }
     }
 
-    fn unknown_pct(&self) -> f64 {
-        if self.total == 0 {
-            0.0
-        } else {
-            (self.unknowns as f64 / self.total as f64) * 100.0
+    if !sc_exact && !failures.contains(&FailureClass::CostModel) {
+        failures.push(FailureClass::CostModel);
+    }
+
+    if !algo_exact {
+        failures.push(FailureClass::Detector);
+    }
+
+    failures
+}
+
+#[allow(clippy::too_many_arguments)]
+fn print_evaluation_summary(
+    title: &str,
+    _cases: &[EvaluatedItem],
+    overall: &MetricCounter,
+    tag_metrics: &HashMap<String, MetricCounter>,
+    rating_metrics: &HashMap<String, MetricCounter>,
+    lang_metrics: &HashMap<String, MetricCounter>,
+    label_confusion: &BTreeMap<String, LabelConfusion>,
+    failure_counts: &HashMap<FailureClass, usize>,
+) {
+    println!("================================================================================");
+    println!("             KITEO BENCHMARK EVALUATION: {title:<33}");
+    println!("================================================================================");
+    println!("TOTAL EVALUATED CASES: {}", overall.total);
+    println!("--------------------------------------------------------------------------------");
+    println!(
+        "  TC Exact   : {:>4} / {:<4} ({:>5.1}%)",
+        overall.tc_exact,
+        overall.total,
+        (overall.tc_exact as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  TC Unknown : {:>4} / {:<4} ({:>5.1}%)",
+        overall.tc_unknown,
+        overall.total,
+        (overall.tc_unknown as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  TC Wrong   : {:>4} / {:<4} ({:>5.1}%)",
+        overall.tc_wrong,
+        overall.total,
+        (overall.tc_wrong as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  SC Exact   : {:>4} / {:<4} ({:>5.1}%)",
+        overall.sc_exact,
+        overall.total,
+        (overall.sc_exact as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  SC Unknown : {:>4} / {:<4} ({:>5.1}%)",
+        overall.sc_unknown,
+        overall.total,
+        (overall.sc_unknown as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  SC Wrong   : {:>4} / {:<4} ({:>5.1}%)",
+        overall.sc_wrong,
+        overall.total,
+        (overall.sc_wrong as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  Algo Exact : {:>4} / {:<4} ({:>5.1}%)",
+        overall.algo_exact,
+        overall.total,
+        (overall.algo_exact as f64 / overall.total as f64) * 100.0
+    );
+    println!(
+        "  Full Match : {:>4} / {:<4} ({:>5.1}%)",
+        overall.fully_correct,
+        overall.total,
+        (overall.fully_correct as f64 / overall.total as f64) * 100.0
+    );
+
+    if !failure_counts.is_empty() {
+        println!(
+            "--------------------------------------------------------------------------------"
+        );
+        println!("FAILURE CLASSES BREAKDOWN:");
+        for (fc, count) in failure_counts {
+            println!("  - {:<15}: {:>3} cases", fc.as_str(), count);
         }
     }
 
-    fn wrong_pct(&self) -> f64 {
-        if self.total == 0 {
-            0.0
-        } else {
-            (self.wrongs as f64 / self.total as f64) * 100.0
+    if !lang_metrics.is_empty() {
+        println!(
+            "--------------------------------------------------------------------------------"
+        );
+        println!("PER-LANGUAGE BREAKDOWN:");
+        println!("  | Language | Total | TC Exact (%) | SC Exact (%) | Algo Exact (%) |");
+        println!("  |:---------|:------|:-------------|:-------------|:---------------|");
+        for (lang, m) in lang_metrics {
+            println!(
+                "  | {:<8} | {:<5} | {:>5.1}% ({:>3}) | {:>5.1}% ({:>3}) | {:>5.1}% ({:>3})   |",
+                lang,
+                m.total,
+                (m.tc_exact as f64 / m.total as f64) * 100.0,
+                m.tc_exact,
+                (m.sc_exact as f64 / m.total as f64) * 100.0,
+                m.sc_exact,
+                (m.algo_exact as f64 / m.total as f64) * 100.0,
+                m.algo_exact,
+            );
         }
     }
+
+    if !rating_metrics.is_empty() {
+        println!(
+            "--------------------------------------------------------------------------------"
+        );
+        println!("PER-RATING BREAKDOWN:");
+        println!("  | Rating / Tier   | Total | Full Exact (%) | TC Exact (%) | SC Exact (%) |");
+        println!("  |:----------------|:------|:---------------|:-------------|:-------------|");
+        for (rating, m) in rating_metrics {
+            println!(
+                "  | {:<15} | {:<5} | {:>5.1}% ({:>3})   | {:>5.1}% ({:>3})| {:>5.1}% ({:>3}) |",
+                rating,
+                m.total,
+                (m.fully_correct as f64 / m.total as f64) * 100.0,
+                m.fully_correct,
+                (m.tc_exact as f64 / m.total as f64) * 100.0,
+                m.tc_exact,
+                (m.sc_exact as f64 / m.total as f64) * 100.0,
+                m.sc_exact,
+            );
+        }
+    }
+
+    if !tag_metrics.is_empty() {
+        println!(
+            "--------------------------------------------------------------------------------"
+        );
+        println!("PER-TAG BREAKDOWN (Top active tags):");
+        println!(
+            "  | Tag                    | Total | TC Exact (%) | SC Exact (%) | Full Match   |"
+        );
+        println!(
+            "  |:-----------------------|:------|:-------------|:-------------|:-------------|"
+        );
+        let mut sorted_tags: Vec<(&String, &MetricCounter)> = tag_metrics.iter().collect();
+        sorted_tags.sort_by(|a, b| b.1.total.cmp(&a.1.total).then_with(|| a.0.cmp(b.0)));
+        for (tag, m) in sorted_tags.iter().take(25) {
+            println!(
+                "  | {:<22} | {:<5} | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) |",
+                tag,
+                m.total,
+                (m.tc_exact as f64 / m.total as f64) * 100.0,
+                m.tc_exact,
+                (m.sc_exact as f64 / m.total as f64) * 100.0,
+                m.sc_exact,
+                (m.fully_correct as f64 / m.total as f64) * 100.0,
+                m.fully_correct,
+            );
+        }
+    }
+
+    // Per-label precision and recall
+    println!("--------------------------------------------------------------------------------");
+    println!("ALGORITHM PRECISION & RECALL PER LABEL:");
+    println!("  | Algorithm Label                | TP  | FP  | FN  | Precision | Recall  |");
+    println!("  |:-------------------------------|:----|:----|:----|:----------|:--------|");
+    for (label, conf) in label_confusion {
+        if conf.tp > 0 || conf.fp > 0 || conf.fn_count > 0 {
+            println!(
+                "  | {:<30} | {:<3} | {:<3} | {:<3} | {:>8.1}% | {:>6.1}% |",
+                label,
+                conf.tp,
+                conf.fp,
+                conf.fn_count,
+                conf.precision(),
+                conf.recall()
+            );
+        }
+    }
+    println!("================================================================================\n");
 }
 
 fn evaluate_corpus(corpus_file: &str, report_name: &str) {
@@ -100,249 +389,280 @@ fn evaluate_corpus(corpus_file: &str, report_name: &str) {
     let cases: Vec<BenchmarkCase> =
         serde_json::from_str(&content).expect("Failed to deserialize benchmark cases JSON");
 
-    let total = cases.len();
     let mut overall = MetricCounter::default();
     let mut tag_metrics: HashMap<String, MetricCounter> = HashMap::new();
     let mut rating_metrics: HashMap<String, MetricCounter> = HashMap::new();
-    let mut evaluations = Vec::new();
+    let mut lang_metrics: HashMap<String, MetricCounter> = HashMap::new();
+    let mut failure_counts: HashMap<FailureClass, usize> = HashMap::new();
 
-    println!("================================================================================");
-    println!("             KITEO BENCHMARK EVALUATION: {report_name:<33}");
-    println!("================================================================================");
+    let mut label_confusion: BTreeMap<String, LabelConfusion> = BTreeMap::new();
+    for algo in AllowedAlgorithm::ALL {
+        label_confusion.insert(algo.as_str().to_string(), LabelConfusion::default());
+    }
+
+    let mut evaluated_cases = Vec::new();
 
     for case in &cases {
         let output = analyze(&case.code, &case.language);
 
-        let tc_match = output.tc == case.expected_tc;
-        let sc_match = output.sc == case.expected_sc;
+        let tc_exact = output.tc == case.expected_tc;
+        let tc_unknown = output.tc == "Unknown";
+        let sc_exact = output.sc == case.expected_sc;
+        let sc_unknown = output.sc == "Unknown";
 
         let mut expected_sorted = case.expected_algorithms.clone();
         expected_sorted.sort();
         let mut actual_sorted = output.algorithms.clone();
         actual_sorted.sort();
-        let algo_match = actual_sorted == expected_sorted;
+        let algo_exact = actual_sorted == expected_sorted;
 
-        let is_match = tc_match && sc_match && algo_match;
-        let is_unknown = !is_match
-            && (output.tc == "Unknown"
-                || output.sc == "Unknown"
-                || (output.algorithms.is_empty() && !case.expected_algorithms.is_empty()));
-        let is_wrong = !is_match && !is_unknown;
+        overall.record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
 
-        overall.record(is_match, is_unknown, is_wrong);
+        lang_metrics
+            .entry(case.language.clone())
+            .or_default()
+            .record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
 
         for tag in &case.tags {
             tag_metrics
                 .entry(tag.clone())
                 .or_default()
-                .record(is_match, is_unknown, is_wrong);
+                .record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
         }
 
         let rating_key = case.rating.clone().unwrap_or_else(|| "Unrated".to_string());
         rating_metrics
             .entry(rating_key)
             .or_default()
-            .record(is_match, is_unknown, is_wrong);
+            .record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
 
-        let mut failures = Vec::new();
-        if !tc_match {
-            if output.tc == "Unknown" {
-                failures.push(FailureClass::UnknownResult);
-            } else {
-                failures.push(FailureClass::ComplexityMismatch);
+        // Update confusion matrix for every canonical label
+        let actual_set: HashSet<String> = output.algorithms.iter().cloned().collect();
+        let expected_set: HashSet<String> = case.expected_algorithms.iter().cloned().collect();
+
+        for (label, conf) in label_confusion.iter_mut() {
+            let in_actual = actual_set.contains(label);
+            let in_expected = expected_set.contains(label);
+            if in_actual && in_expected {
+                conf.tp += 1;
+            } else if in_actual && !in_expected {
+                conf.fp += 1;
+            } else if !in_actual && in_expected {
+                conf.fn_count += 1;
             }
         }
-        if !sc_match && output.sc == "Unknown" && !failures.contains(&FailureClass::UnknownResult) {
-            failures.push(FailureClass::UnknownResult);
-        }
-        if !algo_match {
-            failures.push(FailureClass::AlgorithmMismatch);
+
+        let failures = compute_failure_classes(
+            tc_exact,
+            sc_exact,
+            algo_exact,
+            &case.code,
+            &case.expected_tc,
+            &output.tc,
+        );
+
+        for f in &failures {
+            *failure_counts.entry(f.clone()).or_default() += 1;
         }
 
-        evaluations.push(CaseEvaluation {
+        evaluated_cases.push(EvaluatedItem {
             id: case.id.clone(),
-            name: case.name.clone(),
-            tc_match,
-            sc_match,
-            algo_match,
-            is_match,
-            is_unknown,
-            is_wrong,
+            tc_exact,
+            tc_unknown,
+            sc_exact,
+            sc_unknown,
+            algo_exact,
             failures,
         });
-
-        let status = if is_match {
-            "PASS"
-        } else if is_unknown {
-            "UNKN"
-        } else {
-            "FAIL"
-        };
-
-        let fail_summary: Vec<_> = evaluations
-            .last()
-            .unwrap()
-            .failures
-            .iter()
-            .map(|f| format!("{f:?}"))
-            .collect();
-
-        println!(
-            "[{status}] {:<36} | TC: {:<12} (exp {:<12}) | SC: {:<6} | Fails: [{}]",
-            case.id,
-            output.tc,
-            case.expected_tc,
-            output.sc,
-            fail_summary.join(", ")
-        );
     }
 
-    println!("--------------------------------------------------------------------------------");
-    println!("OVERALL METRICS SUMMARY (Total Cases: {total})");
-    println!(
-        "  Accuracy Rate : {:>3}/{} ({:.1}%)",
-        overall.matches,
-        total,
-        overall.accuracy_pct()
+    print_evaluation_summary(
+        report_name,
+        &evaluated_cases,
+        &overall,
+        &tag_metrics,
+        &rating_metrics,
+        &lang_metrics,
+        &label_confusion,
+        &failure_counts,
     );
-    println!(
-        "  Unknown Rate  : {:>3}/{} ({:.1}%)",
-        overall.unknowns,
-        total,
-        overall.unknown_pct()
-    );
-    println!(
-        "  Wrong Rate    : {:>3}/{} ({:.1}%)",
-        overall.wrongs,
-        total,
-        overall.wrong_pct()
-    );
-    println!("--------------------------------------------------------------------------------");
+}
 
-    println!("PER-TAG BREAKDOWN:");
-    println!(
-        "  | {:<22} | {:<5} | {:<12} | {:<12} | {:<10} |",
-        "Tag", "Total", "Accuracy", "Unknown Rate", "Wrong Rate"
-    );
-    println!("  |:-----------------------|:------|:-------------|:-------------|:-----------|");
-    let mut sorted_tags: Vec<_> = tag_metrics.into_iter().collect();
-    sorted_tags.sort_by(|a, b| a.0.cmp(&b.0));
-    for (tag, m) in &sorted_tags {
-        println!(
-            "  | {:<22} | {:<5} | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) |",
-            tag,
-            m.total,
-            m.accuracy_pct(),
-            m.matches,
-            m.unknown_pct(),
-            m.unknowns,
-            m.wrong_pct(),
-            m.wrongs
-        );
-    }
-    println!("--------------------------------------------------------------------------------");
-
-    println!("PER-RATING BREAKDOWN:");
-    println!(
-        "  | {:<15} | {:<5} | {:<12} | {:<12} | {:<10} |",
-        "Rating / Tier", "Total", "Accuracy", "Unknown Rate", "Wrong Rate"
-    );
-    println!("  |:----------------|:------|:-------------|:-------------|:-----------|");
-    let mut sorted_ratings: Vec<_> = rating_metrics.into_iter().collect();
-    sorted_ratings.sort_by(|a, b| {
-        let a_num = a.0.parse::<i32>().unwrap_or(9999);
-        let b_num = b.0.parse::<i32>().unwrap_or(9999);
-        if a_num != b_num {
-            a_num.cmp(&b_num)
-        } else {
-            a.0.cmp(&b.0)
-        }
-    });
-    for (rating, m) in &sorted_ratings {
-        println!(
-            "  | {:<15} | {:<5} | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) | {:>5.1}% ({:>2}) |",
-            rating,
-            m.total,
-            m.accuracy_pct(),
-            m.matches,
-            m.unknown_pct(),
-            m.unknowns,
-            m.wrong_pct(),
-            m.wrongs
-        );
-    }
-    println!("================================================================================");
-
-    // Write markdown report
-    let mut md = String::new();
-    md.push_str(&format!("# KiteO Evaluation Report: {report_name}\n\n"));
-    md.push_str(&format!("**Dataset File**: `{corpus_file}`  \n"));
-    md.push_str(&format!("**Total Problems**: `{total}`  \n\n"));
-
-    md.push_str("## 1. Overall Summary\n\n");
-    md.push_str("| Metric | Count | Percentage |\n");
-    md.push_str("| :--- | :--- | :--- |\n");
-    md.push_str(&format!(
-        "| **Accuracy Rate** | {}/{} | **{:.1}%** |\n",
-        overall.matches,
-        total,
-        overall.accuracy_pct()
-    ));
-    md.push_str(&format!(
-        "| **Unknown Rate** | {}/{} | {:.1}% |\n",
-        overall.unknowns,
-        total,
-        overall.unknown_pct()
-    ));
-    md.push_str(&format!(
-        "| **Wrong Rate** | {}/{} | {:.1}% |\n\n",
-        overall.wrongs,
-        total,
-        overall.wrong_pct()
-    ));
-
-    md.push_str("## 2. Breakdown Per Tag\n\n");
-    md.push_str("| Tag | Total | Accuracy | Unknown Rate | Wrong Rate |\n");
-    md.push_str("| :--- | :--- | :--- | :--- | :--- |\n");
-    for (tag, m) in &sorted_tags {
-        md.push_str(&format!(
-            "| `{}` | {} | {:.1}% ({}) | {:.1}% ({}) | {:.1}% ({}) |\n",
-            tag,
-            m.total,
-            m.accuracy_pct(),
-            m.matches,
-            m.unknown_pct(),
-            m.unknowns,
-            m.wrong_pct(),
-            m.wrongs
-        ));
-    }
-
-    md.push_str("\n## 3. Breakdown Per Rating / Tier\n\n");
-    md.push_str("| Rating / Tier | Total | Accuracy | Unknown Rate | Wrong Rate |\n");
-    md.push_str("| :--- | :--- | :--- | :--- | :--- |\n");
-    for (rating, m) in &sorted_ratings {
-        md.push_str(&format!(
-            "| `{}` | {} | {:.1}% ({}) | {:.1}% ({}) | {:.1}% ({}) |\n",
-            rating,
-            m.total,
-            m.accuracy_pct(),
-            m.matches,
-            m.unknown_pct(),
-            m.unknowns,
-            m.wrong_pct(),
-            m.wrongs
-        ));
-    }
-
-    let report_filename = if corpus_file.contains("dev2") || corpus_file.contains("held_out") {
-        "benchmark/reports/dev2_evaluation_report.md"
-    } else {
-        "benchmark/reports/benchmark_evaluation_report.md"
+fn evaluate_real_benchmark(is_debug_mode: bool) {
+    let manifest_path = "benchmark/real/manifest.json";
+    let manifest_raw = match fs::read_to_string(manifest_path) {
+        Ok(c) => c,
+        Err(_) => fs::read_to_string("../benchmark/real/manifest.json")
+            .expect("Failed to locate benchmark/real/manifest.json"),
     };
 
-    let _ = fs::create_dir_all("benchmark/reports");
-    let _ = fs::write(report_filename, md);
+    let manifest: RealManifestDoc =
+        serde_json::from_str(&manifest_raw).expect("Invalid benchmark/real/manifest.json");
+
+    // Verify SHA-256 hash of manifest splits
+    let mut hasher = Sha256::new();
+    let mut sorted_cases = manifest.cases.clone();
+    sorted_cases.sort_by(|a, b| a.id.cmp(&b.id));
+    for c in &sorted_cases {
+        hasher.update(format!("{}:{}\n", c.id, c.split).as_bytes());
+    }
+    let hash_bytes = hasher.finalize();
+    let calculated_hash: String = hash_bytes.iter().map(|b| format!("{b:02x}")).collect();
+
+    if calculated_hash != manifest.manifest_sha256 {
+        panic!(
+            "MANIFEST INTEGRITY ERROR: Stored hash {} does not match computed hash {calculated_hash}",
+            manifest.manifest_sha256
+        );
+    }
+
+    println!(
+        "[MANIFEST VERIFIED] SHA-256 integrity match: {calculated_hash}"
+    );
+    println!(
+        "[MANIFEST STATS] Total: {}, Dev: {} (70%), Held-Out: {} (30%)",
+        manifest.total_cases, manifest.dev_count, manifest.held_out_count
+    );
+
+    // Evaluate DEV split
+    println!("\n>>> RUNNING DEV SPLIT (Real Accepted Solutions) <<<");
+    evaluate_real_split(&manifest.cases, "dev");
+
+    // Check debug mode constraint before held-out
+    if is_debug_mode {
+        eprintln!(
+            "\n[POLICY REFUSAL] Refusing to evaluate held-out benchmark cases in debug mode.\n\
+             Held-out test cases are strictly blind and must never be evaluated during debugging."
+        );
+        return;
+    }
+
+    // Evaluate HELD-OUT split
+    println!("\n>>> RUNNING HELD-OUT SPLIT (Blind Verification) <<<");
+    evaluate_real_split(&manifest.cases, "held_out");
+}
+
+fn evaluate_real_split(manifest_cases: &[RealManifestCase], target_split: &str) {
+    let mut overall = MetricCounter::default();
+    let mut tag_metrics: HashMap<String, MetricCounter> = HashMap::new();
+    let mut rating_metrics: HashMap<String, MetricCounter> = HashMap::new();
+    let mut lang_metrics: HashMap<String, MetricCounter> = HashMap::new();
+    let mut failure_counts: HashMap<FailureClass, usize> = HashMap::new();
+
+    let mut label_confusion: BTreeMap<String, LabelConfusion> = BTreeMap::new();
+    for algo in AllowedAlgorithm::ALL {
+        label_confusion.insert(algo.as_str().to_string(), LabelConfusion::default());
+    }
+
+    let mut evaluated_cases = Vec::new();
+
+    for entry in manifest_cases {
+        if entry.split != target_split {
+            continue;
+        }
+
+        let case_file = format!("benchmark/real/cases/{}.json", entry.id);
+        let case_raw = match fs::read_to_string(&case_file) {
+            Ok(c) => c,
+            Err(_) => fs::read_to_string(format!("../{case_file}"))
+                .unwrap_or_else(|_| panic!("Failed to read case {case_file}")),
+        };
+
+        let case: RealCaseJson =
+            serde_json::from_str(&case_raw).expect("Invalid RealCaseJson file");
+
+        let source_path = format!("benchmark/real/{}", case.source_file);
+        let code = match fs::read_to_string(&source_path) {
+            Ok(c) => c,
+            Err(_) => fs::read_to_string(format!("../{source_path}"))
+                .unwrap_or_else(|_| panic!("Failed to read source {source_path}")),
+        };
+
+        let output = analyze(&code, &case.language);
+
+        let tc_exact = output.tc == case.expected_tc;
+        let tc_unknown = output.tc == "Unknown";
+        let sc_exact = output.sc == case.expected_sc;
+        let sc_unknown = output.sc == "Unknown";
+
+        let mut expected_sorted = case.expected_algorithms.clone();
+        expected_sorted.sort();
+        let mut actual_sorted = output.algorithms.clone();
+        actual_sorted.sort();
+        let algo_exact = actual_sorted == expected_sorted;
+
+        overall.record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
+
+        lang_metrics
+            .entry(case.language.clone())
+            .or_default()
+            .record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
+
+        let rating_str = case
+            .rating
+            .map(|r| format!("Rating {r}"))
+            .unwrap_or_else(|| "Unrated".to_string());
+        rating_metrics
+            .entry(rating_str)
+            .or_default()
+            .record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
+
+        tag_metrics
+            .entry(case.platform.clone())
+            .or_default()
+            .record(tc_exact, tc_unknown, sc_exact, sc_unknown, algo_exact);
+
+        // Update confusion
+        let actual_set: HashSet<String> = output.algorithms.iter().cloned().collect();
+        let expected_set: HashSet<String> = case.expected_algorithms.iter().cloned().collect();
+
+        for (label, conf) in label_confusion.iter_mut() {
+            let in_actual = actual_set.contains(label);
+            let in_expected = expected_set.contains(label);
+            if in_actual && in_expected {
+                conf.tp += 1;
+            } else if in_actual && !in_expected {
+                conf.fp += 1;
+            } else if !in_actual && in_expected {
+                conf.fn_count += 1;
+            }
+        }
+
+        let failures = compute_failure_classes(
+            tc_exact,
+            sc_exact,
+            algo_exact,
+            &code,
+            &case.expected_tc,
+            &output.tc,
+        );
+
+        for f in &failures {
+            *failure_counts.entry(f.clone()).or_default() += 1;
+        }
+
+        evaluated_cases.push(EvaluatedItem {
+            id: case.id.clone(),
+            tc_exact,
+            tc_unknown,
+            sc_exact,
+            sc_unknown,
+            algo_exact,
+            failures,
+        });
+    }
+
+    let title = format!("Real Solutions [{}]", target_split.to_uppercase());
+    print_evaluation_summary(
+        &title,
+        &evaluated_cases,
+        &overall,
+        &tag_metrics,
+        &rating_metrics,
+        &lang_metrics,
+        &label_confusion,
+        &failure_counts,
+    );
 }
 
 #[derive(serde::Serialize)]
@@ -417,6 +737,8 @@ fn main() {
         .iter()
         .any(|a| a == "--dev2" || a == "--held-out" || a == "-h");
     let is_all = args.iter().any(|a| a == "--all");
+    let is_real = args.iter().any(|a| a == "--real");
+    let is_debug = args.iter().any(|a| a == "--debug") || cfg!(debug_assertions);
 
     let corpus_file = if is_dev2 {
         "benchmark/corpus/dev2.json"
@@ -428,6 +750,8 @@ fn main() {
         dump_ast(corpus_file);
     } else if is_json {
         dump_json(corpus_file);
+    } else if is_real {
+        evaluate_real_benchmark(is_debug);
     } else if is_all {
         evaluate_corpus(
             "benchmark/corpus/snippets.json",

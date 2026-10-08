@@ -207,6 +207,14 @@ fn canonical_from_detected(
         });
     }
 
+    if detected_algos.contains(&AllowedAlgorithm::KadanesAlgorithm) {
+        return Some(AnalysisOutput {
+            tc: "O(n)".to_string(),
+            sc: "O(1)".to_string(),
+            algorithms: algo_names.to_vec(),
+        });
+    }
+
     if detected_algos.contains(&AllowedAlgorithm::PrefixSum) {
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),

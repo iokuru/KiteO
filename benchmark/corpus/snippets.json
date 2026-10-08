@@ -1110,8 +1110,11 @@
     "code": "int maxSubArray(vector<int>& nums) {\n    int max_so_far = nums[0], cur_max = nums[0];\n    int n = nums.size();\n    for (int i = 1; i < n; i++) {\n        cur_max = max(nums[i], cur_max + nums[i]);\n        max_so_far = max(max_so_far, cur_max);\n    }\n    return max_so_far;\n}",
     "expected_tc": "O(n)",
     "expected_sc": "O(1)",
-    "expected_algorithms": [],
+    "expected_algorithms": [
+      "Kadane's Algorithm"
+    ],
     "tags": [
+      "kadane",
       "dp",
       "linear"
     ]
@@ -1123,8 +1126,11 @@
     "code": "class Solution {\n    public int maxSubArray(int[] nums) {\n        int max_so_far = nums[0], cur_max = nums[0];\n        int n = nums.length;\n        for (int i = 1; i < n; i++) {\n            cur_max = Math.max(nums[i], cur_max + nums[i]);\n            max_so_far = Math.max(max_so_far, cur_max);\n        }\n        return max_so_far;\n    }\n}",
     "expected_tc": "O(n)",
     "expected_sc": "O(1)",
-    "expected_algorithms": [],
+    "expected_algorithms": [
+      "Kadane's Algorithm"
+    ],
     "tags": [
+      "kadane",
       "dp",
       "linear"
     ]

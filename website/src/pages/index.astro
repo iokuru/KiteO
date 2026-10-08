@@ -3,20 +3,24 @@ const adrs = [
   { id: "0001", title: "Symbolic Complexity Representation & Variables", desc: "Canonical monomial ordering (n < m < q < k < V < E < A) and dominance algebra." },
   { id: "0002", title: "Cost Semantics for C++ STL & Java Collections", desc: "Embedded TOML cost models accounting for hidden amortized resizing and map overheads." },
   { id: "0003", title: "Multi-Test Cases & Array Space Semantics", desc: "Per-testcase driver loop stripping and value-indexed O(A) vs input-indexed O(n) array rules." },
-  { id: "0004", title: "Canonical Algorithm Catalog & Anti-Hallucination", desc: "Strict closed catalog of 26 allowed labels; max 3 tags; fallback to Unknown without guessing." },
+  { id: "0004", title: "Canonical Algorithm Catalog (Legacy)", desc: "Superseded by ADR 0010." },
   { id: "0005", title: "Unified Arena IR for C++ and Java", desc: "Language-agnostic Typed Arena IR (BlockId, StmtId, ExprId) sharing identical analyzers." },
   { id: "0006", title: "LeetCode Adapter & Constraint Checking", desc: "Monaco editor inspection and problem input boundary validation against time limits." },
   { id: "0007", title: "Dual-Engine WebAssembly Parser Architecture", desc: "Native tree-sitter C runtime on CLI/desktop paired with lightweight serialized AST in WASM." },
   { id: "0008", title: "Contest Mode & DOM Non-Tampering", desc: "Read-only inspection isolating extension logic from contest timers, ACE, and Monaco editors." },
   { id: "0009", title: "Sandboxed Zero-Network Browser Execution", desc: "100% offline WebAssembly execution with zero external network requests and zero telemetry." },
+  { id: "0010", title: "Closed Canonical 39-Algorithm Catalog", desc: "Closed 39-label catalog with status gate, selection priority, and suppression rules." },
 ];
 
 const algorithms = [
-  "Two Pointers", "Sliding Window", "Binary Search", "Binary Search on Answer",
-  "Prefix Sum", "Sorting", "BFS", "DFS", "Topological Sort", "DSU", "Dijkstra",
-  "MST", "Fenwick Tree", "Segment Tree", "Sparse Table", "Monotonic Stack",
-  "Monotonic Queue", "Binary Lifting", "LCA", "Tree DP", "Bitmask DP", "Sieve",
-  "KMP", "Z Algorithm", "Rolling Hash", "Trie"
+  "Segment Tree", "Fenwick Tree", "Sparse Table", "Dijkstra", "MST",
+  "Strongly Connected Components", "Topological Sort", "LCA", "Binary Lifting", "Trie",
+  "DSU", "KMP", "Z Algorithm", "Rolling Hash", "Sieve", "Kadane's Algorithm",
+  "Tree DP", "Bitmask DP", "Dynamic Programming", "Backtracking", "Divide and Conquer",
+  "Binary Search on Answer", "Two Heaps", "Top K", "Heap / Priority Queue",
+  "Monotonic Stack", "Monotonic Queue", "Cycle Detection", "Linked List Reversal",
+  "Fast and Slow Pointers", "Sliding Window", "Two Pointers", "Binary Search",
+  "Difference Array", "Prefix Sum", "Coordinate Compression", "BFS", "DFS", "Sorting"
 ];
 
 const platforms = [
@@ -344,14 +348,14 @@ const platforms = [
           <div class="card-tag">FIELD 3</div>
           <div class="card-title">Algorithm Classification</div>
           <p class="card-desc">
-            Exactly &le; 3 canonical labels chosen strictly from the 26 allowed catalog.
+            Exactly &le; 3 canonical labels chosen strictly from the closed 39-algorithm catalog.
             If the pattern is unproven or absent, KiteO strictly outputs <code>Unknown</code> or <code>None detected</code>.
           </p>
         </div>
       </div>
 
       <section id="catalog" class="section-heading">
-        <div class="section-title">26 Allowed Canonical Algorithm Catalog</div>
+        <div class="section-title">Closed Canonical 39-Algorithm Catalog</div>
         <p class="section-subtitle">
           Closed reference taxonomy. Free from hallucinations, duplicates, or ambiguous labels like "Greedy".
         </p>

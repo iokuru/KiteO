@@ -1,0 +1,18 @@
+{
+  "id": "real_placeholder_04",
+  "platform": "codeforces",
+  "problem_id": "CF-PLACEHOLDER-4",
+  "rating": 1300,
+  "language": "cpp",
+  "source_file": "sources/real_placeholder_04.cpp",
+  "expected_tc": "O(n log n)",
+  "expected_sc": "O(log n)",
+  "expected_algorithms": [
+    "Sorting"
+  ],
+  "variables": [
+    "n"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

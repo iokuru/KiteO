@@ -1,0 +1,19 @@
+{
+  "id": "real_placeholder_07",
+  "platform": "codeforces",
+  "problem_id": "CF-PLACEHOLDER-7",
+  "rating": 1600,
+  "language": "cpp",
+  "source_file": "sources/real_placeholder_07.cpp",
+  "expected_tc": "O((V + E) log V)",
+  "expected_sc": "O(V + E)",
+  "expected_algorithms": [
+    "Dijkstra"
+  ],
+  "variables": [
+    "V",
+    "E"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

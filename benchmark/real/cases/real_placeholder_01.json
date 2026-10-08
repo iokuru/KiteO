@@ -1,0 +1,16 @@
+{
+  "id": "real_placeholder_01",
+  "platform": "codeforces",
+  "problem_id": "CF-PLACEHOLDER-1",
+  "rating": 800,
+  "language": "cpp",
+  "source_file": "sources/real_placeholder_01.cpp",
+  "expected_tc": "O(1)",
+  "expected_sc": "O(1)",
+  "expected_algorithms": [],
+  "variables": [
+    "n"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

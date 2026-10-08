@@ -1,0 +1,18 @@
+{
+  "id": "real_placeholder_03",
+  "platform": "leetcode",
+  "problem_id": "LC-PLACEHOLDER-3",
+  "rating": 1200,
+  "language": "java",
+  "source_file": "sources/real_placeholder_03.java",
+  "expected_tc": "O(n)",
+  "expected_sc": "O(1)",
+  "expected_algorithms": [
+    "Kadane's Algorithm"
+  ],
+  "variables": [
+    "n"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

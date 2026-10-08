@@ -1,0 +1,70 @@
+{
+  "manifest_version": "1.0",
+  "manifest_sha256": "dea82e3f953609d4d5a525fb8cef1cdfb40497c8666db53f318b83fbd28a7582",
+  "description": "30% held-out partition manifest for real accepted solutions",
+  "total_cases": 10,
+  "dev_count": 7,
+  "held_out_count": 3,
+  "cases": [
+    {
+      "id": "real_placeholder_01",
+      "split": "dev",
+      "language": "cpp",
+      "platform": "codeforces"
+    },
+    {
+      "id": "real_placeholder_02",
+      "split": "dev",
+      "language": "cpp",
+      "platform": "codeforces"
+    },
+    {
+      "id": "real_placeholder_03",
+      "split": "held_out",
+      "language": "java",
+      "platform": "leetcode"
+    },
+    {
+      "id": "real_placeholder_04",
+      "split": "dev",
+      "language": "cpp",
+      "platform": "codeforces"
+    },
+    {
+      "id": "real_placeholder_05",
+      "split": "dev",
+      "language": "java",
+      "platform": "leetcode"
+    },
+    {
+      "id": "real_placeholder_06",
+      "split": "held_out",
+      "language": "cpp",
+      "platform": "atcoder"
+    },
+    {
+      "id": "real_placeholder_07",
+      "split": "dev",
+      "language": "cpp",
+      "platform": "codeforces"
+    },
+    {
+      "id": "real_placeholder_08",
+      "split": "dev",
+      "language": "java",
+      "platform": "codechef"
+    },
+    {
+      "id": "real_placeholder_09",
+      "split": "dev",
+      "language": "cpp",
+      "platform": "cses"
+    },
+    {
+      "id": "real_placeholder_10",
+      "split": "held_out",
+      "language": "cpp",
+      "platform": "codeforces"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "real_placeholder_06",
+  "platform": "atcoder",
+  "problem_id": "ABC-PLACEHOLDER-6",
+  "rating": 1500,
+  "language": "cpp",
+  "source_file": "sources/real_placeholder_06.cpp",
+  "expected_tc": "O(n log log n)",
+  "expected_sc": "O(n)",
+  "expected_algorithms": [
+    "Sieve"
+  ],
+  "variables": [
+    "n"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

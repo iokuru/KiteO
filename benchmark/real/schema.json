@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KiteO Real Accepted Solution Benchmark Schema",
+  "type": "object",
+  "required": [
+    "id",
+    "platform",
+    "problem_id",
+    "rating",
+    "language",
+    "source_file",
+    "expected_tc",
+    "expected_sc",
+    "expected_algorithms",
+    "variables",
+    "case_type",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this real benchmark case"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "codeforces",
+        "leetcode",
+        "atcoder",
+        "codechef",
+        "cses",
+        "hackerrank",
+        "geeksforgeeks",
+        "hackerearth",
+        "onlinegdb",
+        "jdoodle",
+        "programiz",
+        "replit"
+      ]
+    },
+    "problem_id": {
+      "type": "string",
+      "description": "Platform-specific problem identifier (e.g. 4A, 1872D, 15)"
+    },
+    "rating": {
+      "type": ["integer", "null"],
+      "description": "Contest difficulty rating (e.g. 800, 1400, 1800) or null if unrated"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["cpp", "java"]
+    },
+    "source_file": {
+      "type": "string",
+      "description": "Relative path to raw accepted submission source file"
+    },
+    "expected_tc": {
+      "type": "string",
+      "description": "Exact expected Big-O time complexity (e.g. O(n), O(n log n))"
+    },
+    "expected_sc": {
+      "type": "string",
+      "description": "Exact expected Big-O auxiliary space complexity (e.g. O(1), O(n))"
+    },
+    "expected_algorithms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of canonical labels from the closed 39-algorithm catalog (max 3)"
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Complexity variables referenced (e.g. ['n'], ['n', 'q'])"
+    },
+    "case_type": {
+      "type": "string",
+      "description": "Classification: standard, multi_testcase, helper_recursion, library_heavy"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "label_disputed"],
+      "description": "Status of the ground-truth annotation"
+    }
+  },
+  "additionalProperties": false
+}

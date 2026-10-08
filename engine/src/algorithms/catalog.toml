@@ -1,0 +1,276 @@
+# KiteO Closed Canonical Algorithm Catalog (39 Labels)
+# status: "approved" | "candidate"
+# category: "technique" | "data_structure" | "algorithm" | "paradigm"
+
+[[algorithm]]
+name = "Segment Tree"
+status = "approved"
+category = "data_structure"
+priority = 1
+suppresses = []
+
+[[algorithm]]
+name = "Fenwick Tree"
+status = "approved"
+category = "data_structure"
+priority = 2
+suppresses = []
+
+[[algorithm]]
+name = "Sparse Table"
+status = "approved"
+category = "data_structure"
+priority = 3
+suppresses = []
+
+[[algorithm]]
+name = "Dijkstra"
+status = "approved"
+category = "algorithm"
+priority = 4
+suppresses = ["BFS", "Heap / Priority Queue"]
+
+[[algorithm]]
+name = "MST"
+status = "approved"
+category = "algorithm"
+priority = 5
+suppresses = []
+
+[[algorithm]]
+name = "Strongly Connected Components"
+status = "candidate"
+category = "algorithm"
+priority = 6
+suppresses = ["DFS"]
+
+[[algorithm]]
+name = "Topological Sort"
+status = "approved"
+category = "algorithm"
+priority = 7
+suppresses = ["BFS", "DFS"]
+
+[[algorithm]]
+name = "LCA"
+status = "approved"
+category = "algorithm"
+priority = 8
+suppresses = []
+
+[[algorithm]]
+name = "Binary Lifting"
+status = "approved"
+category = "technique"
+priority = 9
+suppresses = []
+
+[[algorithm]]
+name = "Trie"
+status = "approved"
+category = "data_structure"
+priority = 10
+suppresses = []
+
+[[algorithm]]
+name = "DSU"
+status = "approved"
+category = "data_structure"
+priority = 11
+suppresses = []
+
+[[algorithm]]
+name = "KMP"
+status = "approved"
+category = "algorithm"
+priority = 12
+suppresses = []
+
+[[algorithm]]
+name = "Z Algorithm"
+status = "approved"
+category = "algorithm"
+priority = 13
+suppresses = []
+
+[[algorithm]]
+name = "Rolling Hash"
+status = "approved"
+category = "technique"
+priority = 14
+suppresses = []
+
+[[algorithm]]
+name = "Sieve"
+status = "approved"
+category = "algorithm"
+priority = 15
+suppresses = []
+
+[[algorithm]]
+name = "Kadane's Algorithm"
+status = "approved"
+category = "algorithm"
+priority = 16
+suppresses = []
+
+[[algorithm]]
+name = "Tree DP"
+status = "approved"
+category = "paradigm"
+priority = 17
+suppresses = ["Dynamic Programming", "DFS"]
+
+[[algorithm]]
+name = "Bitmask DP"
+status = "approved"
+category = "paradigm"
+priority = 18
+suppresses = ["Dynamic Programming"]
+
+[[algorithm]]
+name = "Dynamic Programming"
+status = "candidate"
+category = "paradigm"
+priority = 19
+suppresses = []
+
+[[algorithm]]
+name = "Backtracking"
+status = "candidate"
+category = "paradigm"
+priority = 20
+suppresses = []
+
+[[algorithm]]
+name = "Divide and Conquer"
+status = "candidate"
+category = "paradigm"
+priority = 21
+suppresses = []
+
+[[algorithm]]
+name = "Binary Search on Answer"
+status = "approved"
+category = "technique"
+priority = 22
+suppresses = ["Binary Search"]
+
+[[algorithm]]
+name = "Two Heaps"
+status = "candidate"
+category = "data_structure"
+priority = 23
+suppresses = ["Heap / Priority Queue"]
+
+[[algorithm]]
+name = "Top K"
+status = "candidate"
+category = "technique"
+priority = 24
+suppresses = ["Heap / Priority Queue"]
+
+[[algorithm]]
+name = "Heap / Priority Queue"
+status = "candidate"
+category = "data_structure"
+priority = 25
+suppresses = []
+
+[[algorithm]]
+name = "Monotonic Stack"
+status = "approved"
+category = "data_structure"
+priority = 26
+suppresses = []
+
+[[algorithm]]
+name = "Monotonic Queue"
+status = "approved"
+category = "data_structure"
+priority = 27
+suppresses = []
+
+[[algorithm]]
+name = "Cycle Detection"
+status = "candidate"
+category = "algorithm"
+priority = 28
+suppresses = []
+
+[[algorithm]]
+name = "Linked List Reversal"
+status = "candidate"
+category = "technique"
+priority = 29
+suppresses = []
+
+[[algorithm]]
+name = "Fast and Slow Pointers"
+status = "candidate"
+category = "technique"
+priority = 30
+suppresses = []
+
+[[algorithm]]
+name = "Sliding Window"
+status = "approved"
+category = "technique"
+priority = 31
+suppresses = ["Two Pointers"]
+
+[[algorithm]]
+name = "Two Pointers"
+status = "approved"
+category = "technique"
+priority = 32
+suppresses = []
+
+[[algorithm]]
+name = "Binary Search"
+status = "approved"
+category = "algorithm"
+priority = 33
+suppresses = []
+
+[[algorithm]]
+name = "Difference Array"
+status = "candidate"
+category = "technique"
+priority = 34
+suppresses = []
+
+[[algorithm]]
+name = "Prefix Sum"
+status = "approved"
+category = "technique"
+priority = 35
+suppresses = []
+
+[[algorithm]]
+name = "Coordinate Compression"
+status = "candidate"
+category = "technique"
+priority = 36
+suppresses = []
+
+[[algorithm]]
+name = "BFS"
+status = "approved"
+category = "algorithm"
+priority = 37
+suppresses = []
+
+[[algorithm]]
+name = "DFS"
+status = "approved"
+category = "algorithm"
+priority = 38
+suppresses = []
+
+[[algorithm]]
+name = "Sorting"
+status = "approved"
+category = "algorithm"
+priority = 39
+suppresses = []

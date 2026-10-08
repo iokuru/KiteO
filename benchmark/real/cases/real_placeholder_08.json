@@ -1,0 +1,18 @@
+{
+  "id": "real_placeholder_08",
+  "platform": "codechef",
+  "problem_id": "CC-PLACEHOLDER-8",
+  "rating": 1700,
+  "language": "java",
+  "source_file": "sources/real_placeholder_08.java",
+  "expected_tc": "O(n)",
+  "expected_sc": "O(n)",
+  "expected_algorithms": [
+    "DSU"
+  ],
+  "variables": [
+    "n"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

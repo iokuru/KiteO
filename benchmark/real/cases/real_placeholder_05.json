@@ -1,0 +1,18 @@
+{
+  "id": "real_placeholder_05",
+  "platform": "leetcode",
+  "problem_id": "LC-PLACEHOLDER-5",
+  "rating": 1400,
+  "language": "java",
+  "source_file": "sources/real_placeholder_05.java",
+  "expected_tc": "O(log n)",
+  "expected_sc": "O(1)",
+  "expected_algorithms": [
+    "Binary Search"
+  ],
+  "variables": [
+    "n"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "real_placeholder_09",
+  "platform": "cses",
+  "problem_id": "CSES-PLACEHOLDER-9",
+  "rating": 1800,
+  "language": "cpp",
+  "source_file": "sources/real_placeholder_09.cpp",
+  "expected_tc": "O(n + q log n)",
+  "expected_sc": "O(n)",
+  "expected_algorithms": [
+    "Segment Tree"
+  ],
+  "variables": [
+    "n",
+    "q"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}

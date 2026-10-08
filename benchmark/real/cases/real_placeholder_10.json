@@ -1,0 +1,20 @@
+{
+  "id": "real_placeholder_10",
+  "platform": "codeforces",
+  "problem_id": "CF-PLACEHOLDER-10",
+  "rating": 1800,
+  "language": "cpp",
+  "source_file": "sources/real_placeholder_10.cpp",
+  "expected_tc": "O(n log n + q log n)",
+  "expected_sc": "O(n log n)",
+  "expected_algorithms": [
+    "LCA",
+    "Binary Lifting"
+  ],
+  "variables": [
+    "n",
+    "q"
+  ],
+  "case_type": "standard",
+  "status": "ok"
+}
