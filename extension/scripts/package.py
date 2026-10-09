@@ -32,7 +32,7 @@ def zip_directory(source_dir, output_zip):
     print(f"Created archive: {output_zip} ({size_kb:.1f} KB)")
 
 def main():
-    print("=== Building KiteO Browser Extension ===")
+    print("=== Building Kite0 Browser Extension ===")
     subprocess.run(["npm", "run", "build"], cwd=EXTENSION_ROOT, check=True, shell=True)
 
     dist_dir = os.path.join(EXTENSION_ROOT, "dist")
@@ -51,7 +51,7 @@ def main():
 
     chrome_manifest = {
         "manifest_version": 3,
-        "name": "KiteO - Static Complexity Analyzer",
+        "name": "Kite0 - Static Complexity Analyzer",
         "version": "0.1.0",
         "description": "Deterministic local static complexity analyzer for competitive programming. Zero telemetry, 100% offline WebAssembly.",
         "icons": {
@@ -66,7 +66,7 @@ def main():
         },
         "action": {
             "default_popup": "src/popup/index.html",
-            "default_title": "KiteO Complexity Analyzer",
+            "default_title": "Kite0 Complexity Analyzer",
             "default_icon": {
                 "16": "icons/icon-16.png",
                 "48": "icons/icon-48.png",
@@ -97,7 +97,7 @@ def main():
 
     firefox_manifest = {
         "manifest_version": 3,
-        "name": "KiteO - Static Complexity Analyzer",
+        "name": "Kite0 - Static Complexity Analyzer",
         "version": "0.1.0",
         "description": "Deterministic local static complexity analyzer for competitive programming. Zero telemetry, 100% offline WebAssembly.",
         "browser_specific_settings": {
@@ -117,7 +117,7 @@ def main():
         },
         "action": {
             "default_popup": "src/popup/index.html",
-            "default_title": "KiteO Complexity Analyzer",
+            "default_title": "Kite0 Complexity Analyzer",
             "default_icon": {
                 "16": "icons/icon-16.png",
                 "48": "icons/icon-48.png",

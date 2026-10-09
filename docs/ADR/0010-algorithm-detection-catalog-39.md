@@ -9,7 +9,7 @@ ADR 0004 defined a 26-label canonical catalog. To support comprehensive competit
 ## Decision
 
 ### 1. Catalog (39 Canonical Labels)
-KiteO recognizes exclusively the following 39 canonical algorithm labels:
+Kite0 recognizes exclusively the following 39 canonical algorithm labels:
 - **Techniques**: Binary Lifting, Rolling Hash, Binary Search on Answer, Top K, Linked List Reversal, Fast and Slow Pointers, Sliding Window, Two Pointers, Difference Array, Prefix Sum, Coordinate Compression.
 - **Data Structures**: Segment Tree, Fenwick Tree, Sparse Table, Trie, DSU, Two Heaps, Heap / Priority Queue, Monotonic Stack, Monotonic Queue.
 - **Algorithms**: Dijkstra, MST, Strongly Connected Components, Topological Sort, LCA, KMP, Z Algorithm, Sieve, Kadane's Algorithm, Cycle Detection, Binary Search, BFS, DFS, Sorting.

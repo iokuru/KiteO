@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "KiteO Real Accepted Solution Benchmark Schema",
+  "title": "Kite0 Real Accepted Solution Benchmark Schema",
   "type": "object",
   "required": [
     "id",

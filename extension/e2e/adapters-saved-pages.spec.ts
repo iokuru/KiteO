@@ -4,7 +4,7 @@ import { CodeforcesAdapter } from '../src/platform/codeforces';
 import { LeetCodeAdapter } from '../src/platform/leetcode';
 import { AtCoderAdapter, CsesAdapter } from '../src/platform/competitive_platforms';
 
-test.describe('KiteO Adapters on Saved Authentic Pages', () => {
+test.describe('Kite0 Adapters on Saved Authentic Pages', () => {
   const fixturesDir = path.resolve(process.cwd(), 'e2e/fixtures');
 
   test('Codeforces adapter extracts code and language from authentic problem page', async ({ page }) => {

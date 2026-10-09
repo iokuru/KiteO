@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { getPlatformAdapter, getAllPlatformAdapters } from '../src/platform/registry';
 
-test.describe('KiteO Platform Adapters Architecture', () => {
+test.describe('Kite0 Platform Adapters Architecture', () => {
   test('all 12 required competitive programming and online IDE platforms are registered', () => {
     const adapters = getAllPlatformAdapters();
     const names = adapters.map(a => a.name);

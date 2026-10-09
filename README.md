@@ -1,6 +1,6 @@
-# KiteO
+# Kite0
 
-KiteO is a deterministic, non-generative browser extension powered by a local Rust/WebAssembly static analyzer for competitive programming solutions. It reads code directly from coding platform editors and determines time complexity, space complexity, and primary algorithm labels without using external servers or generative AI.
+Kite0 is a deterministic, non-generative browser extension powered by a local Rust/WebAssembly static analyzer for competitive programming solutions. It reads code directly from coding platform editors and determines time complexity, space complexity, and primary algorithm labels without using external servers or generative AI.
 
 ## Key Features
 
@@ -21,7 +21,7 @@ KiteO is a deterministic, non-generative browser extension powered by a local Ru
 ## Monorepo Layout
 
 ```
-KiteO/
+Kite0/
 ├── .github/workflows/       # Automated CI (cargo fmt, clippy, test, wasm check, e2e)
 ├── benchmark/
 │   ├── corpus/              # 152 canonical labeled snippets (76 C++ / 76 Java) & dev2 (70 synthetic)
@@ -72,7 +72,7 @@ KiteO/
 
 ## Authoritative Closed Canonical Algorithm Catalog (68 Labels)
 
-KiteO strictly restricts its algorithm classification vocabulary to the following closed 68-label catalog declared in [`engine/src/algorithms/catalog.toml`](file:///d:/Hiring%20Projects/KiteO/engine/src/algorithms/catalog.toml):
+Kite0 strictly restricts its algorithm classification vocabulary to the following closed 68-label catalog declared in [`engine/src/algorithms/catalog.toml`](file:///d:/Hiring%20Projects/Kite0/engine/src/algorithms/catalog.toml):
 
 ### Categorical Groups
 - **Arrays, Hashing and Searching**: Two Pointers, Fast and Slow Pointers, Sliding Window, Prefix Sum, Difference Array, Binary Search, Binary Search on Answer, Sorting, Hash Map, Hash Set, Frequency Counting, Kadane's Algorithm, Intervals, Matrix / Grid, Coordinate Compression.

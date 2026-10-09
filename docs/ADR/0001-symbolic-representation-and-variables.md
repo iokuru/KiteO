@@ -7,7 +7,7 @@ Accepted
 Competitive programming problems use standard asymptotic variables to express problem dimensions. Generic algebra systems tend to aggressively reduce or conflate distinct problem dimensions, which destroys the semantic meaning required by competitive programmers (e.g. distinguishing query count from array size).
 
 ## Decision
-1. KiteO tracks standard competitive programming size dimensions:
+1. Kite0 tracks standard competitive programming size dimensions:
    - `n`, `m`: primary input sequence or matrix dimensions
    - `q`: number of queries
    - `k`: window size, subset size, or block parameter

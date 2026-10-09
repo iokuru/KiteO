@@ -8,5 +8,5 @@ Online competitive programming platforms (Codeforces, AtCoder, CodeChef, LeetCod
 
 ## Decision
 1. **Contest Mode Default**: When a platform adapter detects that an active URL is within a live, rated contest, the analyzer is disabled by default and presents the platform's active rule.
-2. **No Evasion**: KiteO will never implement bypasses or spoofing techniques to evade contest detection.
-3. **Non-Generative Scope**: KiteO does not generate code, offer hints, provide natural language explanations, or suggest refactorings. It serves exclusively as a transparent, deterministic static calculator for asymptotic bounds and algorithmic structure.
+2. **No Evasion**: Kite0 will never implement bypasses or spoofing techniques to evade contest detection.
+3. **Non-Generative Scope**: Kite0 does not generate code, offer hints, provide natural language explanations, or suggest refactorings. It serves exclusively as a transparent, deterministic static calculator for asymptotic bounds and algorithmic structure.

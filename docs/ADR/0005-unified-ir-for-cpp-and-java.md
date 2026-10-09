@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-KiteO treats C++ and Java as first-class languages. Maintaining two independent static analysis pipelines risks divergent complexity calculations, duplicated logic, and maintenance overhead.
+Kite0 treats C++ and Java as first-class languages. Maintaining two independent static analysis pipelines risks divergent complexity calculations, duplicated logic, and maintenance overhead.
 
 ## Decision
 1. C++ and Java parse into their respective Tree-sitter concrete syntax trees and are immediately lowered into a shared, language-agnostic Intermediate Representation (IR).

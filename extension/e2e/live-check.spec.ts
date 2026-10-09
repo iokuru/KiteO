@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { CodeforcesAdapter } from '../src/platform/codeforces';
 import { LeetCodeAdapter } from '../src/platform/leetcode';
 
-test.describe('KiteO Live Platform Connectivity and Adapter Check', () => {
+test.describe('Kite0 Live Platform Connectivity and Adapter Check', () => {
   test('live check on Codeforces problemset connectivity and adapter routing', async ({ page }) => {
     const cfUrl = 'https://codeforces.com/problemset/problem/4/A';
     const cfAdapter = new CodeforcesAdapter();

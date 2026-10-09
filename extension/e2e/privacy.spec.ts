@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('KiteO Privacy & Zero-Network-Request Audit', () => {
+test.describe('Kite0 Privacy & Zero-Network-Request Audit', () => {
   test('strictly zero external network requests are made during page load and analysis', async ({ page }) => {
     const interceptedRequests: string[] = [];
 

@@ -160,7 +160,7 @@ def main():
     os.makedirs("benchmark/reports", exist_ok=True)
     report_path = "benchmark/reports/empirical_validation_report.md"
     with open(report_path, "w", encoding="utf-8") as f:
-        f.write("# KiteO Empirical Complexity Scaling Report\n\n")
+        f.write("# Kite0 Empirical Complexity Scaling Report\n\n")
         f.write(r"Empirical power-law scaling analysis comparing predicted asymptotic bounds with measured wall-clock scaling ($\Delta \ln T / \Delta \ln N$)." + "\n\n")
         f.write("| Algorithm Class | Predicted Big-O | Theoretical Exponent | Measured Exponent | Status |\n")
         f.write("| :--- | :--- | :--- | :--- | :--- |\n")

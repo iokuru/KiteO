@@ -333,7 +333,7 @@ def main():
     print("================================================================================")
 
     # Write report
-    report_md = "# KiteO Empirical Scaling Validation Report: Real Competitive Programming Solutions\n\n"
+    report_md = "# Kite0 Empirical Scaling Validation Report: Real Competitive Programming Solutions\n\n"
     report_md += "**Compiler**: `g++ -O2 -std=c++17`  \n"
     report_md += "**Timer**: `std::chrono::high_resolution_clock` (pure algorithmic timing excluding process startup)  \n"
     report_md += "**Methodology**: Real accepted competitive programming solutions compiled to native binaries, driven with doubling input sizes, measuring monotonic wall-clock scaling: $\\ln T = \\alpha \\ln N + \\beta$.  \n\n"

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('KiteO Analyzer UI & Engine Tests', () => {
+test.describe('Kite0 Analyzer UI & Engine Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test-page.html');
     await page.waitForLoadState('networkidle');
@@ -8,7 +8,7 @@ test.describe('KiteO Analyzer UI & Engine Tests', () => {
   });
 
   test('loads initial page with ready status', async ({ page }) => {
-    await expect(page.locator('h1')).toHaveText('KiteO Local Static Analyzer');
+    await expect(page.locator('h1')).toHaveText('Kite0 Local Static Analyzer');
     const status = page.locator('#status');
     await expect(status).toBeVisible();
     await expect(status).toContainText('Zero network requests');

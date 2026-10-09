@@ -93,7 +93,7 @@ export function App() {
   return (
     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #334155', paddingBottom: '8px' }}>
-        <span style={{ fontWeight: 700, fontSize: '15px', letterSpacing: '0.05em' }}>KiteO</span>
+        <span style={{ fontWeight: 700, fontSize: '15px', letterSpacing: '0.05em' }}>Kite0</span>
         <span style={{ fontSize: '11px', color: '#94a3b8' }}>{pageState.platformName || 'Local CP Analyzer'}</span>
       </div>
 
