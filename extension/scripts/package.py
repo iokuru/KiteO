@@ -103,10 +103,13 @@ def main():
         "browser_specific_settings": {
             "gecko": {
                 "id": "kiteo@iokuru.github.io",
-                "strict_min_version": "109.0",
+                "strict_min_version": "140.0",
                 "data_collection_permissions": {
                     "required": ["none"]
                 }
+            },
+            "gecko_android": {
+                "strict_min_version": "142.0"
             }
         },
         "icons": {
