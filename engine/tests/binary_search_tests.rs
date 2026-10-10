@@ -18,8 +18,7 @@ fn test_standard_binary_search_cpp() {
     let res = analyze(code, "cpp");
     assert_eq!(res.tc, "O(log n)");
     assert_eq!(res.sc, "O(1)");
-    // While Binary Search is a candidate in catalog.toml, UI algorithms output is empty
-    assert!(res.algorithms.is_empty());
+    assert_eq!(res.algorithms, vec!["Binary Search"]);
     assert!(kiteo_engine::algorithms::AlgorithmDetector::detect_raw(code)
         .contains(&kiteo_engine::algorithms::AllowedAlgorithm::BinarySearch));
 }
@@ -46,7 +45,7 @@ fn test_binary_search_on_answer_cpp() {
     let res = analyze(code, "cpp");
     assert_eq!(res.tc, "O(n log A)");
     assert_eq!(res.sc, "O(1)");
-    assert!(res.algorithms.is_empty());
+    assert_eq!(res.algorithms, vec!["Binary Search on Answer"]);
     assert!(kiteo_engine::algorithms::AlgorithmDetector::detect_raw(code)
         .contains(&kiteo_engine::algorithms::AllowedAlgorithm::BinarySearchOnAnswer));
 }

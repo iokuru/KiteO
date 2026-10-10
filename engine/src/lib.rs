@@ -42,11 +42,21 @@ fn canonical_from_detected(
     algo_names: &[String],
     preprocessed: &str,
 ) -> Option<AnalysisOutput> {
+    let resolved_algos = if algo_names.is_empty() {
+        algorithms::select_labels(detected_algos, preprocessed, false)
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    } else {
+        algo_names.to_vec()
+    };
+    
+
     if detected_algos.contains(&AllowedAlgorithm::Sieve) {
         return Some(AnalysisOutput {
             tc: "O(n log log n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -54,7 +64,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n + q log n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -62,7 +72,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(q log n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -70,7 +80,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n log n + q)".to_string(),
             sc: "O(n log n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -78,7 +88,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(E log V)".to_string(),
             sc: "O(V + E)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -88,7 +98,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n log n + q log n)".to_string(),
             sc: "O(n log n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -96,7 +106,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -104,7 +114,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -112,7 +122,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O((V + E) log V)".to_string(),
             sc: "O(V + E)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -123,7 +133,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(V + E)".to_string(),
             sc: "O(V + E)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -131,7 +141,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n log A)".to_string(),
             sc: "O(1)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -139,7 +149,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(log n)".to_string(),
             sc: "O(1)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -147,7 +157,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -155,7 +165,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(2^n * n)".to_string(),
             sc: "O(2^n * n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -163,7 +173,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n log n)".to_string(),
             sc: "O(log n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -171,7 +181,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n + m)".to_string(),
             sc: "O(m)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -179,7 +189,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -187,7 +197,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -195,7 +205,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -203,7 +213,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(k)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -211,7 +221,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(1)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -219,7 +229,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -236,7 +246,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc,
             sc: "O(1)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -256,7 +266,7 @@ fn canonical_from_detected(
         return Some(AnalysisOutput {
             tc: "O(n)".to_string(),
             sc: "O(n)".to_string(),
-            algorithms: algo_names.to_vec(),
+            algorithms: resolved_algos.clone(),
         });
     }
 
@@ -267,10 +277,17 @@ pub fn analyze_ast(code: &str, lang: &str, ast: &AstNode) -> AnalysisOutput {
     let preprocessed = preprocessor::preprocess(code);
     let raw_algos = AlgorithmDetector::detect_raw(&preprocessed);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
-    let algo_names: Vec<String> = detected_algos
-        .iter()
-        .map(|a| a.as_str().to_string())
-        .collect();
+    let algo_names: Vec<String> = if detected_algos.is_empty() {
+        algorithms::select_labels(&raw_algos, &preprocessed, false)
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    } else {
+        detected_algos
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    };
 
     // Check specific known canonical structures first for TC/SC
     if let Some(canonical) = canonical_from_detected(&raw_algos, &algo_names, &preprocessed) {
@@ -320,10 +337,17 @@ pub fn analyze_heuristic(code: &str, _lang: &str) -> AnalysisOutput {
     let preprocessed = preprocessor::preprocess(code);
     let raw_algos = AlgorithmDetector::detect_raw(&preprocessed);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
-    let algo_names: Vec<String> = detected_algos
-        .iter()
-        .map(|a| a.as_str().to_string())
-        .collect();
+    let algo_names: Vec<String> = if detected_algos.is_empty() {
+        algorithms::select_labels(&raw_algos, &preprocessed, false)
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    } else {
+        detected_algos
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    };
 
     if let Some(canonical) = canonical_from_detected(&raw_algos, &algo_names, &preprocessed) {
         return canonical;
@@ -455,11 +479,19 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
     }
 
     // tree-sitter parse failed for cpp/java — prefer Unknown over a heuristic guess.
+    let raw_algos = AlgorithmDetector::detect_raw(&preprocessed);
     let detected_algos = AlgorithmDetector::detect(&preprocessed);
-    let algo_names: Vec<String> = detected_algos
-        .iter()
-        .map(|a| a.as_str().to_string())
-        .collect();
+    let algo_names: Vec<String> = if detected_algos.is_empty() {
+        algorithms::select_labels(&raw_algos, &preprocessed, false)
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    } else {
+        detected_algos
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect()
+    };
     AnalysisOutput {
         tc: "Unknown".to_string(),
         sc: "Unknown".to_string(),
@@ -474,18 +506,34 @@ pub fn analyze(code: &str, lang: &str) -> AnalysisOutput {
 
 #[wasm_bindgen]
 pub fn analyze_wasm(code: &str, lang: &str) -> String {
-    let result = analyze(code, lang);
+    let mut result = analyze(code, lang);
+    if result.algorithms.is_empty() {
+        let preprocessed = preprocessor::preprocess(code);
+        let raw = AlgorithmDetector::detect_raw(&preprocessed);
+        result.algorithms = algorithms::select_labels(&raw, &preprocessed, false)
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect();
+    }
     serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string())
 }
 
 #[wasm_bindgen]
 pub fn analyze_wasm_with_ast(code: &str, lang: &str, ast_json: &str) -> String {
-    if let Ok(ast) = serde_json::from_str::<AstNode>(ast_json) {
-        let result = analyze_ast(code, lang, &ast);
-        serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string())
+    let mut result = if let Ok(ast) = serde_json::from_str::<AstNode>(ast_json) {
+        analyze_ast(code, lang, &ast)
     } else {
-        analyze_wasm(code, lang)
+        analyze(code, lang)
+    };
+    if result.algorithms.is_empty() {
+        let preprocessed = preprocessor::preprocess(code);
+        let raw = AlgorithmDetector::detect_raw(&preprocessed);
+        result.algorithms = algorithms::select_labels(&raw, &preprocessed, false)
+            .iter()
+            .map(|a| a.as_str().to_string())
+            .collect();
     }
+    serde_json::to_string(&result).unwrap_or_else(|_| "{}".to_string())
 }
 
 #[wasm_bindgen]

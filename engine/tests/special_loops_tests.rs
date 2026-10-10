@@ -53,7 +53,7 @@ fn test_bitmask_subsets_loop() {
     let res = analyze(code, "cpp");
     assert_eq!(res.tc, "O(2^n * n)");
     assert_eq!(res.sc, "O(2^n * n)");
-    assert!(res.algorithms.is_empty());
+    assert_eq!(res.algorithms, vec!["Bitmask DP"]);
     assert!(kiteo_engine::algorithms::AlgorithmDetector::detect_raw(code)
         .contains(&kiteo_engine::algorithms::AllowedAlgorithm::BitmaskDp));
 }

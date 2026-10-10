@@ -624,16 +624,26 @@ impl AlgorithmDetector {
         }
 
         // 15. Monotonic Stack
-        if (source.contains("stack<")
+        let has_stack = source.contains("stack<")
+            || source.contains("Stack<")
             || source.contains("ArrayDeque")
+            || source.contains("Deque<")
             || source.contains("st.push")
-            || source.contains("st.pop"))
-            && (source.contains("while (!st.empty()") || source.contains("while (!st.isEmpty()"))
-            && (source.contains("< a[i]")
-                || source.contains("> a[i]")
-                || source.contains("< a[")
-                || source.contains("> a["))
-        {
+            || source.contains("st.pop")
+            || source.contains("stack.push")
+            || source.contains("stack.pop");
+        let has_mono_loop = (source.contains("while (!st.empty()")
+            || source.contains("while (!st.isEmpty()")
+            || source.contains("while (!s.empty()")
+            || source.contains("while (!s.isEmpty()")
+            || source.contains("while (!stack.empty()")
+            || source.contains("while (!stack.isEmpty()")
+            || source.contains("while (st.size()")
+            || source.contains("while (stack.size()")
+            || source.contains("while (!st.empty")
+            || source.contains("while (!stack.empty"))
+            && (source.contains("<") || source.contains(">"));
+        if has_stack && has_mono_loop {
             detected.push(AllowedAlgorithm::MonotonicStack);
         }
 
@@ -646,52 +656,145 @@ impl AlgorithmDetector {
         }
 
         // 17. Prefix Sum
-        if (source.contains("pref[i - 1]")
+        let has_prefix_expr = source.contains("pref[i - 1]")
             || source.contains("pref[i-1]")
             || source.contains("prefix[i - 1]")
-            || source.contains("prefix[i-1]"))
-            && !detected.contains(&AllowedAlgorithm::FenwickTree)
-        {
+            || source.contains("prefix[i-1]")
+            || source.contains("prefixSum[i - 1]")
+            || source.contains("prefixSum[i-1]")
+            || source.contains("pre[i - 1]")
+            || source.contains("pre[i-1]");
+        if has_prefix_expr && !detected.contains(&AllowedAlgorithm::FenwickTree) {
             detected.push(AllowedAlgorithm::PrefixSum);
         }
 
-        // 18. Binary Search on Answer
-        if (source.contains("check(")
-            || source.contains("isPossible(")
-            || source.contains("isValid("))
-            && (source.contains("low <= high") || source.contains("l <= r"))
-            && (source.contains("mid = low +")
-                || source.contains("mid = (low +")
-                || source.contains("mid = l +")
-                || source.contains("mid = (l +"))
-        {
-            detected.push(AllowedAlgorithm::BinarySearchOnAnswer);
-        }
+        // 18. Binary Search on Answer & 19. Binary Search
+        let has_bs_bounds = source.contains("low <= high")
+            || source.contains("low < high")
+            || source.contains("l <= r")
+            || source.contains("l < r")
+            || source.contains("left <= right")
+            || source.contains("left < right")
+            || source.contains("lo <= hi")
+            || source.contains("lo < hi")
+            || source.contains("start <= end")
+            || source.contains("start < end");
 
-        // 19. Binary Search
-        if !detected.contains(&AllowedAlgorithm::BinarySearchOnAnswer)
-            && (source.contains("low <= high") || source.contains("l <= r"))
-            && (source.contains("mid = low +")
-                || source.contains("mid = (low +")
-                || source.contains("mid = l +")
-                || source.contains("mid = (l +")
-                || source.contains("mid ="))
-            && !detected.contains(&AllowedAlgorithm::SegmentTree)
-        {
+        let has_bs_mid = source.contains("mid =")
+            || source.contains("mid=")
+            || source.contains("m =")
+            || source.contains("m=")
+            || source.contains("int mid")
+            || source.contains("long mid")
+            || source.contains("auto mid")
+            || source.contains("mid :=");
+
+        let has_bs_update = (source.contains("high =")
+            || source.contains("high=")
+            || source.contains("r =")
+            || source.contains("r=")
+            || source.contains("right =")
+            || source.contains("right=")
+            || source.contains("hi =")
+            || source.contains("hi=")
+            || source.contains("end =")
+            || source.contains("end="))
+            && (source.contains("low =")
+                || source.contains("low=")
+                || source.contains("l =")
+                || source.contains("l=")
+                || source.contains("left =")
+                || source.contains("left=")
+                || source.contains("lo =")
+                || source.contains("lo=")
+                || source.contains("start =")
+                || source.contains("start="));
+
+        let is_binary_search = has_bs_bounds
+            && has_bs_mid
+            && has_bs_update
+            && !detected.contains(&AllowedAlgorithm::SegmentTree);
+
+        let has_bs_answer_predicate = source.contains("check(")
+            || source.contains("check (")
+            || source.contains("isPossible(")
+            || source.contains("isPossible (")
+            || source.contains("isValid(")
+            || source.contains("isValid (")
+            || source.contains("can(")
+            || source.contains("can (")
+            || source.contains("feasible(")
+            || source.contains("good(")
+            || source.contains("ok(");
+
+        let has_inner_loop_in_bs = if is_binary_search {
+            let mut in_while = false;
+            let mut found_inner_loop = false;
+            for line in source.lines() {
+                let trimmed = line.trim();
+                if trimmed.starts_with("while")
+                    && (trimmed.contains("low")
+                        || trimmed.contains("l <")
+                        || trimmed.contains("l <=")
+                        || trimmed.contains("left")
+                        || trimmed.contains("lo")
+                        || trimmed.contains("start"))
+                {
+                    in_while = true;
+                } else if in_while
+                    && (trimmed.starts_with("for ")
+                        || trimmed.starts_with("for(")
+                        || trimmed.starts_with("for:"))
+                {
+                    found_inner_loop = true;
+                    break;
+                } else if in_while && trimmed.starts_with("return ") {
+                    in_while = false;
+                }
+            }
+            found_inner_loop
+        } else {
+            false
+        };
+
+        if is_binary_search && (has_bs_answer_predicate || has_inner_loop_in_bs) {
+            detected.push(AllowedAlgorithm::BinarySearchOnAnswer);
+        } else if is_binary_search {
             detected.push(AllowedAlgorithm::BinarySearch);
         }
 
         // 20. Two Pointers
-        if (source.contains("l < r") || source.contains("left < right"))
-            && (source.contains("l++") || source.contains("left++"))
-            && (source.contains("r--") || source.contains("right--"))
+        let has_two_pointers_bounds = source.contains("l < r")
+            || source.contains("l <= r")
+            || source.contains("left < right")
+            || source.contains("left <= right")
+            || source.contains("i < j")
+            || source.contains("i <= j");
+        let has_two_pointers_adv = (source.contains("l++")
+            || source.contains("left++")
+            || source.contains("i++"))
+            && (source.contains("r--")
+                || source.contains("right--")
+                || source.contains("j--"));
+        if has_two_pointers_bounds
+            && has_two_pointers_adv
+            && !is_binary_search
         {
             detected.push(AllowedAlgorithm::TwoPointers);
         }
 
         // 21. Sliding Window
-        if (source.contains("for (int r = 0") || source.contains("for (int right = 0"))
-            && (source.contains("while (") && (source.contains("l++") || source.contains("left++")))
+        let has_sliding_window = (source.contains("for (int r = 0")
+            || source.contains("for (int right = 0")
+            || source.contains("for (int j = 0")
+            || source.contains("for (int end = 0")
+            || source.contains("r++")
+            || source.contains("right++"))
+            && (source.contains("while (") || source.contains("while("))
+            && (source.contains("l++") || source.contains("left++") || source.contains("start++"));
+        if has_sliding_window
+            && !detected.contains(&AllowedAlgorithm::TwoPointers)
+            && !is_binary_search
         {
             detected.push(AllowedAlgorithm::SlidingWindow);
         }
@@ -725,12 +828,9 @@ impl AlgorithmDetector {
         let has_kadane_reset = (source.contains("< 0") || source.contains("<= 0"))
             && (source.contains("= 0;") || source.contains("= 0\n"));
         let has_kadane_max_choice = (source.contains("max(") || source.contains("Math.max("))
-            && (source.contains("cur + nums[")
-                || source.contains("cur + a[")
-                || source.contains("cur + arr[")
-                || source.contains("cur_max + nums[")
-                || source.contains("cur_max + a[")
-                || source.contains("cur_max + arr[")
+            && (source.contains("cur +")
+                || source.contains("cur_max +")
+                || source.contains("sum +")
                 || source.contains("max(0,")
                 || source.contains("max(0LL,")
                 || source.contains("Math.max(0,"));
@@ -742,7 +842,11 @@ impl AlgorithmDetector {
             && (source.contains("max(") || source.contains("Math.max("));
         let not_sliding_window = !source.contains("l++") && !source.contains("left++");
 
-        if (has_kadane_reset || has_kadane_max_choice) && tracks_global_max && not_sliding_window {
+        if (has_kadane_reset || has_kadane_max_choice)
+            && tracks_global_max
+            && not_sliding_window
+            && !detected.contains(&AllowedAlgorithm::TwoPointers)
+        {
             detected.push(AllowedAlgorithm::KadanesAlgorithm);
         }
 

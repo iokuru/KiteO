@@ -155,3 +155,36 @@ fn test_python_bfs_num_islands() {
     assert!(AlgorithmDetector::detect_raw(code).contains(&AllowedAlgorithm::Bfs));
 }
 
+#[test]
+fn test_koko_eating_bananas_bs_on_answer() {
+    let code = r#"
+    class Solution {
+        public int minEatingSpeed(int[] piles, int h) {
+            int low = 1, high = 0;
+            for (int p : piles) {
+                high = Math.max(high, p);
+            }
+            while (low < high) {
+                int mid = low + (high - low) / 2;
+                long hours = 0;
+                for (int p : piles) {
+                    hours += (p + (long) mid - 1) / mid;
+                }
+                if (hours <= h) {
+                    high = mid;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            return low;
+        }
+    }
+    "#;
+    assert!(AlgorithmDetector::detect_raw(code).contains(&AllowedAlgorithm::BinarySearchOnAnswer));
+    let analysis = kiteo_engine::analyze_heuristic(code, "java");
+    assert_eq!(analysis.tc, "O(n log A)");
+    assert_eq!(analysis.sc, "O(1)");
+    assert_eq!(analysis.algorithms, vec!["Binary Search on Answer"]);
+}
+
+
