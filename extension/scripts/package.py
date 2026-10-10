@@ -79,6 +79,12 @@ def main():
                 "js": ["content.js"],
             }
         ],
+        "web_accessible_resources": [
+            {
+                "resources": ["*.wasm", "assets/*", "icons/*"],
+                "matches": ["<all_urls>"],
+            }
+        ],
     }
 
     with open(os.path.join(chrome_dir, "manifest.json"), "w", encoding="utf-8") as f:
@@ -134,6 +140,12 @@ def main():
             {
                 "matches": MATCHES,
                 "js": ["content.js"],
+            }
+        ],
+        "web_accessible_resources": [
+            {
+                "resources": ["*.wasm", "assets/*", "icons/*"],
+                "matches": ["<all_urls>"],
             }
         ],
     }

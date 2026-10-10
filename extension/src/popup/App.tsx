@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import browser from 'webextension-polyfill';
+import { analyzeCode } from '../shared/analyzer';
 import type { AnalysisResult } from '../shared/types';
 
 interface PageState {
@@ -99,20 +100,26 @@ export function App() {
         editorAvailable: true,
       });
 
-      const analysis: AnalysisResult = await browser.runtime.sendMessage({
-        type: 'ANALYZE_REQUEST',
-        payload: {
-          source: response.source,
-          language: response.language || 'cpp',
-        },
-      });
+      let analysis: AnalysisResult;
+      try {
+        analysis = await analyzeCode(response.source, response.language || 'cpp');
+      } catch (directErr) {
+        analysis = await browser.runtime.sendMessage({
+          type: 'ANALYZE_REQUEST',
+          payload: {
+            source: response.source,
+            language: response.language || 'cpp',
+          },
+        });
+      }
 
       setResult(analysis);
-    } catch {
+    } catch (err: any) {
+      console.error('Kite0 error:', err);
       setPageState({
         loading: false,
         supported: false,
-        error: 'Please refresh the problem page and try again.',
+        error: String(err?.message || err || 'Failed to analyze code in active editor.'),
       });
     }
   }
@@ -182,7 +189,7 @@ export function App() {
             (e.currentTarget as HTMLElement).style.background = '#ffffff';
           }}
         >
-          Scan
+          Search
         </button>
       </div>
 
