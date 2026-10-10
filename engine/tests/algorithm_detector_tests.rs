@@ -125,3 +125,33 @@ fn test_dijkstra_positive_and_negative() {
     "#;
     assert!(!AlgorithmDetector::detect_raw(negative_max_heap).contains(&AllowedAlgorithm::Dijkstra));
 }
+
+#[test]
+fn test_grid_dfs_positive() {
+    let code = r#"
+    void dfs(vector<vector<char>>& grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == '0') return;
+        grid[i][j] = '0';
+        dfs(grid, i + 1, j);
+        dfs(grid, i - 1, j);
+    }
+    "#;
+    assert!(AlgorithmDetector::detect_raw(code).contains(&AllowedAlgorithm::Dfs));
+}
+
+#[test]
+fn test_python_bfs_num_islands() {
+    let code = r#"
+    class Solution:
+        def numIslands(self, grid: List[List[str]]) -> int:
+            visited = set()
+            def bfs(r, c):
+                q = collections.deque()
+                visited.add((r, c))
+                q.append((r, c))
+                while q:
+                    row, col = q.popleft()
+    "#;
+    assert!(AlgorithmDetector::detect_raw(code).contains(&AllowedAlgorithm::Bfs));
+}
+

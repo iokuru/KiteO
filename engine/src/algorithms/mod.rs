@@ -563,8 +563,23 @@ impl AlgorithmDetector {
         }
 
         // 11. BFS
-        if (source.contains("queue") || source.contains("Queue") || source.contains("LinkedList"))
-            && (source.contains("vis[") || source.contains("visited") || source.contains("vis."))
+        if (source.contains("queue")
+            || source.contains("Queue")
+            || source.contains("LinkedList")
+            || source.contains("deque")
+            || source.contains("Deque")
+            || source.contains("popleft")
+            || source.contains("bfs(")
+            || source.contains("bfs (")
+            || source.contains("def bfs")
+            || source.contains("void bfs"))
+            && (source.contains("vis[")
+                || source.contains("visited")
+                || source.contains("vis.")
+                || source.contains("grid[")
+                || source.contains("grid.")
+                || source.contains("board[")
+                || source.contains("matrix["))
             && !detected.contains(&AllowedAlgorithm::TopologicalSort)
             && !detected.contains(&AllowedAlgorithm::Dijkstra)
         {
@@ -582,8 +597,18 @@ impl AlgorithmDetector {
 
         // 13. DFS
         if !detected.contains(&AllowedAlgorithm::TreeDp)
-            && (source.contains("dfs(") || source.contains("dfs ("))
-            && (source.contains("vis[") || source.contains("vis.") || source.contains("visited"))
+            && (source.contains("dfs(") || source.contains("dfs (") || source.contains("dfs "))
+            && (source.contains("vis[")
+                || source.contains("vis.")
+                || source.contains("visited")
+                || source.contains("grid[")
+                || source.contains("grid.")
+                || source.contains("board[")
+                || source.contains("matrix[")
+                || source.contains("dfs(grid")
+                || source.contains("dfs (grid")
+                || source.contains("dfs(r")
+                || source.contains("dfs(i"))
         {
             detected.push(AllowedAlgorithm::Dfs);
         }

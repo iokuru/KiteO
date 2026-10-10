@@ -22,7 +22,63 @@ export class LeetCodeAdapter implements PlatformAdapter {
   }
 
   getSource(): string | null {
-    // 1. Primary: Extract lines from Monaco editor DOM
+    // 1. Primary: Locate the specific Solution code editor container
+    // Avoid console, testcase, or test-result sub-editors
+    const codeEditorContainers = [
+      document.querySelector('[data-track-load="code_editor"]'),
+      document.querySelector('[data-mode-id="cpp"], [data-mode-id="java"], [data-mode-id="python3"], [data-mode-id="c"]')?.closest('.monaco-editor'),
+      document.querySelector('.editor-container .monaco-editor'),
+    ];
+
+    for (const container of codeEditorContainers) {
+      if (container) {
+        const lines = container.querySelectorAll('.view-lines .view-line, .view-line');
+        if (lines.length > 0) {
+          const text = Array.from(lines)
+            .map((l) => (l.textContent || '').replace(/\u00a0/g, ' '))
+            .join('\n')
+            .trim();
+          if (text.length > 0) return text;
+        }
+      }
+    }
+
+    // 2. Iterate all monaco-editor instances and select the one with actual solution code
+    const allEditors = document.querySelectorAll('.monaco-editor');
+    let bestCandidate: string | null = null;
+    let maxLines = 0;
+
+    for (const ed of Array.from(allEditors)) {
+      if (
+        ed.closest('#console') ||
+        ed.closest('[class*="console"]') ||
+        ed.closest('[class*="testcase"]') ||
+        ed.closest('[class*="test-result"]')
+      ) {
+        continue;
+      }
+
+      const lines = ed.querySelectorAll('.view-lines .view-line, .view-line');
+      if (lines.length > 0) {
+        const text = Array.from(lines)
+          .map((l) => (l.textContent || '').replace(/\u00a0/g, ' '))
+          .join('\n')
+          .trim();
+        if (text.includes('Solution') || text.includes('int ') || text.includes('void ') || text.includes('for')) {
+          return text;
+        }
+        if (lines.length > maxLines) {
+          maxLines = lines.length;
+          bestCandidate = text;
+        }
+      }
+    }
+
+    if (bestCandidate && bestCandidate.length > 0) {
+      return bestCandidate;
+    }
+
+    // 3. Fallback to generic line extraction
     const monacoLines = document.querySelectorAll(
       '.monaco-editor .view-line, .view-lines .view-line, [role="code"] .view-line, .lines-content .view-line'
     );
@@ -33,21 +89,6 @@ export class LeetCodeAdapter implements PlatformAdapter {
       });
       const combined = lines.join('\n').trim();
       if (combined.length > 0) return combined;
-    }
-
-    // 2. Secondary: Monaco hidden/accessible textarea
-    const textarea = document.querySelector(
-      'textarea.monaco-mouse-cursor-text, .monaco-editor textarea, textarea.inputarea'
-    ) as HTMLTextAreaElement | null;
-    if (textarea && textarea.value && textarea.value.trim().length > 0) {
-      return textarea.value.replace(/\u00a0/g, ' ').trim();
-    }
-
-    // 3. Fallback: check all pre/code blocks in editor container
-    const codeBlocks = document.querySelectorAll('.monaco-editor pre, [data-track-load="code_editor"] pre');
-    if (codeBlocks.length > 0) {
-      const texts = Array.from(codeBlocks).map(b => (b.textContent || '').replace(/\u00a0/g, ' ')).join('\n').trim();
-      if (texts.length > 0) return texts;
     }
 
     return null;
