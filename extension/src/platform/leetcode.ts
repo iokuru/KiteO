@@ -14,35 +14,68 @@ export class LeetCodeAdapter implements PlatformAdapter {
   }
 
   isEditorAvailable(): boolean {
-    return document.querySelector('.monaco-editor') !== null;
+    return (
+      document.querySelector('.monaco-editor') !== null ||
+      document.querySelector('[data-track-load="code_editor"]') !== null ||
+      document.querySelector('.view-lines') !== null
+    );
   }
 
   getSource(): string | null {
-    // Read editor text directly from Monaco container or page context
-    const monacoLines = document.querySelectorAll('.monaco-editor .view-line');
+    // 1. Primary: Extract lines from Monaco editor DOM
+    const monacoLines = document.querySelectorAll('.monaco-editor .view-line, .view-lines .view-line');
     if (monacoLines.length > 0) {
       const lines: string[] = [];
       monacoLines.forEach((line) => {
         lines.push(line.textContent || '');
       });
-      return lines.join('\n');
+      const combined = lines.join('\n').trim();
+      if (combined.length > 0) return combined;
     }
 
-    const textarea = document.querySelector('textarea.monaco-mouse-cursor-text') as HTMLTextAreaElement | null;
-    return textarea ? textarea.value : null;
+    // 2. Secondary: Monaco hidden/accessible textarea
+    const textarea = document.querySelector('textarea.monaco-mouse-cursor-text, .monaco-editor textarea') as HTMLTextAreaElement | null;
+    if (textarea && textarea.value && textarea.value.trim().length > 0) {
+      return textarea.value;
+    }
+
+    // 3. Fallback: check all pre/code blocks in editor container
+    const codeBlocks = document.querySelectorAll('.monaco-editor pre, [data-track-load="code_editor"] pre');
+    if (codeBlocks.length > 0) {
+      const texts = Array.from(codeBlocks).map(b => b.textContent || '').join('\n').trim();
+      if (texts.length > 0) return texts;
+    }
+
+    return null;
   }
 
   getLanguage(): SupportedLanguage | null {
-    const langBtn = document.querySelector('[data-mode-id]') || document.querySelector('button[id*="headlessui-listbox-button"]');
-    const text = langBtn?.textContent?.toLowerCase() || '';
+    // Check various language dropdown buttons in modern LeetCode UI
+    const candidates = [
+      document.querySelector('[data-mode-id]'),
+      document.querySelector('button[id*="headlessui-listbox-button"]'),
+      document.querySelector('[id*="headlessui-popover-button"]'),
+      document.querySelector('button[class*="rounded"][class*="text-xs"]'),
+      document.querySelector('[data-cy="lang-select"]'),
+    ];
 
-    if (text.includes('c++') || text.includes('cpp')) return 'cpp';
-    if (text.includes('java') && !text.includes('javascript')) return 'java';
+    for (const btn of candidates) {
+      if (btn && btn.textContent) {
+        const text = btn.textContent.toLowerCase();
+        if (text.includes('c++') || text.includes('cpp')) return 'cpp';
+        if (text.includes('java') && !text.includes('javascript')) return 'java';
+        if (text.includes('python')) return 'cpp'; // default parser
+      }
+    }
 
-    // Infer from source if class Solution uses public static or vector
+    // Infer from source text
     const src = this.getSource() || '';
-    if (src.includes('vector<') || src.includes('std::') || src.includes('string&')) return 'cpp';
-    if (src.includes('public class') || src.includes('public int') || src.includes('int[]')) return 'java';
+    if (src.includes('public class') || src.includes('public int') || src.includes('public void') || src.includes('int[]') || src.includes('System.out')) {
+      return 'java';
+    }
+    if (src.includes('vector<') || src.includes('std::') || src.includes('string&') || src.includes('#include') || src.includes('cout <<')) {
+      return 'cpp';
+    }
 
     return 'cpp';
   }

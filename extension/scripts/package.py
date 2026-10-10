@@ -59,7 +59,7 @@ def main():
             "48": "icons/icon-48.png",
             "128": "icons/icon-128.png",
         },
-        "permissions": ["activeTab"],
+        "permissions": ["activeTab", "scripting"],
         "background": {
             "service_worker": "background.js",
             "type": "module",
@@ -117,7 +117,7 @@ def main():
             "48": "icons/icon-48.png",
             "128": "icons/icon-128.png",
         },
-        "permissions": ["activeTab"],
+        "permissions": ["activeTab", "scripting"],
         "background": {
             "scripts": ["background.js"],
         },
