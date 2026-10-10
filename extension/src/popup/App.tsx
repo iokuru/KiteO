@@ -9,65 +9,20 @@ interface PageState {
   contestMode?: boolean;
   editorAvailable?: boolean;
   error?: string;
-  sourcePreview?: string;
-  language?: string;
 }
 
-function Kite0Logo({ size = 24 }: { size?: number }) {
+function Kite0Badge() {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" style={{ flexShrink: 0 }}>
-      <rect x="2" y="2" width="60" height="60" rx="14" fill="#0B0F19" stroke="#1E293B" strokeWidth="1.5" />
-      <polygon points="32,10 11.5,29.5 32,29.5" fill="#0EA5E9" />
-      <polygon points="32,10 52.5,29.5 32,29.5" fill="#38BDF8" />
-      <polygon points="32,54 11.5,29.5 32,29.5" fill="#0369A1" />
-      <polygon points="32,54 52.5,29.5 32,29.5" fill="#0284C7" />
-      <polygon points="32,10 52.5,29.5 32,54 11.5,29.5" stroke="#BAE6FD" strokeWidth="1" strokeLinejoin="round" fill="none" />
-      <line x1="32" y1="10" x2="32" y2="54" stroke="#F0F9FF" strokeOpacity="0.5" strokeWidth="1" />
-      <line x1="11.5" y1="29.5" x2="52.5" y2="29.5" stroke="#F0F9FF" strokeOpacity="0.5" strokeWidth="1" />
-      <ellipse cx="32" cy="29.5" rx="11" ry="13.5" fill="#0B0F19" fillOpacity="0.9" />
-      <ellipse cx="32" cy="29.5" rx="9" ry="11.5" stroke="#FFFFFF" strokeWidth="2.5" fill="none" />
-      <line x1="38" y1="21.5" x2="26" y2="37.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="12" r="11" fill="#16a34a" />
+      <polygon points="12,4 17.5,11.5 12,19.5 6.5,11.5" stroke="#ffffff" strokeWidth="1.8" fill="none" strokeLinejoin="round" />
+      <line x1="12" y1="4" x2="12" y2="19.5" stroke="#ffffff" strokeWidth="1.1" strokeOpacity="0.8" />
+      <line x1="6.5" y1="11.5" x2="17.5" y2="11.5" stroke="#ffffff" strokeWidth="1.1" strokeOpacity="0.8" />
     </svg>
   );
 }
 
-function RefreshIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-      <path d="M16 21h5v-5" />
-    </svg>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-
-function CopyIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-const MONO_FONT = "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace";
+const MONO_FONT = 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace';
 
 export function App() {
   const [pageState, setPageState] = useState<PageState>({
@@ -91,8 +46,8 @@ export function App() {
       let response: any = null;
       try {
         response = await browser.tabs.sendMessage(activeTab.id, { type: 'EXTRACT_SOURCE' });
-      } catch (err) {
-        console.warn('Direct message failed, attempting script injection...', err);
+      } catch {
+        // Fallback to injection if content script wasn't pre-loaded
       }
 
       if (!response && (browser as any).scripting?.executeScript) {
@@ -102,8 +57,8 @@ export function App() {
             files: ['content.js']
           });
           response = await browser.tabs.sendMessage(activeTab.id, { type: 'EXTRACT_SOURCE' });
-        } catch (injectionErr) {
-          console.warn('Scripting injection failed:', injectionErr);
+        } catch {
+          // Injection fallback failed
         }
       }
 
@@ -111,7 +66,7 @@ export function App() {
         setPageState({
           loading: false,
           supported: false,
-          error: 'Ready on supported platforms: LeetCode, Codeforces, AtCoder, CSES, CodeChef, HackerRank.',
+          error: 'Open a problem on LeetCode, Codeforces, AtCoder, CSES, or CodeChef.',
         });
         return;
       }
@@ -132,7 +87,7 @@ export function App() {
           supported: true,
           platformName: response.platformName,
           editorAvailable: false,
-          error: 'Editor detected, but no solution code found yet. Enter your solution code in the editor.',
+          error: 'No solution code found in editor. Type or paste your code in the editor.',
         });
         return;
       }
@@ -142,8 +97,6 @@ export function App() {
         supported: true,
         platformName: response.platformName,
         editorAvailable: true,
-        sourcePreview: response.source.slice(0, 80),
-        language: response.language,
       });
 
       const analysis: AnalysisResult = await browser.runtime.sendMessage({
@@ -154,16 +107,12 @@ export function App() {
         },
       });
 
-      if (response.constraints && analysis.tc) {
-        analysis.constraintStatus = response.constraints;
-      }
-
       setResult(analysis);
-    } catch (err: any) {
+    } catch {
       setPageState({
         loading: false,
         supported: false,
-        error: 'Please refresh the problem page or ensure you are in an active editor tab.',
+        error: 'Please refresh the problem page and try again.',
       });
     }
   }
@@ -172,9 +121,9 @@ export function App() {
     analyzeTab();
   }, []);
 
-  function handleCopySummary() {
+  function handleCopy() {
     if (!result) return;
-    const algoStr = result.algorithms.length > 0 ? result.algorithms.join(', ') : 'Unknown';
+    const algoStr = result.algorithms.length > 0 ? result.algorithms.join(', ') : 'None';
     const text = `Time Complexity: ${result.tc}\nSpace Complexity: ${result.sc}\nAlgorithm: ${algoStr}`;
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -182,339 +131,213 @@ export function App() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '280px', background: '#0b0f17' }}>
-      {/* Top App Bar */}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '190px',
+      background: '#ffffff',
+      color: '#111827',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    }}>
+      {/* Header */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '12px 16px',
-        background: '#0f172a',
-        borderBottom: '1px solid #1e293b'
+        padding: '10px 14px',
+        borderBottom: '1px solid #e5e7eb',
+        background: '#f9fafb'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Kite0Logo size={24} />
-          <div>
-            <div style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '-0.01em', color: '#f8fafc' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Kite0Badge />
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#111827' }}>
               Kite0
-            </div>
-            <div style={{ fontSize: '10px', color: '#64748b', marginTop: '-2px' }}>
-              Static Complexity Engine
-            </div>
+            </span>
+            {pageState.platformName && (
+              <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                • {pageState.platformName}
+              </span>
+            )}
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {pageState.platformName && (
-            <span style={{
-              fontSize: '11px',
-              fontFamily: MONO_FONT,
-              fontWeight: 600,
-              padding: '2px 8px',
-              borderRadius: '4px',
-              background: '#131e33',
-              color: '#38bdf8',
-              border: '1px solid #1e3a5f'
-            }}>
-              {pageState.platformName}
-            </span>
-          )}
-          <button
-            onClick={() => analyzeTab()}
-            title="Re-analyze current buffer"
-            style={{
-              background: 'transparent',
-              border: '1px solid #334155',
-              borderRadius: '6px',
-              padding: '4px 8px',
-              color: '#94a3b8',
-              cursor: 'pointer',
-              fontSize: '11px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = '#f8fafc';
-              (e.currentTarget as HTMLElement).style.borderColor = '#475569';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = '#94a3b8';
-              (e.currentTarget as HTMLElement).style.borderColor = '#334155';
-            }}
-          >
-            <RefreshIcon />
-            <span>Re-scan</span>
-          </button>
-        </div>
+        <button
+          onClick={() => analyzeTab()}
+          style={{
+            background: '#ffffff',
+            border: '1px solid #d1d5db',
+            borderRadius: '5px',
+            padding: '3px 9px',
+            color: '#374151',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: 500,
+            transition: 'background 0.1s'
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background = '#f3f4f6';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = '#ffffff';
+          }}
+        >
+          Scan
+        </button>
       </div>
 
-      {/* Main Content Area */}
-      <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* Body */}
+      <div style={{ padding: '14px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {pageState.loading && (
-          <div style={{
-            padding: '40px 16px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
-            <div style={{
-              width: '24px',
-              height: '24px',
-              border: '2px solid #1e293b',
-              borderTopColor: '#38bdf8',
-              borderRadius: '50%',
-              animation: 'spin 0.8s linear infinite'
-            }} />
-            <div style={{ fontSize: '13px', color: '#94a3b8' }}>
-              Parsing syntax tree...
-            </div>
-            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <div style={{ textAlign: 'center', padding: '24px 0', color: '#6b7280', fontSize: '13px' }}>
+            Analyzing solution...
           </div>
         )}
 
         {!pageState.loading && pageState.contestMode && (
           <div style={{
-            background: 'rgba(245, 158, 11, 0.08)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
-            borderRadius: '8px',
-            padding: '14px',
-            color: '#fef3c7'
+            background: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: '6px',
+            padding: '12px',
+            color: '#92400e',
+            fontSize: '13px',
+            lineHeight: 1.4
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '13px', color: '#fbbf24' }}>
-              <ShieldIcon />
-              <span>Contest Fair-Play Active</span>
+            <strong>Contest Mode Active</strong>
+            <div style={{ marginTop: '4px', fontSize: '12px' }}>
+              Live contest session detected. Analysis is paused for fair play.
             </div>
-            <p style={{ margin: '6px 0 0 0', fontSize: '12px', lineHeight: '1.4', color: '#d1d5db' }}>
-              Active live contest detected. Kite0 is paused to strictly comply with platform contest integrity standards.
-            </p>
           </div>
         )}
 
         {!pageState.loading && !pageState.contestMode && pageState.error && (
           <div style={{
-            background: '#131b2e',
-            border: '1px solid #1e293b',
-            borderRadius: '8px',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px'
+            background: '#f9fafb',
+            border: '1px solid #e5e7eb',
+            borderRadius: '6px',
+            padding: '14px',
+            textAlign: 'center',
+            color: '#4b5563',
+            fontSize: '13px',
+            lineHeight: 1.5
           }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#f8fafc' }}>
-              Ready for Code Analysis
-            </div>
-            <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: '1.5' }}>
-              {pageState.error}
-            </p>
-            <div style={{
-              fontSize: '11px',
-              color: '#64748b',
-              borderTop: '1px solid #1e293b',
-              paddingTop: '8px',
-              marginTop: '4px'
-            }}>
-              Supported: LeetCode, Codeforces, AtCoder, CSES, CodeChef, HackerRank.
-            </div>
+            {pageState.error}
           </div>
         )}
 
         {!pageState.loading && !pageState.contestMode && result && (
-          <>
-            {/* Complexity Cards Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              {/* Time Complexity Card */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Complexity Metrics Table */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '8px',
+            }}>
               <div style={{
-                background: '#131b2e',
-                border: '1px solid #1e293b',
-                borderRadius: '8px',
-                padding: '12px',
-                position: 'relative',
-                overflow: 'hidden'
+                background: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                padding: '10px 12px'
               }}>
-                <div style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '2px',
-                  background: '#0284c7'
-                }} />
-                <div style={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  color: '#64748b',
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  marginBottom: '4px'
-                }}>
-                  TIME COMPLEXITY
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>
+                  Time
                 </div>
                 <div style={{
                   fontFamily: MONO_FONT,
                   fontSize: '18px',
                   fontWeight: 700,
-                  color: '#38bdf8'
+                  color: '#111827',
+                  marginTop: '2px'
                 }}>
                   {result.tc}
                 </div>
               </div>
 
-              {/* Space Complexity Card */}
               <div style={{
-                background: '#131b2e',
-                border: '1px solid #1e293b',
-                borderRadius: '8px',
-                padding: '12px',
-                position: 'relative',
-                overflow: 'hidden'
+                background: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                padding: '10px 12px'
               }}>
-                <div style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '2px',
-                  background: '#10b981'
-                }} />
-                <div style={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  color: '#64748b',
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  marginBottom: '4px'
-                }}>
-                  SPACE COMPLEXITY
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>
+                  Space
                 </div>
                 <div style={{
                   fontFamily: MONO_FONT,
                   fontSize: '18px',
                   fontWeight: 700,
-                  color: '#34d399'
+                  color: '#111827',
+                  marginTop: '2px'
                 }}>
                   {result.sc}
                 </div>
               </div>
             </div>
 
-            {/* Algorithm Classification Card */}
+            {/* Algorithm Detected */}
             <div style={{
-              background: '#131b2e',
-              border: '1px solid #1e293b',
-              borderRadius: '8px',
-              padding: '12px',
-              position: 'relative',
-              overflow: 'hidden'
+              background: '#f9fafb',
+              border: '1px solid #e5e7eb',
+              borderRadius: '6px',
+              padding: '10px 12px',
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between'
             }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '2px',
-                background: '#eab308'
-              }} />
-              <div style={{
-                fontSize: '10px',
-                fontWeight: 700,
-                color: '#64748b',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                marginBottom: '8px'
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase' }}>
+                Algorithm
+              </span>
+              <span style={{
+                fontFamily: MONO_FONT,
+                fontSize: '13px',
+                fontWeight: 600,
+                color: result.algorithms.length > 0 ? '#15803d' : '#6b7280'
               }}>
-                CLASSIFIED ALGORITHMS
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {result.algorithms.length > 0 ? (
-                  result.algorithms.map((algo) => (
-                    <span
-                      key={algo}
-                      style={{
-                        background: 'rgba(234, 179, 8, 0.1)',
-                        border: '1px solid rgba(234, 179, 8, 0.3)',
-                        color: '#fde047',
-                        fontSize: '12px',
-                        fontFamily: MONO_FONT,
-                        fontWeight: 600,
-                        padding: '3px 8px',
-                        borderRadius: '4px'
-                      }}
-                    >
-                      {algo}
-                    </span>
-                  ))
-                ) : (
-                  <span style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic' }}>
-                    No canonical pattern detected (Unknown)
-                  </span>
-                )}
-              </div>
+                {result.algorithms.length > 0 ? result.algorithms.join(', ') : 'None detected'}
+              </span>
             </div>
 
-            {/* Copy Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+            {/* Actions */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2px' }}>
               <button
-                onClick={handleCopySummary}
+                onClick={handleCopy}
                 style={{
-                  background: copied ? '#065f46' : '#1e293b',
-                  color: copied ? '#6ee7b7' : '#cbd5e1',
-                  border: '1px solid',
-                  borderColor: copied ? '#059669' : '#334155',
-                  borderRadius: '6px',
-                  padding: '6px 12px',
+                  background: '#ffffff',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '5px',
+                  padding: '5px 12px',
                   fontSize: '12px',
                   fontWeight: 500,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  transition: 'all 0.15s ease'
+                  color: '#374151',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = '#f3f4f6';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = '#ffffff';
                 }}
               >
-                {copied ? (
-                  <>
-                    <CheckIcon />
-                    <span>Copied to clipboard</span>
-                  </>
-                ) : (
-                  <>
-                    <CopyIcon />
-                    <span>Copy Analysis</span>
-                  </>
-                )}
+                {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
-          </>
+          </div>
         )}
       </div>
 
-      {/* Footer Status Bar */}
+      {/* Footer */}
       <div style={{
-        padding: '8px 16px',
-        background: '#090d16',
-        borderTop: '1px solid #1e293b',
+        padding: '6px 14px',
+        borderTop: '1px solid #f3f4f6',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         fontSize: '11px',
-        color: '#64748b'
+        color: '#9ca3af'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{
-            display: 'inline-block',
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            background: pageState.supported ? '#10b981' : '#f59e0b'
-          }} />
-          <span>{pageState.supported ? 'Online (Local WASM)' : 'Standby'}</span>
-        </div>
-        <span>v0.1.0 / 100% Offline</span>
+        <span>Local WASM</span>
+        <span>v0.1.0 • Offline</span>
       </div>
     </div>
   );

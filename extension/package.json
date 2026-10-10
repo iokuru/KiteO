@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.config.content.ts",
     "package": "python scripts/package.py",
     "test:e2e": "playwright test",
     "test:ast-parity": "node ../benchmark/ast_parity_test.mjs",
