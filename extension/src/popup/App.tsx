@@ -13,6 +13,62 @@ interface PageState {
   language?: string;
 }
 
+function Kite0Logo({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" style={{ flexShrink: 0 }}>
+      <rect x="2" y="2" width="60" height="60" rx="14" fill="#0B0F19" stroke="#1E293B" strokeWidth="1.5" />
+      <polygon points="32,10 11.5,29.5 32,29.5" fill="#0EA5E9" />
+      <polygon points="32,10 52.5,29.5 32,29.5" fill="#38BDF8" />
+      <polygon points="32,54 11.5,29.5 32,29.5" fill="#0369A1" />
+      <polygon points="32,54 52.5,29.5 32,29.5" fill="#0284C7" />
+      <polygon points="32,10 52.5,29.5 32,54 11.5,29.5" stroke="#BAE6FD" strokeWidth="1" strokeLinejoin="round" fill="none" />
+      <line x1="32" y1="10" x2="32" y2="54" stroke="#F0F9FF" strokeOpacity="0.5" strokeWidth="1" />
+      <line x1="11.5" y1="29.5" x2="52.5" y2="29.5" stroke="#F0F9FF" strokeOpacity="0.5" strokeWidth="1" />
+      <ellipse cx="32" cy="29.5" rx="11" ry="13.5" fill="#0B0F19" fillOpacity="0.9" />
+      <ellipse cx="32" cy="29.5" rx="9" ry="11.5" stroke="#FFFFFF" strokeWidth="2.5" fill="none" />
+      <line x1="38" y1="21.5" x2="26" y2="37.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function RefreshIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+      <path d="M16 21h5v-5" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+function CopyIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+const MONO_FONT = "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace";
+
 export function App() {
   const [pageState, setPageState] = useState<PageState>({
     loading: true,
@@ -36,11 +92,9 @@ export function App() {
       try {
         response = await browser.tabs.sendMessage(activeTab.id, { type: 'EXTRACT_SOURCE' });
       } catch (err) {
-        // Content script might not have been injected yet
         console.warn('Direct message failed, attempting script injection...', err);
       }
 
-      // If no response, try injecting content script dynamically
       if (!response && (browser as any).scripting?.executeScript) {
         try {
           await (browser as any).scripting.executeScript({
@@ -57,7 +111,7 @@ export function App() {
         setPageState({
           loading: false,
           supported: false,
-          error: 'Ready on competitive programming editors: LeetCode, Codeforces, CodeChef, AtCoder, CSES, HackerRank, GeeksforGeeks, etc.',
+          error: 'Ready on supported platforms: LeetCode, Codeforces, AtCoder, CSES, CodeChef, HackerRank.',
         });
         return;
       }
@@ -78,7 +132,7 @@ export function App() {
           supported: true,
           platformName: response.platformName,
           editorAvailable: false,
-          error: 'Editor detected, but no solution code found yet. Type or paste your solution in the editor.',
+          error: 'Editor detected, but no solution code found yet. Enter your solution code in the editor.',
         });
         return;
       }
@@ -92,7 +146,6 @@ export function App() {
         language: response.language,
       });
 
-      // Request deterministic analysis from background worker (WASM)
       const analysis: AnalysisResult = await browser.runtime.sendMessage({
         type: 'ANALYZE_REQUEST',
         payload: {
@@ -102,7 +155,6 @@ export function App() {
       });
 
       if (response.constraints && analysis.tc) {
-        // Optional limits evaluation
         analysis.constraintStatus = response.constraints;
       }
 
@@ -140,23 +192,8 @@ export function App() {
         background: '#0f172a',
         borderBottom: '1px solid #1e293b'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '24px',
-            height: '24px',
-            borderRadius: '6px',
-            background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: '13px',
-            color: '#fff',
-            fontFamily: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace",
-            boxShadow: '0 2px 4px rgba(2, 132, 199, 0.2)'
-          }}>
-            K0
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Kite0Logo size={24} />
           <div>
             <div style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '-0.01em', color: '#f8fafc' }}>
               Kite0
@@ -171,12 +208,13 @@ export function App() {
           {pageState.platformName && (
             <span style={{
               fontSize: '11px',
+              fontFamily: MONO_FONT,
               fontWeight: 600,
               padding: '2px 8px',
-              borderRadius: '999px',
-              background: '#1e293b',
+              borderRadius: '4px',
+              background: '#131e33',
               color: '#38bdf8',
-              border: '1px solid #334155'
+              border: '1px solid #1e3a5f'
             }}>
               {pageState.platformName}
             </span>
@@ -194,7 +232,7 @@ export function App() {
               fontSize: '11px',
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '5px',
               transition: 'all 0.15s ease'
             }}
             onMouseEnter={(e) => {
@@ -206,7 +244,8 @@ export function App() {
               (e.currentTarget as HTMLElement).style.borderColor = '#334155';
             }}
           >
-            ↻ Re-scan
+            <RefreshIcon />
+            <span>Re-scan</span>
           </button>
         </div>
       </div>
@@ -231,7 +270,7 @@ export function App() {
               animation: 'spin 0.8s linear infinite'
             }} />
             <div style={{ fontSize: '13px', color: '#94a3b8' }}>
-              Inspecting editor syntax tree...
+              Parsing syntax tree...
             </div>
             <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
           </div>
@@ -246,7 +285,8 @@ export function App() {
             color: '#fef3c7'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '13px', color: '#fbbf24' }}>
-              <span>🛡️</span> Contest Fair-Play Active
+              <ShieldIcon />
+              <span>Contest Fair-Play Active</span>
             </div>
             <p style={{ margin: '6px 0 0 0', fontSize: '12px', lineHeight: '1.4', color: '#d1d5db' }}>
               Active live contest detected. Kite0 is paused to strictly comply with platform contest integrity standards.
@@ -271,16 +311,13 @@ export function App() {
               {pageState.error}
             </p>
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
               fontSize: '11px',
               color: '#64748b',
               borderTop: '1px solid #1e293b',
               paddingTop: '8px',
               marginTop: '4px'
             }}>
-              <span>💡</span> Open any LeetCode, Codeforces, or CodeChef problem editor.
+              Supported: LeetCode, Codeforces, AtCoder, CSES, CodeChef, HackerRank.
             </div>
           </div>
         )}
@@ -317,7 +354,7 @@ export function App() {
                   TIME COMPLEXITY
                 </div>
                 <div style={{
-                  fontFamily: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace",
+                  fontFamily: MONO_FONT,
                   fontSize: '18px',
                   fontWeight: 700,
                   color: '#38bdf8'
@@ -354,7 +391,7 @@ export function App() {
                   SPACE COMPLEXITY
                 </div>
                 <div style={{
-                  fontFamily: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace",
+                  fontFamily: MONO_FONT,
                   fontSize: '18px',
                   fontWeight: 700,
                   color: '#34d399'
@@ -402,6 +439,7 @@ export function App() {
                         border: '1px solid rgba(234, 179, 8, 0.3)',
                         color: '#fde047',
                         fontSize: '12px',
+                        fontFamily: MONO_FONT,
                         fontWeight: 600,
                         padding: '3px 8px',
                         borderRadius: '4px'
@@ -438,7 +476,17 @@ export function App() {
                   transition: 'all 0.15s ease'
                 }}
               >
-                {copied ? '✓ Copied to clipboard' : '📋 Copy Analysis'}
+                {copied ? (
+                  <>
+                    <CheckIcon />
+                    <span>Copied to clipboard</span>
+                  </>
+                ) : (
+                  <>
+                    <CopyIcon />
+                    <span>Copy Analysis</span>
+                  </>
+                )}
               </button>
             </div>
           </>
@@ -466,7 +514,7 @@ export function App() {
           }} />
           <span>{pageState.supported ? 'Online (Local WASM)' : 'Standby'}</span>
         </div>
-        <span>v0.1.0 • 100% Offline</span>
+        <span>v0.1.0 / 100% Offline</span>
       </div>
     </div>
   );
